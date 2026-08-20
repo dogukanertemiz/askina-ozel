@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sana Özel — Onyx Zarafet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,500&family=Tangerine:wght@700&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-1:#050505; --bg-2:#101010; --bg-3:#181818;
+    --accent:#d4b98c; --accent-soft:#e8d4ab;
+    --text:#f2ede2; --text-dim:#9a9080;
+    --card:rgba(255,255,255,.03); --border:rgba(212,185,140,.28);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Cormorant Garamond',serif;
+    background:linear-gradient(160deg,var(--bg-1),var(--bg-2) 50%,var(--bg-3));
+    color:var(--text); overflow-x:hidden; min-height:100vh; position:relative;
+  }
+  h1,h2{font-family:'Cormorant',serif; font-weight:500; letter-spacing:.03em}
+  .script{font-family:'Tangerine',cursive}
+  section{position:relative; z-index:2; padding:110px 24px; max-width:900px; margin:0 auto}
+
+  .hearts-bg{position:fixed; inset:0; pointer-events:none; z-index:1; overflow:hidden}
+  .heart{position:absolute; bottom:-20px; color:var(--accent-soft); opacity:.5; font-size:8px; animation:floatUp linear forwards}
+  @keyframes floatUp{ to{ transform:translateY(-105vh); opacity:0 } }
+
+  .intro-overlay{
+    position:fixed; inset:0; z-index:50; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:30px;
+    background:var(--bg-1);
+    transition:opacity 1s ease, visibility 1s ease;
+  }
+  .intro-overlay.hidden{opacity:0; visibility:hidden; pointer-events:none}
+  .envelope{width:120px; height:80px; position:relative; cursor:pointer}
+  .envelope .body{position:absolute; inset:0; background:transparent; border:1px solid var(--accent); border-radius:2px}
+  .envelope .flap{position:absolute; top:0; left:0; width:0; height:0; border-left:60px solid transparent; border-right:60px solid transparent; border-top:44px solid var(--bg-2); transform-origin:top; transition:transform .6s ease}
+  .intro-overlay.opening .flap{transform:rotateX(180deg)}
+  .envelope .heart-seal{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:16px; color:var(--accent); z-index:2}
+  .intro-text{font-size:1.15rem; color:var(--text-dim); letter-spacing:.15em; text-align:center; text-transform:uppercase}
+  .intro-btn{font-family:'Cormorant Garamond',serif; font-size:1rem; letter-spacing:.25em; text-transform:uppercase; background:transparent; border:1px solid var(--border); color:var(--accent-soft); padding:14px 34px; cursor:pointer; transition:.4s}
+  .intro-btn:hover{background:var(--accent); color:var(--bg-1); border-color:var(--accent)}
+
+  .hero{min-height:92vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:22px}
+  .kicker{letter-spacing:.5em; text-transform:uppercase; font-size:.7rem; color:var(--accent-soft)}
+  .hero h1{font-size:clamp(2.4rem,6.5vw,4.6rem); font-weight:500; color:var(--text); line-height:1.15; opacity:0; animation:riseIn 1.4s .3s ease forwards}
+  .hero p.sub{font-size:1.2rem; color:var(--text-dim); max-width:500px; opacity:0; animation:riseIn 1.4s .7s ease forwards; letter-spacing:.02em}
+  @keyframes riseIn{from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:translateY(0)}}
+  .divider{width:40px; height:1px; background:var(--accent); margin:8px 0}
+  .scroll-cue{margin-top:44px; font-size:.75rem; color:var(--text-dim); letter-spacing:.3em; text-transform:uppercase}
+
+  .countdown{text-align:center}
+  .countdown h2{font-size:1.6rem; margin-bottom:10px; letter-spacing:.1em}
+  .countdown .label{color:var(--text-dim); margin-bottom:40px; font-size:1rem; letter-spacing:.05em}
+  .timer{display:flex; justify-content:center; gap:14px; flex-wrap:wrap}
+  .timer .unit{background:var(--card); border:1px solid var(--border); padding:22px 24px; min-width:88px}
+  .timer .num{font-family:'Cormorant',serif; font-size:2.2rem; color:var(--accent-soft); font-weight:400}
+  .timer .u-label{font-size:.68rem; letter-spacing:.2em; text-transform:uppercase; color:var(--text-dim); margin-top:8px}
+
+  .section-title{text-align:center; font-size:1.9rem; margin-bottom:50px; letter-spacing:.08em}
+  .gallery{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:2px}
+  .gallery img{width:100%; height:260px; object-fit:cover; filter:grayscale(.15); cursor:pointer; transition:transform .5s ease, filter .5s ease}
+  .gallery img:hover{transform:scale(1.02); filter:grayscale(0)}
+  .lightbox{position:fixed; inset:0; background:rgba(0,0,0,.95); display:none; align-items:center; justify-content:center; z-index:60; padding:30px}
+  .lightbox.open{display:flex}
+  .lightbox img{max-width:90%; max-height:85vh}
+  .lightbox .close{position:absolute; top:24px; right:32px; font-size:2rem; color:var(--accent-soft); cursor:pointer; background:none; border:none}
+
+  .letter-card{background:var(--card); border:1px solid var(--border); padding:56px 48px; opacity:0; transform:translateY(30px); transition:opacity 1.1s ease, transform 1.1s ease}
+  .letter-card.visible{opacity:1; transform:translateY(0)}
+  .letter-body{font-size:1.2rem; line-height:2; color:var(--text); font-weight:400}
+  .letter-body p{margin-bottom:1.2em}
+  .signature{margin-top:34px; text-align:right}
+  .signature .name{font-family:'Tangerine',cursive; font-size:3rem; color:var(--accent-soft)}
+  .signature .date{color:var(--text-dim); font-size:.85rem; letter-spacing:.1em}
+
+  .song{text-align:center}
+  .vinyl{width:100px; height:100px; margin:0 auto 26px; border-radius:50%; background:radial-gradient(circle at center,var(--bg-1) 0 16px,var(--accent) 17px 19px,var(--bg-1) 20px 100%); border:1px solid var(--border); animation:spin 7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .song-info{font-size:1.3rem; margin-bottom:24px; letter-spacing:.03em}
+  .song-info .artist{color:var(--text-dim); font-size:1rem}
+  .song iframe{border:1px solid var(--border)}
+
+  .footer{text-align:center; padding:80px 24px 100px; color:var(--text-dim); letter-spacing:.1em; font-size:.9rem}
+  .footer .heart-line{font-size:1rem; color:var(--accent); margin-bottom:12px; letter-spacing:.4em}
+
+  @media(max-width:520px){ section{padding:76px 18px} .letter-card{padding:36px 26px} }
+</style>
+</head>
+<body>
+
+<div class="intro-overlay" id="introOverlay">
+  <div class="envelope" id="envelope">
+    <div class="body"></div>
+    <div class="flap"></div>
+    <div class="heart-seal">♥</div>
+  </div>
+  <div class="intro-text">Sana özel bir şey hazırlandı</div>
+  <button class="intro-btn" id="openBtn">Aç</button>
+</div>
+
+<div class="hearts-bg" id="heartsBg"></div>
+
+<section class="hero">
+  <div class="kicker">Aşkına Özel</div>
+  <h1 id="heroTitle">Sevgilim</h1>
+  <div class="divider"></div>
+  <p class="sub" id="heroSub">Fazla söze gerek yok. Sadece bu: seni seviyorum.</p>
+  <div class="scroll-cue">aşağı kaydır</div>
+</section>
+
+<section class="countdown">
+  <h2 id="countdownTitle">Geri Sayım</h2>
+  <div class="label" id="countdownLabel">Özel günümüze kalan süre</div>
+  <div class="timer">
+    <div class="unit"><div class="num" id="cd-days">00</div><div class="u-label">Gün</div></div>
+    <div class="unit"><div class="num" id="cd-hours">00</div><div class="u-label">Saat</div></div>
+    <div class="unit"><div class="num" id="cd-mins">00</div><div class="u-label">Dakika</div></div>
+    <div class="unit"><div class="num" id="cd-secs">00</div><div class="u-label">Saniye</div></div>
+  </div>
+</section>
+
+<section class="gallery-section">
+  <h2 class="section-title">Anılarımız</h2>
+  <div class="gallery" id="gallery"></div>
+</section>
+
+<section class="letter">
+  <h2 class="section-title">Sana Bir Mektup</h2>
+  <div class="letter-card" id="letterCard">
+    <div class="letter-body" id="letterBody"></div>
+    <div class="signature">
+      <div class="name" id="signatureName">İmza</div>
+      <div class="date" id="signatureDate"></div>
+    </div>
+  </div>
+</section>
+
+<section class="song">
+  <h2 class="section-title">Bizim Şarkımız</h2>
+  <div class="vinyl"></div>
+  <div class="song-info">
+    <div id="songName">Şarkı Adı</div>
+    <div class="artist" id="songArtist">Sanatçı</div>
+  </div>
+  <div id="songEmbedWrap"></div>
+</section>
+
+<div class="footer">
+  <div class="heart-line">— ♥ —</div>
+  <div>Seninle her şey daha zarif.</div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <button class="close" id="lightboxClose">×</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<script>
+/* ============================================================
+   DEĞİŞTİR: Sipariş bilgilerine göre aşağıdaki CONFIG'i doldur.
+   HTML içinde başka bir şey değiştirmene gerek yok.
+   ============================================================ */
+const CONFIG = {
+  partnerName: "Sevgilim",                        // DEĞİŞTİR: partnerin adı
+  heroSubtitle: "Fazla söze gerek yok. Sadece bu: seni seviyorum.", // DEĞİŞTİR (opsiyonel)
+  senderName: "Seni Seven",                        // DEĞİŞTİR: gönderenin adı
+  signatureDate: "",                                // DEĞİŞTİR: örn "19 Ağustos 2026" (boş bırakılırsa bugünün tarihi yazılır)
+
+  specialDate: "2026-12-31T00:00:00",              // DEĞİŞTİR: özel tarih (ISO format)
+  specialDateLabel: "Yıldönümümüze kalan süre",     // DEĞİŞTİR: geri sayım etiketi
+  countUpLabel: "Birlikte geçirdiğimiz gün sayısı",// DEĞİŞTİR: geçmiş tarih için etiket
+
+  photos: [                                         // DEĞİŞTİR: müşterinin gönderdiği 3-5 fotoğraf
+    "https://picsum.photos/600/800?random=41",
+    "https://picsum.photos/600/800?random=42",
+    "https://picsum.photos/600/800?random=43",
+    "https://picsum.photos/600/800?random=44"
+  ],
+
+  letter: `Buraya mektubun ilk paragrafı gelecek.
+
+İkinci paragraf, aranızda boş satır bırakarak ekleyebilirsin.
+
+Son paragraf ve kapanış cümlesi.`,                  // DEĞİŞTİR: mektup metni (paragrafları boş satırla ayır)
+
+  songName: "Şarkı Adı",                            // DEĞİŞTİR
+  songArtist: "Sanatçı Adı",                        // DEĞİŞTİR
+  spotifyEmbedUrl: ""                               // DEĞİŞTİR: örn "https://open.spotify.com/embed/track/XXXXXXXXXXXXXXXXXXXXXX" — boşsa sadece isim/sanatçı gösterilir
+};
+/* ============================================================ */
+
+function pad(n){ return String(n).padStart(2,'0'); }
+
+function populateContent(){
+  document.title = "Sana Özel — " + CONFIG.partnerName;
+  document.getElementById('heroTitle').textContent = CONFIG.partnerName;
+  document.getElementById('heroSub').textContent = CONFIG.heroSubtitle;
+
+  const gallery = document.getElementById('gallery');
+  CONFIG.photos.forEach((src,i) => {
+    const img = document.createElement('img');
+    img.src = src; img.alt = 'Anı ' + (i+1); img.loading = 'lazy';
+    img.addEventListener('click', () => openLightbox(src));
+    gallery.appendChild(img);
+  });
+
+  const letterBody = document.getElementById('letterBody');
+  CONFIG.letter.trim().split(/\n\s*\n/).forEach(p => {
+    const el = document.createElement('p');
+    el.textContent = p.trim();
+    letterBody.appendChild(el);
+  });
+  document.getElementById('signatureName').textContent = CONFIG.senderName;
+  document.getElementById('signatureDate').textContent = CONFIG.signatureDate ||
+    new Date().toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'});
+
+  document.getElementById('songName').textContent = CONFIG.songName;
+  document.getElementById('songArtist').textContent = CONFIG.songArtist;
+  if(CONFIG.spotifyEmbedUrl){
+    const wrap = document.getElementById('songEmbedWrap');
+    wrap.innerHTML = `<iframe src="${CONFIG.spotifyEmbedUrl}" width="100%" height="152" style="max-width:420px" frameborder="0" allow="autoplay; encrypted-media" loading="lazy"></iframe>`;
+  }
+}
+
+function openLightbox(src){
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+function initGallery(){
+  document.getElementById('lightboxClose').addEventListener('click', () => document.getElementById('lightbox').classList.remove('open'));
+  document.getElementById('lightbox').addEventListener('click', e => { if(e.target.id === 'lightbox') e.target.classList.remove('open'); });
+}
+
+function initCountdown(){
+  const target = new Date(CONFIG.specialDate).getTime();
+  const els = {d:document.getElementById('cd-days'), h:document.getElementById('cd-hours'), m:document.getElementById('cd-mins'), s:document.getElementById('cd-secs')};
+  const titleEl = document.getElementById('countdownTitle');
+  const labelEl = document.getElementById('countdownLabel');
+
+  function tick(){
+    const now = Date.now();
+    let diff = target - now;
+    let counting = 'down';
+    if(diff <= 0){ diff = now - target; counting = 'up'; }
+    const d = Math.floor(diff/86400000);
+    const h = Math.floor(diff%86400000/3600000);
+    const m = Math.floor(diff%3600000/60000);
+    const s = Math.floor(diff%60000/1000);
+    els.d.textContent = pad(d); els.h.textContent = pad(h); els.m.textContent = pad(m); els.s.textContent = pad(s);
+    titleEl.textContent = counting === 'down' ? 'Geri Sayım' : 'Birlikteyiz';
+    labelEl.textContent = counting === 'down' ? CONFIG.specialDateLabel : CONFIG.countUpLabel;
+  }
+  tick(); setInterval(tick, 1000);
+}
+
+function initRevealAnimations(){
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); } });
+  }, {threshold:.25});
+  obs.observe(document.getElementById('letterCard'));
+}
+
+function initHearts(){
+  const wrap = document.getElementById('heartsBg');
+  setInterval(() => {
+    const h = document.createElement('div');
+    h.className = 'heart';
+    h.textContent = '·';
+    h.style.left = Math.random()*100 + 'vw';
+    h.style.fontSize = (6 + Math.random()*10) + 'px';
+    h.style.animationDuration = (8 + Math.random()*8) + 's';
+    wrap.appendChild(h);
+    setTimeout(() => h.remove(), 17000);
+  }, 400);
+}
+
+function initEnvelope(){
+  const overlay = document.getElementById('introOverlay');
+  const env = document.getElementById('envelope');
+  const btn = document.getElementById('openBtn');
+  function open(){
+    overlay.classList.add('opening');
+    setTimeout(() => overlay.classList.add('hidden'), 600);
+  }
+  env.addEventListener('click', open);
+  btn.addEventListener('click', open);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  populateContent();
+  initEnvelope();
+  initCountdown();
+  initGallery();
+  initRevealAnimations();
+  initHearts();
+});
+</script>
+</body>
+</html>

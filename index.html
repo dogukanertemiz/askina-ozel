@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aşkına Özel — Sevgiline Özel Bir Sayfa</title>
+<meta name="description" content="Sevgiline özel, kişiselleştirilmiş bir sürpriz web sayfası. Şablon seç, bilgilerini gönder, birkaç saat içinde teslim al.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Dancing+Script:wght@600;700&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-1:#1a0508; --bg-2:#2b0a10; --bg-3:#3a0e14;
+    --accent:#d4af37; --accent-soft:#e8c874;
+    --text:#f5e6d3; --text-dim:#c9a98f;
+    --card:rgba(255,255,255,.05); --card-strong:rgba(255,255,255,.08); --border:rgba(212,175,55,.3);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Cormorant Garamond',serif;
+    background:linear-gradient(160deg,var(--bg-1),var(--bg-2) 40%,var(--bg-3));
+    color:var(--text); min-height:100vh; overflow-x:hidden;
+  }
+  h1,h2,h3{font-family:'Playfair Display',serif}
+  .script{font-family:'Dancing Script',cursive}
+  a{color:inherit; text-decoration:none}
+  ul{list-style:none}
+  img{max-width:100%}
+  .wrap{max-width:1120px; margin:0 auto; padding:0 24px}
+
+  /* Nav */
+  .nav{position:fixed; top:0; left:0; right:0; z-index:40; backdrop-filter:blur(10px); background:rgba(26,5,8,.7); border-bottom:1px solid var(--border)}
+  .nav .wrap{display:flex; align-items:center; justify-content:space-between; height:74px}
+  .logo{font-family:'Playfair Display',serif; font-size:1.4rem; letter-spacing:.03em; color:var(--accent-soft)}
+  .logo span{color:var(--text)}
+  .nav-links{display:flex; gap:32px; align-items:center}
+  .nav-links a{font-size:1.05rem; color:var(--text-dim); transition:.25s}
+  .nav-links a:hover{color:var(--accent-soft)}
+  .btn{display:inline-block; font-family:'Cormorant Garamond',serif; font-weight:600; font-size:1rem; letter-spacing:.08em; text-transform:uppercase; padding:12px 28px; border-radius:30px; transition:.3s; cursor:pointer; border:1px solid var(--accent)}
+  .btn-solid{background:var(--accent); color:var(--bg-1)}
+  .btn-solid:hover{background:var(--accent-soft)}
+  .btn-outline{background:transparent; color:var(--accent-soft)}
+  .btn-outline:hover{background:var(--accent); color:var(--bg-1)}
+  .nav-cta{padding:10px 24px; font-size:.9rem}
+  .burger{display:none}
+
+  /* Hero */
+  .hero{padding:170px 0 100px; display:grid; grid-template-columns:1.1fr .9fr; gap:60px; align-items:center}
+  .kicker{letter-spacing:.4em; text-transform:uppercase; font-size:.78rem; color:var(--accent-soft); margin-bottom:18px}
+  .hero h1{font-size:clamp(2.6rem,5vw,3.6rem); line-height:1.15; margin-bottom:22px}
+  .hero h1 em{font-style:normal; color:var(--accent-soft)}
+  .hero p{font-size:1.3rem; color:var(--text-dim); max-width:520px; margin-bottom:34px; line-height:1.6}
+  .hero-ctas{display:flex; gap:16px; flex-wrap:wrap}
+
+  .mock{position:relative; background:var(--card-strong); border:1px solid var(--border); border-radius:20px; padding:8px; box-shadow:0 30px 80px rgba(0,0,0,.45)}
+  .mock-bar{display:flex; gap:6px; padding:10px 12px}
+  .mock-dot{width:9px; height:9px; border-radius:50%; background:var(--border)}
+  .mock-screen{background:linear-gradient(160deg,var(--bg-1),var(--bg-3)); border-radius:14px; padding:44px 28px; text-align:center}
+  .mock-kicker{letter-spacing:.35em; text-transform:uppercase; font-size:.62rem; color:var(--accent-soft); margin-bottom:10px}
+  .mock-name{font-family:'Playfair Display',serif; font-size:1.8rem; margin-bottom:14px}
+  .mock-timer{display:flex; justify-content:center; gap:8px; margin-bottom:16px}
+  .mock-unit{background:var(--card); border:1px solid var(--border); border-radius:8px; padding:8px 10px; min-width:44px}
+  .mock-unit .n{font-family:'Playfair Display',serif; font-size:1.1rem; color:var(--accent-soft)}
+  .mock-unit .l{font-size:.55rem; letter-spacing:.1em; color:var(--text-dim); text-transform:uppercase}
+  .mock-hearts{color:var(--accent); letter-spacing:.5em; font-size:.9rem}
+
+  /* Sections */
+  section{padding:100px 0}
+  .section-kicker{text-align:center; letter-spacing:.4em; text-transform:uppercase; font-size:.75rem; color:var(--accent-soft); margin-bottom:14px}
+  .section-title{text-align:center; font-size:clamp(1.9rem,3.5vw,2.5rem); margin-bottom:16px}
+  .section-sub{text-align:center; color:var(--text-dim); font-size:1.15rem; max-width:600px; margin:0 auto 60px}
+
+  /* Benefits */
+  .benefits{display:grid; grid-template-columns:repeat(4,1fr); gap:22px}
+  .benefit{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:32px 26px; text-align:center}
+  .benefit .icon{font-size:1.8rem; margin-bottom:14px}
+  .benefit h3{font-size:1.25rem; margin-bottom:10px; font-weight:600}
+  .benefit p{color:var(--text-dim); font-size:1rem; line-height:1.55}
+
+  /* Steps */
+  .steps{display:grid; grid-template-columns:repeat(4,1fr); gap:22px; counter-reset:step}
+  .step{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:30px 24px; position:relative}
+  .step .num{font-family:'Playfair Display',serif; font-size:2.2rem; color:var(--accent-soft); opacity:.5; margin-bottom:10px}
+  .step h3{font-size:1.15rem; margin-bottom:8px; font-weight:600}
+  .step p{color:var(--text-dim); font-size:.98rem; line-height:1.5}
+
+  /* Gallery */
+  .filter-note{text-align:center; color:var(--text-dim); font-size:.95rem; margin-bottom:36px}
+  .gallery-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px}
+  .tpl-card{background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; display:flex; flex-direction:column; transition:.3s}
+  .tpl-card:hover{transform:translateY(-4px); border-color:var(--accent)}
+  .tpl-swatch{height:110px; position:relative; display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif; font-size:1.3rem; color:rgba(255,255,255,.85)}
+  .tpl-body{padding:22px 24px 26px; flex:1; display:flex; flex-direction:column}
+  .tpl-tag{display:inline-block; font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; color:var(--accent-soft); border:1px solid var(--border); padding:3px 10px; border-radius:20px; margin-bottom:12px; align-self:flex-start}
+  .tpl-tag.game{color:var(--bg-1); background:var(--accent-soft); border-color:var(--accent-soft)}
+  .tpl-tag.birthday{color:#1c0f38; background:#ff9ec1; border-color:#ff9ec1}
+  .tpl-tag.friend{color:#0c1c28; background:#7fe0d7; border-color:#7fe0d7}
+  .tpl-tag.other{color:#1c1712; background:#e8c99a; border-color:#e8c99a}
+  .tpl-body h3{font-size:1.3rem; margin-bottom:8px; font-weight:600}
+  .tpl-body p{color:var(--text-dim); font-size:.95rem; line-height:1.5; margin-bottom:20px; flex:1}
+  .tpl-preview{align-self:flex-start; font-size:.85rem; letter-spacing:.1em; text-transform:uppercase; color:var(--accent-soft); border-bottom:1px solid var(--border); padding-bottom:2px; transition:.25s}
+  .tpl-preview:hover{color:var(--accent); border-color:var(--accent)}
+
+  /* Pricing */
+  .pricing-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:22px}
+  .price-card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:34px 26px; text-align:center; display:flex; flex-direction:column}
+  .price-card.featured{border-color:var(--accent); background:var(--card-strong); transform:scale(1.03)}
+  .price-name{font-size:1.2rem; letter-spacing:.05em; margin-bottom:6px; color:var(--accent-soft); font-weight:600}
+  .price-amount{font-family:'Playfair Display',serif; font-size:2.1rem; margin-bottom:18px}
+  .price-amount span{font-size:.95rem; color:var(--text-dim); font-family:'Cormorant Garamond',serif}
+  .price-feats{text-align:left; margin-bottom:26px; flex:1}
+  .price-feats li{color:var(--text-dim); font-size:.95rem; padding:6px 0; padding-left:22px; position:relative}
+  .price-feats li::before{content:'✦'; position:absolute; left:0; color:var(--accent-soft); font-size:.8rem}
+
+  /* FAQ */
+  .faq{max-width:760px; margin:0 auto}
+  details{background:var(--card); border:1px solid var(--border); border-radius:12px; margin-bottom:14px; padding:20px 24px}
+  summary{cursor:pointer; font-size:1.15rem; font-weight:600; list-style:none; display:flex; justify-content:space-between; align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:'+'; font-size:1.4rem; color:var(--accent-soft); margin-left:16px}
+  details[open] summary::after{content:'−'}
+  details p{color:var(--text-dim); margin-top:14px; line-height:1.6; font-size:1.02rem}
+
+  /* CTA banner */
+  .cta-banner{background:linear-gradient(135deg,var(--bg-3),var(--bg-2)); border:1px solid var(--border); border-radius:24px; padding:70px 40px; text-align:center}
+  .cta-banner h2{font-size:clamp(1.8rem,3.5vw,2.4rem); margin-bottom:16px}
+  .cta-banner p{color:var(--text-dim); font-size:1.15rem; margin-bottom:32px}
+
+  /* Footer */
+  footer{padding:60px 0 40px; border-top:1px solid var(--border)}
+  .footer-grid{display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:40px; margin-bottom:40px}
+  footer h4{font-size:1rem; letter-spacing:.1em; text-transform:uppercase; color:var(--accent-soft); margin-bottom:16px}
+  footer p{color:var(--text-dim); font-size:1rem; line-height:1.6}
+  footer ul li{margin-bottom:10px}
+  footer ul li a{color:var(--text-dim); font-size:1rem; transition:.25s}
+  footer ul li a:hover{color:var(--accent-soft)}
+  .footer-bottom{text-align:center; color:var(--text-dim); font-size:.9rem; padding-top:24px; border-top:1px solid var(--border)}
+
+  @media(max-width:920px){
+    .hero{grid-template-columns:1fr; padding-top:140px}
+    .benefits, .steps{grid-template-columns:repeat(2,1fr)}
+    .gallery-grid{grid-template-columns:repeat(2,1fr)}
+    .pricing-grid{grid-template-columns:repeat(2,1fr)}
+    .price-card.featured{transform:none}
+    .footer-grid{grid-template-columns:1fr}
+    .nav-links{display:none}
+  }
+  @media(max-width:560px){
+    .benefits, .steps, .gallery-grid, .pricing-grid{grid-template-columns:1fr}
+    section{padding:70px 0}
+    .wrap{padding:0 18px}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <div class="logo">Aşkına <span>Özel</span></div>
+    <div class="nav-links">
+      <a href="#sablonlar">Şablonlar</a>
+      <a href="#nasil-calisir">Nasıl Çalışır</a>
+      <a href="#fiyatlar">Fiyatlar</a>
+      <a href="#sss">SSS</a>
+    </div>
+    <a href="siparis-formu.html" class="btn btn-solid nav-cta">Sipariş Ver</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap" style="display:contents">
+    <div>
+      <div class="kicker">Sevgiline, Arkadaşına, Doğum Gününe Özel</div>
+      <h1>Ona <em>tek bir cümleyle</em> değil,<br>tek bir sayfayla anlat.</h1>
+      <p>Fotoğraflarınız, mektubunuz, şarkınız ve anılarınızla kişiye özel bir sürpriz web
+      sayfası hazırlıyoruz — sevgiline, en yakın arkadaşına ya da doğum günü kutlamasına özel.
+      Sen bilgileri gönder, gerisini biz halledelim — genelde birkaç saat içinde teslim.</p>
+      <div class="hero-ctas">
+        <a href="siparis-formu.html" class="btn btn-solid">Sipariş Ver</a>
+        <a href="#sablonlar" class="btn btn-outline">Şablonlara Göz At</a>
+      </div>
+    </div>
+    <div class="mock">
+      <div class="mock-bar"><div class="mock-dot"></div><div class="mock-dot"></div><div class="mock-dot"></div></div>
+      <div class="mock-screen">
+        <div class="mock-kicker">Aşkına Özel</div>
+        <div class="mock-name script" style="font-family:'Dancing Script',cursive; font-size:2.2rem;">Sevgilim</div>
+        <div class="mock-timer">
+          <div class="mock-unit"><div class="n">04</div><div class="l">Gün</div></div>
+          <div class="mock-unit"><div class="n">12</div><div class="l">Saat</div></div>
+          <div class="mock-unit"><div class="n">37</div><div class="l">Dk</div></div>
+        </div>
+        <div class="mock-hearts">♥ ♥ ♥</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="neden-biz">
+  <div class="wrap">
+    <div class="section-kicker">Neden Aşkına Özel</div>
+    <h2 class="section-title">Hazır kart değil, kişiye özel bir deneyim</h2>
+    <p class="section-sub">Her sayfa; isminden mektubuna, şarkısından fotoğraflarına kadar
+    tamamen o kişiye göre hazırlanır.</p>
+    <div class="benefits">
+      <div class="benefit">
+        <div class="icon">💌</div>
+        <h3>Tamamen Kişiye Özel</h3>
+        <p>İsim, tarih, fotoğraf, mektup ve şarkı — hepsi sizin hikayenize göre.</p>
+      </div>
+      <div class="benefit">
+        <div class="icon">⚡</div>
+        <h3>Hızlı Teslim</h3>
+        <p>Standart paketlerde birkaç saat, VIP'te aynı gün teslim.</p>
+      </div>
+      <div class="benefit">
+        <div class="icon">🎨</div>
+        <h3>6 Stil + 3 Oyunlu Şablon</h3>
+        <p>Klasikten minimale, masalsıdan interaktif oyunlu deneyime kadar.</p>
+      </div>
+      <div class="benefit">
+        <div class="icon">🔒</div>
+        <h3>Sürpriz Garantisi</h3>
+        <p>Bilgileriniz gizli tutulur, sayfa yalnızca gönderdiğiniz linkle açılır.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="nasil-calisir">
+  <div class="wrap">
+    <div class="section-kicker">Süreç</div>
+    <h2 class="section-title">Nasıl Çalışır?</h2>
+    <p class="section-sub">4 basit adımda, sevdiğine özel sayfası hazır.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="num">01</div>
+        <h3>Şablonunu Seç</h3>
+        <p>6 stilden ya da 3 interaktif oyunlu şablondan birini seç, emin değilsen sana öneririz.</p>
+      </div>
+      <div class="step">
+        <div class="num">02</div>
+        <h3>Bilgilerini Gönder</h3>
+        <p>Partnerinin adı, özel tarih, 3-5 fotoğraf, mektup ve şarkı bilgisini formdan ilet.</p>
+      </div>
+      <div class="step">
+        <div class="num">03</div>
+        <h3>Biz Hazırlıyoruz</h3>
+        <p>Şablonu bilgilerinle doldurup teslime hazır hale getiriyoruz.</p>
+      </div>
+      <div class="step">
+        <div class="num">04</div>
+        <h3>Teslim Al</h3>
+        <p>Linkini ya da dosyanı al, sevdiğine gönder. İzlerken mutlu ol.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="sablonlar">
+  <div class="wrap">
+    <div class="section-kicker">Katalog</div>
+    <h2 class="section-title">Şablonlarımız</h2>
+    <p class="filter-note">Her karta tıklayıp gerçek şablonu (örnek içerikle) önizleyebilirsin.</p>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+</section>
+
+<section id="fiyatlar">
+  <div class="wrap">
+    <div class="section-kicker">Fiyatlandırma</div>
+    <h2 class="section-title">Bütçene Uygun Paket</h2>
+    <p class="section-sub">Tüm paketlerde kişiye özel içerik, galeri ve geri sayım vardır.</p>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-name">Başlangıç</div>
+        <div class="price-amount">799 <span>TL</span></div>
+        <ul class="price-feats">
+          <li>Hazır şablon (6 stilden biri)</li>
+          <li>1 fotoğraf galerisi</li>
+          <li>Geri sayım</li>
+          <li>1 şarkı</li>
+        </ul>
+        <a href="siparis-formu.html" class="btn btn-outline">Seç</a>
+      </div>
+      <div class="price-card featured">
+        <div class="price-name">Premium</div>
+        <div class="price-amount">1.299 <span>TL</span></div>
+        <ul class="price-feats">
+          <li>Başlangıç paketindeki her şey</li>
+          <li>Sınırsız revizyon</li>
+          <li>Video arka plan seçeneği</li>
+        </ul>
+        <a href="siparis-formu.html" class="btn btn-solid">Seç</a>
+      </div>
+      <div class="price-card">
+        <div class="price-name">VIP</div>
+        <div class="price-amount">1.899 <span>TL</span></div>
+        <ul class="price-feats">
+          <li>Premium paketindeki her şey</li>
+          <li>Öncelikli, aynı gün teslim</li>
+          <li>Sesli mesaj / animasyon eklentisi</li>
+        </ul>
+        <a href="siparis-formu.html" class="btn btn-outline">Seç</a>
+      </div>
+      <div class="price-card">
+        <div class="price-name">Oyunlu</div>
+        <div class="price-amount">1.599–2.199 <span>TL</span></div>
+        <ul class="price-feats">
+          <li>Puzzle, Kazı Kazan veya Hafıza Kartları</li>
+          <li>Gerçek, oynanabilir bir mekanik</li>
+          <li>Kopyalanamayan, unutulmaz deneyim</li>
+        </ul>
+        <a href="siparis-formu.html" class="btn btn-outline">Seç</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="sss">
+  <div class="wrap">
+    <div class="section-kicker">Merak Edilenler</div>
+    <h2 class="section-title">Sıkça Sorulan Sorular</h2>
+    <div class="faq">
+      <details open>
+        <summary>Teslim süresi ne kadar?</summary>
+        <p>Standart paketlerde genelde birkaç saat içinde teslim ederiz. VIP pakette öncelikli
+        aynı gün teslim garantisi vardır. Yoğunluğa göre süre değişebilir, sipariş sırasında
+        netleştiririz.</p>
+      </details>
+      <details>
+        <summary>Fotoğraf göndermem şart mı?</summary>
+        <p>Hayır. Fotoğraf göndermezsen sayfayı geçici görsellerle teslim eder, istediğin zaman
+        kendi fotoğraflarınla değiştirebilirsin ya da bize sonradan iletebilirsin.</p>
+      </details>
+      <details>
+        <summary>Sayfa nerede yayınlanıyor, bir linki oluyor mu?</summary>
+        <p>Sana teslime hazır tek bir HTML dosyası veririz. İstersen bunu doğrudan sevgiline
+        gönderebilir, istersen birkaç saniyede ücretsiz bir barındırma servisine yükleyip bir
+        link oluşturabilirsin.</p>
+      </details>
+      <details>
+        <summary>Mektubu ben mi yazmalıyım?</summary>
+        <p>Hayır, istersen kendin yazabilirsin ya da nasıl tanıştığınız, en sevdiğin özelliği,
+        sana ne hissettirdiği gibi birkaç maddeyi bize anlatman yeterli — akıcı bir mektuba biz
+        çeviririz.</p>
+      </details>
+      <details>
+        <summary>Revizyon yapabiliyor muyum?</summary>
+        <p>Başlangıç paketinde teslim öncesi küçük düzeltmeler yapılır; Premium ve VIP paketlerde
+        sınırsız revizyon hakkın vardır.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section id="cta">
+  <div class="wrap">
+    <div class="cta-banner">
+      <h2>Sevdiğine bugün özel bir şey hazırla</h2>
+      <p>Formu doldur, gerisini bize bırak.</p>
+      <a href="siparis-formu.html" class="btn btn-solid">Sipariş Formunu Doldur</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h4>Aşkına Özel</h4>
+        <p>Sevdiklerinize özel, kişiselleştirilmiş sürpriz web sayfaları hazırlıyoruz.
+        Her sipariş, tamamen o hikayeye göre tasarlanır.</p>
+      </div>
+      <div>
+        <h4>Bağlantılar</h4>
+        <ul>
+          <li><a href="#sablonlar">Şablonlar</a></li>
+          <li><a href="#fiyatlar">Fiyatlar</a></li>
+          <li><a href="#sss">SSS</a></li>
+          <li><a href="siparis-formu.html">Sipariş Ver</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>İletişim</h4>
+        <ul>
+          <!-- DEĞİŞTİR: gerçek iletişim bilgileriyle güncelle -->
+          <li><a href="https://wa.me/905000000000">WhatsApp</a></li>
+          <li><a href="mailto:siparis@askinaozel.com">siparis@askinaozel.com</a></li>
+          <li><a href="https://instagram.com/askinaozel">@askinaozel</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">© <span id="year"></span> Aşkına Özel. Tüm hakları saklıdır.</div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  /* ============================================================
+     Şablon kataloğu — yeni şablon eklediğinde SIPARIS-SURECI.md'deki
+     tabloya da eklemeyi unutma.
+     ============================================================ */
+  const TEMPLATES = [
+    { file:'templates/tutkulu-gul.html', name:'Tutkulu Gül', tag:'Standart', gradient:'linear-gradient(135deg,#5c0f1a,#8b1a2b)', desc:'Bordo & altın, iddialı ve romantik. Klasik, "büyük jest" isteyen çiftler için.' },
+    { file:'templates/mavi-ruya.html', name:'Mavi Rüya', tag:'Standart', gradient:'linear-gradient(135deg,#1c2350,#3f47a8)', desc:'Pastel lacivert & lavanta, hayalperest. Uzak mesafe ilişkiler ve "kavuşma" teması.' },
+    { file:'templates/bal-sarisi.html', name:'Bal Sarısı', tag:'Standart', gradient:'linear-gradient(135deg,#432112,#c97a3d)', desc:'Sıcak turuncu & şeftali, samimi. Uzun süreli, ev gibi hissettiren ilişkiler için.' },
+    { file:'templates/zeytin-dali.html', name:'Zeytin Dalı', tag:'Standart', gradient:'linear-gradient(135deg,#28311f,#6b7d4f)', desc:'Adaçayı yeşili & toprak tonları, sakin ve doğal. Sade zevkli çiftler için.' },
+    { file:'templates/onyx-zarafet.html', name:'Onyx Zarafet', tag:'Standart', gradient:'linear-gradient(135deg,#0a0a0a,#3a3226)', desc:'Siyah & şampanya altını, modern ve lüks. "Gösterişsiz lüks" isteyenler için.' },
+    { file:'templates/seftali-tul.html', name:'Şeftali Tül', tag:'Standart', gradient:'linear-gradient(135deg,#ffd6c2,#ff8fa3)', desc:'Açık şeftali & pudra, masalsı ve hayalperest. Genç, tatlı, masal temalı ilişkiler için.' },
+    { file:'templates/puzzle-aski.html', name:'Puzzle Aşkı', tag:'İnteraktif', gradient:'linear-gradient(135deg,#33122c,#f4c95d)', desc:'Müşterinin fotoğrafından 3x3 sürgülü yapboz — çözünce mektup açılır.' },
+    { file:'templates/kazi-kazan-surprizi.html', name:'Kazı Kazan Sürprizi', tag:'İnteraktif', gradient:'linear-gradient(135deg,#123a30,#ffb26b)', desc:'Kazınabilir kart — fare ya da parmakla kazıyınca altındaki mesaj ortaya çıkar.' },
+    { file:'templates/hafiza-kartlari.html', name:'Hafıza Kartları', tag:'İnteraktif', gradient:'linear-gradient(135deg,#221247,#ffd166)', desc:'6 çiftlik hafıza/eşleştirme oyunu — tamamlanınca mektup açılır.' },
+    { file:'templates/dogum-gunu-solen.html', name:'Doğum Günü Şöleni', tag:'Doğum Günü', gradient:'linear-gradient(135deg,#301a5c,#ff6b9d)', desc:'Üflenebilir interaktif pasta, konfeti patlaması ve çok kişili dilek duvarı.' },
+    { file:'templates/arkadasima-ozel.html', name:'Arkadaşıma Özel', tag:'Arkadaşlık', gradient:'linear-gradient(135deg,#123044,#ffb347)', desc:'Romantik değil, samimi ve arkadaşça bir dille — "iyi ki varsın" sayfası.' },
+    { file:'templates/evlilik-teklifi.html', name:'Evlilik Teklifi', tag:'İnteraktif', gradient:'linear-gradient(135deg,#1b1640,#ffe9a8)', desc:'Yüzük kutusu açılır, "Hayır" butonu kaçar — sadece "Evet" kalır. İlişki zaman çizelgesiyle.' },
+    { file:'templates/tesekkur-ozur.html', name:'Teşekkür & Özür', tag:'Diğer', gradient:'linear-gradient(135deg,#2b2318,#d9a66c)', desc:'İçten, sade bir dille — özür dilemek ya da teşekkür etmek için (romantik olmak zorunda değil).' },
+    { file:'templates/aile-gunu.html', name:'Aile Günü', tag:'Diğer', gradient:'linear-gradient(135deg,#3a2620,#e8a87c)', desc:'Anneler ya da Babalar Günü için — polaroid galeri ve aile üyelerinden mesaj duvarı.' },
+    { file:'templates/mezuniyet.html', name:'Mezuniyet', tag:'Diğer', gradient:'linear-gradient(135deg,#151b3d,#ffd166)', desc:'Diplomayı sürükleyip kutuya bırak — başarı yolculuğu zaman çizelgesi ve tebrik duvarı.' },
+    { file:'templates/bebek-duyurusu.html', name:'Bebek Duyurusu', tag:'Diğer', gradient:'linear-gradient(135deg,#213631,#f6c9d6)', desc:'Balonu şişir, patlat, konfeti patlasın — hamilelik duyurusu ya da doğum haberi için.' },
+    { file:'templates/evcil-hayvan-anisi.html', name:'Evcil Hayvan Anısı', tag:'Diğer', gradient:'linear-gradient(135deg,#1c2444,#cfd6ff)', desc:'Sakin, teselli edici bir anı sayfası — kaybedilen bir evcil hayvanı anmak için.' },
+    { file:'templates/yeni-is-terfi.html', name:'Yeni İş / Terfi', tag:'Diğer', gradient:'linear-gradient(135deg,#0d2830,#ffcf6b)', desc:'Kariyer merdivenini sırayla tırman, tepeye ulaşınca konfeti — terfi/yeni iş kutlaması.' },
+  ];
+
+  const grid = document.getElementById('galleryGrid');
+  TEMPLATES.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'tpl-card';
+    card.innerHTML = `
+      <div class="tpl-swatch" style="background:${t.gradient}">${t.name}</div>
+      <div class="tpl-body">
+        <span class="tpl-tag ${t.tag === 'İnteraktif' ? 'game' : t.tag === 'Doğum Günü' ? 'birthday' : t.tag === 'Arkadaşlık' ? 'friend' : t.tag === 'Diğer' ? 'other' : ''}">${t.tag}</span>
+        <h3>${t.name}</h3>
+        <p>${t.desc}</p>
+        <a class="tpl-preview" href="${t.file}" target="_blank" rel="noopener">Önizle →</a>
+      </div>`;
+    grid.appendChild(card);
+  });
+</script>
+</body>
+</html>

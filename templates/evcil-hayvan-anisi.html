@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sana Özel — Evcil Hayvan Anısı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Dancing+Script:wght@600;700&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-1:#12162b; --bg-2:#1c2444; --bg-3:#26305e;
+    --accent:#cfd6ff; --accent-soft:#e8ecff;
+    --text:#f2f3ff; --text-dim:#a6ade0;
+    --card:rgba(255,255,255,.05); --border:rgba(207,214,255,.3);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Cormorant Garamond',serif;
+    background:linear-gradient(160deg,var(--bg-1),var(--bg-2) 45%,var(--bg-3));
+    color:var(--text); overflow-x:hidden; min-height:100vh; position:relative;
+  }
+  h1,h2{font-family:'Playfair Display',serif; font-weight:500}
+  .script{font-family:'Dancing Script',cursive}
+  section{position:relative; z-index:2; padding:100px 24px; max-width:860px; margin:0 auto}
+
+  .hearts-bg{position:fixed; inset:0; pointer-events:none; z-index:1; overflow:hidden}
+  .heart{position:absolute; bottom:-30px; color:var(--accent); opacity:.4; font-size:15px; animation:floatUp linear forwards}
+  @keyframes floatUp{ to{ transform:translateY(-104vh); opacity:0 } }
+
+  .intro-overlay{
+    position:fixed; inset:0; z-index:50; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px;
+    background:radial-gradient(circle at 50% 40%,var(--bg-3),var(--bg-1)); text-align:center; padding:24px;
+    transition:opacity 1s ease, visibility 1s ease;
+  }
+  .intro-overlay.hidden{opacity:0; visibility:hidden; pointer-events:none}
+  .paw-icon{font-size:3.4rem; cursor:pointer; animation:softPulse 2.8s ease-in-out infinite}
+  @keyframes softPulse{0%,100%{opacity:.85; transform:scale(1)}50%{opacity:1; transform:scale(1.05)}}
+  .intro-text{font-size:1.15rem; color:var(--text-dim); max-width:420px}
+  .intro-btn{font-family:'Cormorant Garamond',serif; font-size:1rem; letter-spacing:.12em; text-transform:uppercase; background:transparent; border:1px solid var(--border); color:var(--accent-soft); padding:12px 28px; border-radius:30px; cursor:pointer; transition:.3s}
+  .intro-btn:hover{background:var(--accent); color:var(--bg-1)}
+
+  .hero{min-height:80vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:18px}
+  .kicker{letter-spacing:.35em; text-transform:uppercase; font-size:.7rem; color:var(--accent-soft)}
+  .hero h1{font-size:clamp(2.2rem,5.8vw,3.8rem); color:var(--text); line-height:1.2}
+  .hero p.sub{font-size:1.15rem; color:var(--text-dim); max-width:500px; line-height:1.65}
+  .together-badge{display:inline-block; background:var(--card); border:1px solid var(--border); color:var(--accent-soft); padding:8px 22px; border-radius:30px; font-size:1rem}
+  .divider{width:52px; height:1px; background:var(--accent); margin:6px 0}
+  .scroll-cue{margin-top:34px; font-size:.82rem; color:var(--text-dim); letter-spacing:.2em}
+
+  .section-title{text-align:center; font-size:1.9rem; margin-bottom:38px}
+
+  .gallery{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:16px}
+  .gallery img{width:100%; height:240px; object-fit:cover; border-radius:12px; border:1px solid var(--border); cursor:pointer; transition:transform .4s ease}
+  .gallery img:hover{transform:scale(1.03)}
+  .lightbox{position:fixed; inset:0; background:rgba(6,8,18,.92); display:none; align-items:center; justify-content:center; z-index:60; padding:30px}
+  .lightbox.open{display:flex}
+  .lightbox img{max-width:90%; max-height:85vh; border-radius:8px}
+  .lightbox .close{position:absolute; top:24px; right:32px; font-size:2rem; color:var(--accent-soft); cursor:pointer; background:none; border:none}
+
+  .letter-card{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:48px 40px; opacity:0; transform:translateY(26px); transition:opacity 1s ease, transform 1s ease}
+  .letter-card.visible{opacity:1; transform:translateY(0)}
+  .letter-body{font-size:1.18rem; line-height:1.9; color:var(--text)}
+  .letter-body p{margin-bottom:1.1em}
+  .signature{margin-top:26px; text-align:right}
+  .signature .name{font-family:'Dancing Script',cursive; font-size:2rem; color:var(--accent-soft)}
+  .signature .date{color:var(--text-dim); font-size:.9rem}
+
+  .song{text-align:center}
+  .vinyl{width:96px; height:96px; margin:0 auto 20px; border-radius:50%; background:radial-gradient(circle at center,var(--bg-1) 0 15px,var(--accent) 16px 18px,var(--bg-1) 19px 100%); border:2px solid var(--border); animation:spin 7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .song-info{font-size:1.25rem; margin-bottom:18px}
+  .song-info .artist{color:var(--text-dim); font-size:.98rem}
+  .song iframe{border-radius:12px; border:1px solid var(--border)}
+  #songSection.hide{display:none}
+
+  .footer{text-align:center; padding:64px 24px 84px; color:var(--text-dim)}
+  .footer .heart-line{font-size:1.3rem; color:var(--accent); margin-bottom:10px}
+
+  @media(max-width:520px){ section{padding:60px 18px} .letter-card{padding:30px 22px} }
+</style>
+</head>
+<body>
+
+<div class="intro-overlay" id="introOverlay">
+  <div class="paw-icon" id="pawIcon">🐾</div>
+  <div class="intro-text">Anılarını görmek için dokun...</div>
+  <button class="intro-btn" id="openBtn">Devam Et</button>
+</div>
+
+<div class="hearts-bg" id="heartsBg"></div>
+
+<section class="hero">
+  <div class="kicker">Sonsuza Dek Kalbimizde</div>
+  <h1 id="heroTitle">İsim</h1>
+  <div class="together-badge" id="togetherBadge" style="display:none"></div>
+  <div class="divider"></div>
+  <p class="sub" id="heroSub">Bize verdiğin sevgiyi ve bıraktığın izleri hiç unutmayacağız.</p>
+  <div class="scroll-cue">aşağı kaydır ↓</div>
+</section>
+
+<section class="gallery-section">
+  <h2 class="section-title">Anılarımız</h2>
+  <div class="gallery" id="gallery"></div>
+</section>
+
+<section class="letter">
+  <h2 class="section-title">Sana Yazdıklarımız</h2>
+  <div class="letter-card" id="letterCard">
+    <div class="letter-body" id="letterBody"></div>
+    <div class="signature">
+      <div class="name" id="signatureName">İmza</div>
+      <div class="date" id="signatureDate"></div>
+    </div>
+  </div>
+</section>
+
+<section class="song" id="songSection">
+  <h2 class="section-title">Seni Hatırlatan Şarkı</h2>
+  <div class="vinyl"></div>
+  <div class="song-info">
+    <div id="songName">Şarkı Adı</div>
+    <div class="artist" id="songArtist">Sanatçı</div>
+  </div>
+  <div id="songEmbedWrap"></div>
+</section>
+
+<div class="footer">
+  <div class="heart-line">🐾 🌈 🐾</div>
+  <div>Gökkuşağı köprüsünde huzur içinde uyu.</div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <button class="close" id="lightboxClose">×</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<script>
+/* ============================================================
+   DEĞİŞTİR: Sipariş bilgilerine göre aşağıdaki CONFIG'i doldur.
+   Bu şablon bir anı/tribute sayfasıdır — dil sakin ve tesellı
+   edici tutulmalı, abartılı animasyon/oyun kullanılmaz.
+   ============================================================ */
+const CONFIG = {
+  partnerName: "İsim",                              // DEĞİŞTİR: evcil hayvanın adı
+  yearsTogether: "",                                 // DEĞİŞTİR (opsiyonel): örn. "7 Yıl Boyunca" — boşsa rozet gösterilmez
+  heroSubtitle: "Bize verdiğin sevgiyi ve bıraktığın izleri hiç unutmayacağız.", // DEĞİŞTİR
+  senderName: "Seni Seven Ailen",                   // DEĞİŞTİR
+  signatureDate: "",                                // DEĞİŞTİR
+
+  photos: [                                         // DEĞİŞTİR: anı fotoğrafları
+    "https://picsum.photos/600/800?random=161",
+    "https://picsum.photos/600/800?random=162",
+    "https://picsum.photos/600/800?random=163",
+    "https://picsum.photos/600/800?random=164"
+  ],
+
+  letter: `Buraya anı mektubunun ilk paragrafı gelecek — sakin, içten bir dille.
+
+İkinci paragraf, aranızda boş satır bırakarak ekleyebilirsin. Paylaştığınız anılar, ona kattığı neşe buraya çok yakışır.
+
+Son paragraf ve kapanış cümlesi.`,                  // DEĞİŞTİR
+
+  songName: "",                                     // DEĞİŞTİR (opsiyonel): boşsa şarkı bölümü gizlenir
+  songArtist: "",                                   // DEĞİŞTİR
+  spotifyEmbedUrl: ""                                // DEĞİŞTİR
+};
+/* ============================================================ */
+
+function populateContent(){
+  document.title = "Sonsuza Dek Kalbimizde — " + CONFIG.partnerName;
+  document.getElementById('heroTitle').textContent = CONFIG.partnerName;
+  document.getElementById('heroSub').textContent = CONFIG.heroSubtitle;
+
+  if(CONFIG.yearsTogether){
+    const badge = document.getElementById('togetherBadge');
+    badge.textContent = CONFIG.yearsTogether + ' Birlikteydik';
+    badge.style.display = 'inline-block';
+  }
+
+  const gallery = document.getElementById('gallery');
+  CONFIG.photos.forEach((src,i) => {
+    const img = document.createElement('img');
+    img.src = src; img.alt = 'Anı ' + (i+1); img.loading = 'lazy';
+    img.addEventListener('click', () => openLightbox(src));
+    gallery.appendChild(img);
+  });
+
+  const letterBody = document.getElementById('letterBody');
+  CONFIG.letter.trim().split(/\n\s*\n/).forEach(p => {
+    const el = document.createElement('p');
+    el.textContent = p.trim();
+    letterBody.appendChild(el);
+  });
+  document.getElementById('signatureName').textContent = CONFIG.senderName;
+  document.getElementById('signatureDate').textContent = CONFIG.signatureDate ||
+    new Date().toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'});
+
+  if(CONFIG.songName){
+    document.getElementById('songName').textContent = CONFIG.songName;
+    document.getElementById('songArtist').textContent = CONFIG.songArtist;
+    if(CONFIG.spotifyEmbedUrl){
+      const wrap = document.getElementById('songEmbedWrap');
+      wrap.innerHTML = `<iframe src="${CONFIG.spotifyEmbedUrl}" width="100%" height="152" style="max-width:420px" frameborder="0" allow="autoplay; encrypted-media" loading="lazy"></iframe>`;
+    }
+  } else {
+    document.getElementById('songSection').classList.add('hide');
+  }
+}
+
+function openLightbox(src){
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+function initGallery(){
+  document.getElementById('lightboxClose').addEventListener('click', () => document.getElementById('lightbox').classList.remove('open'));
+  document.getElementById('lightbox').addEventListener('click', e => { if(e.target.id === 'lightbox') e.target.classList.remove('open'); });
+}
+
+function initRevealAnimations(){
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); } });
+  }, {threshold:.25});
+  obs.observe(document.getElementById('letterCard'));
+}
+
+function initHearts(){
+  const wrap = document.getElementById('heartsBg');
+  setInterval(() => {
+    const h = document.createElement('div');
+    h.className = 'heart';
+    h.textContent = '🐾';
+    h.style.left = Math.random()*100 + 'vw';
+    h.style.fontSize = (10 + Math.random()*10) + 'px';
+    h.style.animationDuration = (8 + Math.random()*7) + 's';
+    wrap.appendChild(h);
+    setTimeout(() => h.remove(), 16000);
+  }, 900);
+}
+
+function initIntro(){
+  const overlay = document.getElementById('introOverlay');
+  function close(){ overlay.classList.add('hidden'); }
+  document.getElementById('pawIcon').addEventListener('click', close);
+  document.getElementById('openBtn').addEventListener('click', close);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  populateContent();
+  initIntro();
+  initGallery();
+  initRevealAnimations();
+  initHearts();
+});
+</script>
+</body>
+</html>

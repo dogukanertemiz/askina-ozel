@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sipariş Formu — Aşkına Özel</title>
+<meta name="description" content="Sevgiline özel sayfan için bilgilerini gönder.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-1:#1a0508; --bg-2:#2b0a10; --bg-3:#3a0e14;
+    --accent:#d4af37; --accent-soft:#e8c874;
+    --text:#f5e6d3; --text-dim:#c9a98f;
+    --card:rgba(255,255,255,.05); --card-strong:rgba(255,255,255,.08); --border:rgba(212,175,55,.3);
+    --danger:#e08585;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Cormorant Garamond',serif;
+    background:linear-gradient(160deg,var(--bg-1),var(--bg-2) 40%,var(--bg-3));
+    color:var(--text); min-height:100vh;
+  }
+  h1,h2,h3{font-family:'Playfair Display',serif}
+  a{color:var(--accent-soft)}
+  .wrap{max-width:760px; margin:0 auto; padding:0 24px}
+
+  .nav{position:sticky; top:0; z-index:40; backdrop-filter:blur(10px); background:rgba(26,5,8,.75); border-bottom:1px solid var(--border)}
+  .nav .wrap{display:flex; align-items:center; justify-content:space-between; height:70px; max-width:900px}
+  .logo{font-family:'Playfair Display',serif; font-size:1.3rem; color:var(--accent-soft)}
+  .logo span{color:var(--text)}
+  .back-link{font-size:1rem; color:var(--text-dim)}
+  .back-link:hover{color:var(--accent-soft)}
+
+  main{padding:60px 0 100px}
+  .form-head{text-align:center; margin-bottom:44px}
+  .kicker{letter-spacing:.4em; text-transform:uppercase; font-size:.72rem; color:var(--accent-soft); margin-bottom:14px}
+  .form-head h1{font-size:clamp(1.9rem,4vw,2.6rem); margin-bottom:14px}
+  .form-head p{color:var(--text-dim); font-size:1.15rem; max-width:520px; margin:0 auto}
+
+  .card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:36px 32px; margin-bottom:24px}
+  .card h2{font-size:1.3rem; margin-bottom:6px; font-weight:600}
+  .card .step-note{color:var(--text-dim); font-size:.95rem; margin-bottom:24px}
+
+  label{display:block; font-size:1.05rem; margin-bottom:8px; color:var(--text)}
+  .req{color:var(--danger); font-size:.85rem}
+  .field{margin-bottom:22px}
+  .field:last-child{margin-bottom:0}
+  input[type=text], input[type=date], input[type=tel], input[type=email], textarea, select{
+    width:100%; font-family:'Cormorant Garamond',serif; font-size:1.05rem; color:var(--text);
+    background:rgba(0,0,0,.2); border:1px solid var(--border); border-radius:10px; padding:12px 14px;
+    outline:none; transition:.25s;
+  }
+  input:focus, textarea:focus, select:focus{border-color:var(--accent)}
+  textarea{resize:vertical; min-height:90px; line-height:1.5}
+  select{cursor:pointer}
+  ::placeholder{color:var(--text-dim); opacity:.7}
+  .hint{color:var(--text-dim); font-size:.88rem; margin-top:6px}
+
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:20px}
+  .radio-group{display:flex; flex-direction:column; gap:10px}
+  .radio-opt{display:flex; align-items:flex-start; gap:10px; background:rgba(0,0,0,.15); border:1px solid var(--border); border-radius:10px; padding:12px 14px; cursor:pointer}
+  .radio-opt input{width:auto; margin-top:4px}
+  .radio-opt .opt-title{font-weight:600}
+  .radio-opt .opt-price{color:var(--accent-soft); font-size:.9rem}
+  .radio-opt .opt-desc{color:var(--text-dim); font-size:.9rem}
+
+  .letter-mode{display:flex; gap:10px; margin-bottom:16px}
+  .mode-btn{flex:1; text-align:center; padding:10px; border:1px solid var(--border); border-radius:10px; cursor:pointer; font-size:.98rem; color:var(--text-dim)}
+  .mode-btn.active{background:var(--accent); color:var(--bg-1); border-color:var(--accent); font-weight:600}
+  .letter-panel{display:none}
+  .letter-panel.active{display:block}
+
+  .checkbox-row{display:flex; align-items:flex-start; gap:10px; margin-top:6px}
+  .checkbox-row input{width:auto; margin-top:4px}
+  .checkbox-row label{margin:0; font-size:.98rem; color:var(--text-dim)}
+
+  .submit-row{text-align:center; margin-top:8px}
+  .btn{display:inline-block; font-family:'Cormorant Garamond',serif; font-weight:600; font-size:1.05rem; letter-spacing:.06em; text-transform:uppercase; padding:14px 34px; border-radius:30px; transition:.3s; cursor:pointer; border:1px solid var(--accent); background:var(--accent); color:var(--bg-1)}
+  .btn:hover{background:var(--accent-soft)}
+  .btn-outline{background:transparent; color:var(--accent-soft)}
+  .btn-outline:hover{background:var(--accent); color:var(--bg-1)}
+  .error-msg{color:var(--danger); font-size:.95rem; margin-top:14px; text-align:center; display:none}
+
+  #resultCard{display:none}
+  #resultCard.show{display:block}
+  .result-actions{display:flex; gap:14px; flex-wrap:wrap; margin-top:18px}
+  #summaryOutput{width:100%; min-height:280px; font-family:'Menlo','Courier New',monospace; font-size:.92rem; line-height:1.6; white-space:pre-wrap; background:rgba(0,0,0,.3); border:1px solid var(--border); border-radius:10px; padding:18px; color:var(--text)}
+  .copy-note{color:var(--accent-soft); font-size:.9rem; margin-top:8px; display:none}
+
+  @media(max-width:600px){ .grid2{grid-template-columns:1fr} .card{padding:26px 20px} }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <div class="logo">Aşkına <span>Özel</span></div>
+    <a href="index.html" class="back-link">← Anasayfaya Dön</a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+    <div class="form-head">
+      <div class="kicker">Sipariş Formu</div>
+      <h1>Bilgilerini Bize Anlat</h1>
+      <p>Formu doldur; en altta, bize göndermen için hazır bir özet ve WhatsApp / e-posta
+      bağlantısı oluşturacağız.</p>
+    </div>
+
+    <form id="orderForm" novalidate>
+
+      <div class="card">
+        <h2>1. Şablon</h2>
+        <div class="step-note">Emin değilsen "Siz önerin" seçeneğini işaretleyebilirsin.</div>
+        <div class="field">
+          <label for="template">Hangi şablonu istiyorsun? <span class="req">*</span></label>
+          <select id="template" required>
+            <option value="">Seçiniz...</option>
+            <option>Tutkulu Gül — Bordo/altın, iddialı & romantik</option>
+            <option>Mavi Rüya — Pastel lacivert/lavanta, hayalperest</option>
+            <option>Bal Sarısı — Sıcak turuncu/şeftali, samimi</option>
+            <option>Zeytin Dalı — Adaçayı yeşili/toprak, sakin & doğal</option>
+            <option>Onyx Zarafet — Siyah/şampanya altını, modern & lüks</option>
+            <option>Şeftali Tül — Açık şeftali/pudra, masalsı & hayalperest</option>
+            <option>Puzzle Aşkı (İnteraktif) — Yapboz çözünce mektup açılır</option>
+            <option>Kazı Kazan Sürprizi (İnteraktif) — Kazıyınca mesaj çıkar</option>
+            <option>Hafıza Kartları (İnteraktif) — Eşleştirince mektup açılır</option>
+            <option>Doğum Günü Şöleni — Üflenebilir pasta, konfeti, dilek duvarı</option>
+            <option>Arkadaşıma Özel — Samimi, arkadaşça dille "iyi ki varsın" sayfası</option>
+            <option>Evlilik Teklifi — Yüzük kutusu, kaçan "Hayır" butonu, zaman çizelgesi</option>
+            <option>Teşekkür & Özür — İçten, sade bir dille (romantik olmak zorunda değil)</option>
+            <option>Aile Günü — Anneler/Babalar Günü için</option>
+            <option>Mezuniyet — Diplomayı sürükle-bırak, başarı yolculuğu</option>
+            <option>Bebek Duyurusu — Balonu şişir & patlat, hamilelik/doğum haberi</option>
+            <option>Evcil Hayvan Anısı — Sakin, teselli edici bir anı sayfası</option>
+            <option>Yeni İş / Terfi — Kariyer merdiveni tırmanma, terfi kutlaması</option>
+            <option>Siz önerin</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>2. Paket</h2>
+        <div class="step-note">Fiyatlar hakkında detay için anasayfadaki fiyatlandırma bölümüne bakabilirsin.</div>
+        <div class="field">
+          <div class="radio-group">
+            <label class="radio-opt">
+              <input type="radio" name="package" value="Başlangıç (799 TL)">
+              <div><div class="opt-title">Başlangıç <span class="opt-price">— 799 TL</span></div><div class="opt-desc">Hazır şablon, 1 galeri, geri sayım, 1 şarkı</div></div>
+            </label>
+            <label class="radio-opt">
+              <input type="radio" name="package" value="Premium (1.299 TL)">
+              <div><div class="opt-title">Premium <span class="opt-price">— 1.299 TL</span></div><div class="opt-desc">Sınırsız revizyon, video arka plan seçeneği</div></div>
+            </label>
+            <label class="radio-opt">
+              <input type="radio" name="package" value="VIP (1.899 TL)">
+              <div><div class="opt-title">VIP <span class="opt-price">— 1.899 TL</span></div><div class="opt-desc">Öncelikli aynı gün teslim + sesli mesaj/animasyon</div></div>
+            </label>
+            <label class="radio-opt">
+              <input type="radio" name="package" value="Oyunlu (1.599–2.199 TL)">
+              <div><div class="opt-title">Oyunlu Şablon <span class="opt-price">— 1.599–2.199 TL</span></div><div class="opt-desc">Puzzle / Kazı Kazan / Hafıza Kartları</div></div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>3. Kişi Bilgileri</h2>
+        <div class="grid2">
+          <div class="field">
+            <label for="partnerName">Partnerinin adı <span class="req">*</span></label>
+            <input type="text" id="partnerName" placeholder="Örn. Ayşe" required>
+          </div>
+          <div class="field">
+            <label for="senderName">Senin adın (imza olacak) <span class="req">*</span></label>
+            <input type="text" id="senderName" placeholder="Örn. Mehmet" required>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label for="specialDate">Özel tarih</label>
+            <input type="date" id="specialDate">
+            <div class="hint">Yıldönümü, buluşma tarihi vb. — geri sayım için kullanılır.</div>
+          </div>
+          <div class="field">
+            <label for="specialDateLabel">Bu tarih ne anlama geliyor?</label>
+            <input type="text" id="specialDateLabel" placeholder="Örn. İlk buluşmamızın yıldönümü">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>4. Fotoğraflar</h2>
+        <div class="step-note">Bu form fotoğraf yüklemez — 3-5 fotoğrafı sipariş özetiyle birlikte
+        WhatsApp veya e-posta üzerinden ayrıca gönder.</div>
+        <div class="field">
+          <label for="photoNote">Fotoğraflar hakkında not (opsiyonel)</label>
+          <textarea id="photoNote" placeholder="Örn. 4 fotoğraf göndereceğim, en sevdiğim ikimizin plajdaki fotoğrafı kapak olsun."></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>5. Mektup</h2>
+        <div class="letter-mode">
+          <div class="mode-btn active" data-mode="full">Kendim yazacağım</div>
+          <div class="mode-btn" data-mode="bullets">Siz yazın, ben anlatayım</div>
+        </div>
+        <div class="letter-panel active" id="panel-full">
+          <div class="field">
+            <label for="letterFull">Mektup metni</label>
+            <textarea id="letterFull" placeholder="Sevgiline söylemek istediklerini buraya yaz. Paragrafları boş satırla ayırabilirsin."></textarea>
+          </div>
+        </div>
+        <div class="letter-panel" id="panel-bullets">
+          <div class="field">
+            <label for="howMet">Nasıl tanıştınız?</label>
+            <textarea id="howMet" placeholder="Kısaca anlat..."></textarea>
+          </div>
+          <div class="field">
+            <label for="favThing">En sevdiğin özelliği ne?</label>
+            <textarea id="favThing" placeholder="Kısaca anlat..."></textarea>
+          </div>
+          <div class="field">
+            <label for="feeling">Sana ne hissettiriyor?</label>
+            <textarea id="feeling" placeholder="Kısaca anlat..."></textarea>
+          </div>
+          <div class="field">
+            <label for="extraNote">Eklemek istediğin başka bir şey var mı?</label>
+            <textarea id="extraNote" placeholder="Opsiyonel..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>6. Şarkı</h2>
+        <div class="grid2">
+          <div class="field">
+            <label for="songName">Şarkı adı</label>
+            <input type="text" id="songName" placeholder="Örn. Perfect">
+          </div>
+          <div class="field">
+            <label for="songArtist">Sanatçı</label>
+            <input type="text" id="songArtist" placeholder="Örn. Ed Sheeran">
+          </div>
+        </div>
+        <div class="field">
+          <label for="spotifyLink">Spotify linki (varsa)</label>
+          <input type="text" id="spotifyLink" placeholder="https://open.spotify.com/track/...">
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>7. Şablona Özel Ek Bilgiler <span style="color:var(--text-dim); font-size:.85rem; font-weight:400;">(opsiyonel)</span></h2>
+        <div class="step-note">
+          Seçtiğin şablona göre doldur — diğerleri boş kalabilir:<br>
+          • <strong>Doğum Günü Şöleni / Bebek Duyurusu:</strong> dilek duvarı için her satıra "İsim: Mesaj"<br>
+          • <strong>Evlilik Teklifi:</strong> ilişki zaman çizelgesi için her satıra "Başlık: Açıklama" (örn. "İlk Tanıştığımız Gün: ...")<br>
+          • <strong>Teşekkür & Özür:</strong> nedenler için her satıra bir madde, ayrıca özür mü teşekkür mü olduğunu belirt<br>
+          • <strong>Aile Günü:</strong> anne mi baba mı olduğunu belirt<br>
+          • <strong>Mezuniyet / Yeni İş-Terfi:</strong> tebrik mesajları için "İsim: Mesaj", varsa yolculuk/kariyer zaman çizelgesi için "Başlık: Açıklama"<br>
+          • <strong>Evcil Hayvan Anısı:</strong> birlikte geçirilen süre (örn. "7 Yıl")
+        </div>
+        <div class="field">
+          <textarea id="wishes" placeholder="Ailen: Nice yaşlara!&#10;En yakın arkadaşın: İyi ki varsın!&#10;— ya da —&#10;İlk Tanıştığımız Gün: ...&#10;— ya da —&#10;Özür: Çünkü seni üzdüm ve bunu telafi etmek istiyorum."></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>8. Teslim & İletişim</h2>
+        <div class="field">
+          <label for="urgency">Teslim aciliyeti</label>
+          <select id="urgency">
+            <option>Standart (birkaç saat)</option>
+            <option>24 saat içinde</option>
+            <option>Aynı gün / acil (VIP)</option>
+          </select>
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label for="contactPhone">Telefon</label>
+            <input type="tel" id="contactPhone" placeholder="05xx xxx xx xx">
+          </div>
+          <div class="field">
+            <label for="contactEmail">E-posta</label>
+            <input type="email" id="contactEmail" placeholder="ornek@mail.com">
+          </div>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="confirmCheck">
+          <label for="confirmCheck">Bilgilerimin doğru olduğunu ve bu sayfayı sadece kişisel/hediye amacıyla kullandığımı onaylıyorum.</label>
+        </div>
+      </div>
+
+      <div class="submit-row">
+        <button type="submit" class="btn">Özeti Oluştur</button>
+        <div class="error-msg" id="errorMsg">Lütfen yıldızlı (*) alanları doldur.</div>
+      </div>
+    </form>
+
+    <div class="card" id="resultCard">
+      <h2>Sipariş Özetin Hazır 🎉</h2>
+      <div class="step-note">Aşağıdaki metni kopyala ya da doğrudan WhatsApp/e-posta ile gönder.
+      Bu format, siparişini hızlıca hazırlamamız için tam ihtiyacımız olan bilgiyi içeriyor.</div>
+      <textarea id="summaryOutput" readonly></textarea>
+      <div class="copy-note" id="copyNote">Panoya kopyalandı ✓</div>
+      <div class="result-actions">
+        <button type="button" class="btn" id="copyBtn">Metni Kopyala</button>
+        <a class="btn btn-outline" id="whatsappLink" href="#" target="_blank" rel="noopener">WhatsApp ile Gönder</a>
+        <a class="btn btn-outline" id="emailLink" href="#">E-posta ile Gönder</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+/* ============================================================
+   DEĞİŞTİR: işletmenin gerçek WhatsApp numarası ve e-posta adresi.
+   WhatsApp numarası ülke koduyla, boşluksuz yazılmalı (örn. 905551234567).
+   ============================================================ */
+const BUSINESS = {
+  whatsapp: "905000000000",           // DEĞİŞTİR
+  email: "siparis@askinaozel.com"     // DEĞİŞTİR
+};
+
+// Letter mode toggle
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.letter-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.mode).classList.add('active');
+  });
+});
+
+function val(id){ return document.getElementById(id).value.trim(); }
+
+function formatDate(iso){
+  if(!iso) return '';
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString('tr-TR', {day:'numeric', month:'long', year:'numeric'});
+}
+
+document.getElementById('orderForm').addEventListener('submit', function(e){
+  e.preventDefault();
+
+  const template = val('template');
+  const partnerName = val('partnerName');
+  const senderName = val('senderName');
+  const confirmed = document.getElementById('confirmCheck').checked;
+
+  if(!template || !partnerName || !senderName || !confirmed){
+    document.getElementById('errorMsg').style.display = 'block';
+    document.getElementById('errorMsg').textContent = !confirmed
+      ? 'Lütfen onay kutusunu işaretle.'
+      : 'Lütfen yıldızlı (*) alanları doldur.';
+    return;
+  }
+  document.getElementById('errorMsg').style.display = 'none';
+
+  const packageEl = document.querySelector('input[name=package]:checked');
+  const packageVal = packageEl ? packageEl.value : 'Belirtilmedi';
+
+  const letterMode = document.querySelector('.mode-btn.active').dataset.mode;
+  let letterBlock;
+  if(letterMode === 'full'){
+    letterBlock = val('letterFull') || '(müşteri kendi yazacak — henüz iletilmedi)';
+  } else {
+    const parts = [];
+    if(val('howMet')) parts.push('Nasıl tanıştık: ' + val('howMet'));
+    if(val('favThing')) parts.push('En sevdiğim özelliği: ' + val('favThing'));
+    if(val('feeling')) parts.push('Bana ne hissettiriyor: ' + val('feeling'));
+    if(val('extraNote')) parts.push('Ek not: ' + val('extraNote'));
+    letterBlock = parts.length ? parts.join('\n') + '\n(Bu maddelerden akıcı bir mektup yazılacak)' : '(madde henüz girilmedi)';
+  }
+
+  const songLine = [val('songName'), val('songArtist')].filter(Boolean).join(' - ') || 'Belirtilmedi';
+  const spotify = val('spotifyLink');
+  const wishesRaw = val('wishes');
+
+  const lines = [
+    `${template} ile sipariş`,
+    ``,
+    `Paket: ${packageVal}`,
+    `Partner adı: ${partnerName}`,
+    `Gönderen: ${senderName}`,
+    `Özel tarih: ${formatDate(val('specialDate')) || 'Belirtilmedi'}${val('specialDateLabel') ? ' (' + val('specialDateLabel') + ')' : ''}`,
+    `Fotoğraflar: ${val('photoNote') || 'Ayrıca WhatsApp/e-posta ile gönderilecek'}`,
+    ``,
+    `Mektup:`,
+    letterBlock,
+    ``,
+    `Şarkı: ${songLine}${spotify ? ' | Spotify: ' + spotify : ''}`,
+  ];
+
+  if(wishesRaw){
+    lines.push(``, `Şablona özel ek bilgiler:`, wishesRaw);
+  }
+
+  lines.push(
+    ``,
+    `Teslim aciliyeti: ${val('urgency') || document.getElementById('urgency').value}`,
+    `İletişim: ${[val('contactPhone'), val('contactEmail')].filter(Boolean).join(' / ') || 'Belirtilmedi'}`
+  );
+
+  const summary = lines.join('\n');
+  document.getElementById('summaryOutput').value = summary;
+
+  document.getElementById('whatsappLink').href = `https://wa.me/${BUSINESS.whatsapp}?text=${encodeURIComponent(summary)}`;
+  document.getElementById('emailLink').href = `mailto:${BUSINESS.email}?subject=${encodeURIComponent('Yeni Sipariş - ' + partnerName)}&body=${encodeURIComponent(summary)}`;
+
+  document.getElementById('resultCard').classList.add('show');
+  document.getElementById('resultCard').scrollIntoView({behavior:'smooth', block:'start'});
+});
+
+document.getElementById('copyBtn').addEventListener('click', async () => {
+  const text = document.getElementById('summaryOutput').value;
+  try{
+    await navigator.clipboard.writeText(text);
+  } catch(err){
+    const ta = document.getElementById('summaryOutput');
+    ta.select(); document.execCommand('copy');
+  }
+  const note = document.getElementById('copyNote');
+  note.style.display = 'block';
+  setTimeout(() => note.style.display = 'none', 2000);
+});
+</script>
+</body>
+</html>

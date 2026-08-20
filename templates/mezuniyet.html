@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sana Özel — Mezuniyet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Dancing+Script:wght@600;700&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-1:#0b0e22; --bg-2:#151b3d; --bg-3:#1f2a5c;
+    --accent:#ffd166; --accent-soft:#ffe4a3; --silver:#cfd8ff;
+    --text:#f2f4ff; --text-dim:#a9b0dd;
+    --card:rgba(255,255,255,.05); --border:rgba(255,209,102,.32);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Cormorant Garamond',serif;
+    background:linear-gradient(160deg,var(--bg-1),var(--bg-2) 45%,var(--bg-3));
+    color:var(--text); overflow-x:hidden; min-height:100vh; position:relative;
+  }
+  h1,h2{font-family:'Playfair Display',serif}
+  .script{font-family:'Dancing Script',cursive}
+  section{position:relative; z-index:2; padding:100px 24px; max-width:920px; margin:0 auto}
+
+  #confettiCanvas{position:fixed; inset:0; z-index:55; pointer-events:none}
+
+  .hearts-bg{position:fixed; inset:0; pointer-events:none; z-index:1; overflow:hidden}
+  .heart{position:absolute; bottom:-40px; opacity:.55; font-size:18px; animation:floatUp linear forwards}
+  @keyframes floatUp{ to{ transform:translateY(-110vh) rotate(360deg); opacity:0 } }
+
+  .intro-overlay{
+    position:fixed; inset:0; z-index:50; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:26px;
+    background:radial-gradient(circle at 50% 30%,var(--bg-3),var(--bg-1)); padding:24px; text-align:center;
+    transition:opacity .9s ease, visibility .9s ease;
+  }
+  .intro-overlay.hidden{opacity:0; visibility:hidden; pointer-events:none}
+  .kicker{letter-spacing:.35em; text-transform:uppercase; font-size:.72rem; color:var(--accent-soft)}
+  .cap-title{font-size:clamp(1.6rem,4.5vw,2.3rem); max-width:520px}
+  .cap-hint{color:var(--text-dim); max-width:400px; font-size:1.05rem}
+
+  .drag-scene{position:relative; width:min(380px,88vw); height:200px; user-select:none}
+  .drop-zone{position:absolute; right:6px; top:50%; transform:translateY(-50%); width:120px; height:120px; border:2px dashed var(--border); border-radius:18px; display:flex; align-items:center; justify-content:center; font-size:.82rem; color:var(--text-dim); text-align:center; padding:10px; transition:.25s ease; line-height:1.3}
+  .drop-zone.hover{border-color:var(--accent); background:rgba(255,209,102,.1); color:var(--accent-soft)}
+  .drop-zone.filled{border-style:solid; border-color:var(--accent)}
+  .diploma{position:absolute; left:6px; top:50%; transform:translateY(-50%); font-size:3.6rem; cursor:grab; touch-action:none}
+  .diploma.dragging{cursor:grabbing; z-index:5; filter:drop-shadow(0 12px 20px rgba(0,0,0,.4))}
+  .diploma.placed{cursor:default; animation:settle .4s ease}
+  @keyframes settle{ 0%{transform:scale(1.15)} 100%{transform:scale(1)} }
+
+  .win-panel{display:none; flex-direction:column; align-items:center; gap:18px}
+  .win-panel.show{display:flex}
+  .win-panel h2{font-size:2.1rem; color:var(--accent-soft)}
+  .intro-btn{font-family:'Cormorant Garamond',serif; font-size:1.05rem; letter-spacing:.15em; text-transform:uppercase; background:transparent; border:1px solid var(--border); color:var(--accent-soft); padding:12px 30px; border-radius:30px; cursor:pointer; transition:.3s}
+  .intro-btn:hover{background:var(--accent); color:var(--bg-1)}
+
+  .hero{min-height:80vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:18px}
+  .hero h1{font-size:clamp(2.4rem,6.5vw,4.4rem); color:var(--text); line-height:1.15}
+  .hero p.sub{font-size:1.25rem; color:var(--text-dim); max-width:520px}
+  .badge{display:inline-block; background:var(--card); border:1px solid var(--border); color:var(--accent-soft); padding:8px 22px; border-radius:30px; font-weight:600}
+  .divider{width:60px; height:1px; background:var(--accent); margin:6px 0}
+  .scroll-cue{margin-top:36px; font-size:.85rem; color:var(--text-dim); letter-spacing:.2em}
+
+  .section-title{text-align:center; font-size:2.1rem; margin-bottom:44px}
+
+  .timeline{position:relative; padding-left:32px; border-left:2px solid var(--border)}
+  .tl-item{position:relative; margin-bottom:34px}
+  .tl-item:last-child{margin-bottom:0}
+  .tl-item::before{content:''; position:absolute; left:-40px; top:6px; width:14px; height:14px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 4px var(--bg-2)}
+  .tl-date{color:var(--accent-soft); font-size:.9rem; letter-spacing:.1em; text-transform:uppercase; margin-bottom:4px}
+  .tl-text{font-size:1.2rem; color:var(--text)}
+
+  .wish-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:18px; margin-top:56px}
+  .wish-card{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px 22px}
+  .wish-card .wname{font-weight:700; color:var(--accent-soft); margin-bottom:8px; font-family:'Playfair Display',serif}
+  .wish-card .wmsg{color:var(--text); font-size:1.05rem; line-height:1.5}
+
+  .gallery{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-top:56px}
+  .gallery img{width:100%; height:260px; object-fit:cover; border-radius:10px; border:1px solid var(--border); cursor:pointer; transition:transform .4s ease}
+  .gallery img:hover{transform:scale(1.03)}
+  .lightbox{position:fixed; inset:0; background:rgba(4,6,16,.92); display:none; align-items:center; justify-content:center; z-index:60; padding:30px}
+  .lightbox.open{display:flex}
+  .lightbox img{max-width:90%; max-height:85vh; border-radius:8px}
+  .lightbox .close{position:absolute; top:24px; right:32px; font-size:2rem; color:var(--accent-soft); cursor:pointer; background:none; border:none}
+
+  .letter-card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:52px 44px; opacity:0; transform:translateY(30px); transition:opacity 1s ease, transform 1s ease}
+  .letter-card.visible{opacity:1; transform:translateY(0)}
+  .letter-body{font-size:1.25rem; line-height:1.9; color:var(--text)}
+  .letter-body p{margin-bottom:1.1em}
+  .signature{margin-top:30px; text-align:right}
+  .signature .name{font-family:'Dancing Script',cursive; font-size:2.2rem; color:var(--accent-soft)}
+  .signature .date{color:var(--text-dim); font-size:.95rem}
+
+  .song{text-align:center}
+  .vinyl{width:110px; height:110px; margin:0 auto 24px; border-radius:50%; background:radial-gradient(circle at center,var(--bg-1) 0 18px,var(--accent) 19px 21px,var(--bg-1) 22px 100%); border:2px solid var(--border); animation:spin 6s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .song-info{font-size:1.4rem; margin-bottom:22px}
+  .song-info .artist{color:var(--text-dim); font-size:1.05rem}
+  .song iframe{border-radius:12px; border:1px solid var(--border)}
+  #songSection.hide{display:none}
+
+  .footer{text-align:center; padding:70px 24px 90px; color:var(--text-dim)}
+  .footer .heart-line{font-size:1.6rem; margin-bottom:10px}
+
+  @media(max-width:520px){ section{padding:70px 18px} .letter-card{padding:34px 24px} }
+</style>
+</head>
+<body>
+
+<canvas id="confettiCanvas"></canvas>
+
+<div class="intro-overlay" id="introOverlay">
+  <div class="kicker">Aşkına Özel · Mezuniyet</div>
+  <div id="playScreen">
+    <div class="cap-title" id="capTitle">Mezun oldun! Diplomanı almaya hazır mısın?</div>
+    <p class="cap-hint">Diplomayı sürükleyip kutuya bırak 📜</p>
+    <div style="height:20px"></div>
+    <div class="drag-scene" id="dragScene">
+      <div class="diploma" id="diploma">📜</div>
+      <div class="drop-zone" id="dropZone">Buraya<br>bırak</div>
+    </div>
+  </div>
+  <div class="win-panel" id="winPanel">
+    <h2>Tebrikler! 🎉</h2>
+    <p class="cap-hint">Şimdi sana hazırladığımız her şeyi gör.</p>
+    <button class="intro-btn" id="continueBtn">Devam Et</button>
+  </div>
+</div>
+
+<div class="hearts-bg" id="heartsBg"></div>
+
+<section class="hero">
+  <div class="kicker">Mezuniyetin Kutlu Olsun</div>
+  <h1 id="heroTitle">İsim</h1>
+  <div class="badge" id="degreeBadge" style="display:none"></div>
+  <div class="divider"></div>
+  <p class="sub" id="heroSub">Yıllarca süren emeğin, azminin ve sabrın bugün karşılığını buldu. Seninle gurur duyuyoruz.</p>
+  <div class="scroll-cue">aşağı kaydır ↓</div>
+</section>
+
+<section class="timeline-section">
+  <h2 class="section-title">Yolculuğun</h2>
+  <div class="timeline" id="timeline"></div>
+</section>
+
+<section class="wish-section">
+  <h2 class="section-title">Tebrikler</h2>
+  <div class="wish-grid" id="wishGrid"></div>
+  <div class="gallery" id="gallery"></div>
+</section>
+
+<section class="letter">
+  <h2 class="section-title">Sana Yazdıklarımız</h2>
+  <div class="letter-card" id="letterCard">
+    <div class="letter-body" id="letterBody"></div>
+    <div class="signature">
+      <div class="name" id="signatureName">İmza</div>
+      <div class="date" id="signatureDate"></div>
+    </div>
+  </div>
+</section>
+
+<section class="song" id="songSection">
+  <h2 class="section-title">Bugünün Şarkısı</h2>
+  <div class="vinyl"></div>
+  <div class="song-info">
+    <div id="songName">Şarkı Adı</div>
+    <div class="artist" id="songArtist">Sanatçı</div>
+  </div>
+  <div id="songEmbedWrap"></div>
+</section>
+
+<div class="footer">
+  <div class="heart-line">🎓 ✨ 🎓</div>
+  <div>Bu sadece bir başlangıç.</div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <button class="close" id="lightboxClose">×</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<script>
+/* ============================================================
+   DEĞİŞTİR: Sipariş bilgilerine göre aşağıdaki CONFIG'i doldur.
+   ============================================================ */
+const CONFIG = {
+  partnerName: "İsim",                              // DEĞİŞTİR: mezun olan kişinin adı
+  degree: "",                                        // DEĞİŞTİR (opsiyonel): örn. "Bilgisayar Mühendisliği" — boşsa rozet gösterilmez
+  heroSubtitle: "Yıllarca süren emeğin, azminin ve sabrın bugün karşılığını buldu. Seninle gurur duyuyoruz.", // DEĞİŞTİR
+  senderName: "Seninle Gurur Duyanlar",             // DEĞİŞTİR: gönderenin adı
+  signatureDate: "",                                // DEĞİŞTİR
+
+  milestones: [                                     // DEĞİŞTİR: eğitim/başarı yolculuğu
+    { date: "Başlangıç", text: "Bu yolculuğa ilk adımı attığında kimse bugünü hayal edememişti — sen hariç." },
+    { date: "Zorluklar", text: "Vazgeçmek istediğin anlarda bile devam ettin." },
+    { date: "Bugün", text: "Tüm emeğin karşılığını aldın. Mezun oldun!" }
+  ],
+
+  wishes: [                                         // DEĞİŞTİR: birden fazla kişiden kısa tebrik mesajı
+    { name: "Ailen", message: "Seninle gurur duyuyoruz!" },
+    { name: "En Yakın Arkadaşın", message: "Bunu hak ettin, tebrikler!" }
+  ],
+
+  photos: [                                         // DEĞİŞTİR: galeri fotoğrafları
+    "https://picsum.photos/600/800?random=141",
+    "https://picsum.photos/600/800?random=142",
+    "https://picsum.photos/600/800?random=143",
+    "https://picsum.photos/600/800?random=144"
+  ],
+
+  letter: `Buraya mektubun ilk paragrafı gelecek.
+
+İkinci paragraf, aranızda boş satır bırakarak ekleyebilirsin.
+
+Son paragraf ve kapanış cümlesi.`,                  // DEĞİŞTİR
+
+  songName: "",                                     // DEĞİŞTİR (opsiyonel): boşsa şarkı bölümü gizlenir
+  songArtist: "",                                   // DEĞİŞTİR
+  spotifyEmbedUrl: ""                                // DEĞİŞTİR
+};
+/* ============================================================ */
+
+function populateContent(){
+  document.title = "Mezuniyetin Kutlu Olsun — " + CONFIG.partnerName;
+  document.getElementById('heroTitle').textContent = CONFIG.partnerName;
+  document.getElementById('heroSub').textContent = CONFIG.heroSubtitle;
+  document.getElementById('capTitle').textContent = CONFIG.partnerName + ", mezun oldun! Kutlamaya hazır mısın?";
+
+  if(CONFIG.degree){
+    const badge = document.getElementById('degreeBadge');
+    badge.textContent = CONFIG.degree + ' Mezunu 🎓';
+    badge.style.display = 'inline-block';
+  }
+
+  const timeline = document.getElementById('timeline');
+  CONFIG.milestones.forEach(m => {
+    const item = document.createElement('div');
+    item.className = 'tl-item';
+    item.innerHTML = `<div class="tl-date">${m.date}</div><div class="tl-text">${m.text}</div>`;
+    timeline.appendChild(item);
+  });
+
+  const wishGrid = document.getElementById('wishGrid');
+  CONFIG.wishes.forEach(w => {
+    const card = document.createElement('div');
+    card.className = 'wish-card';
+    card.innerHTML = `<div class="wname">${w.name}</div><div class="wmsg">${w.message}</div>`;
+    wishGrid.appendChild(card);
+  });
+
+  const gallery = document.getElementById('gallery');
+  CONFIG.photos.forEach((src,i) => {
+    const img = document.createElement('img');
+    img.src = src; img.alt = 'Anı ' + (i+1); img.loading = 'lazy';
+    img.addEventListener('click', () => openLightbox(src));
+    gallery.appendChild(img);
+  });
+
+  const letterBody = document.getElementById('letterBody');
+  CONFIG.letter.trim().split(/\n\s*\n/).forEach(p => {
+    const el = document.createElement('p');
+    el.textContent = p.trim();
+    letterBody.appendChild(el);
+  });
+  document.getElementById('signatureName').textContent = CONFIG.senderName;
+  document.getElementById('signatureDate').textContent = CONFIG.signatureDate ||
+    new Date().toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'});
+
+  if(CONFIG.songName){
+    document.getElementById('songName').textContent = CONFIG.songName;
+    document.getElementById('songArtist').textContent = CONFIG.songArtist;
+    if(CONFIG.spotifyEmbedUrl){
+      const wrap = document.getElementById('songEmbedWrap');
+      wrap.innerHTML = `<iframe src="${CONFIG.spotifyEmbedUrl}" width="100%" height="152" style="max-width:420px" frameborder="0" allow="autoplay; encrypted-media" loading="lazy"></iframe>`;
+    }
+  } else {
+    document.getElementById('songSection').classList.add('hide');
+  }
+}
+
+function openLightbox(src){
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+function initGallery(){
+  document.getElementById('lightboxClose').addEventListener('click', () => document.getElementById('lightbox').classList.remove('open'));
+  document.getElementById('lightbox').addEventListener('click', e => { if(e.target.id === 'lightbox') e.target.classList.remove('open'); });
+}
+
+function initRevealAnimations(){
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); } });
+  }, {threshold:.25});
+  obs.observe(document.getElementById('letterCard'));
+}
+
+function initHearts(){
+  const wrap = document.getElementById('heartsBg');
+  const symbols = ['✨','🎉','⭐'];
+  setInterval(() => {
+    const h = document.createElement('div');
+    h.className = 'heart';
+    h.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+    h.style.left = Math.random()*100 + 'vw';
+    h.style.fontSize = (14 + Math.random()*16) + 'px';
+    h.style.animationDuration = (6 + Math.random()*6) + 's';
+    wrap.appendChild(h);
+    setTimeout(() => h.remove(), 13000);
+  }, 700);
+}
+
+/* ---------------- Drag diploma into frame ---------------- */
+function rectsOverlap(a, b){
+  return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
+}
+
+function initCap(){
+  const scene = document.getElementById('dragScene');
+  const diploma = document.getElementById('diploma');
+  const dropZone = document.getElementById('dropZone');
+  let dragging = false, placed = false, offsetX = 0, offsetY = 0;
+
+  function toSceneRelative(el){
+    const s = scene.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    return { left: r.left - s.left, top: r.top - s.top };
+  }
+
+  function startDrag(e){
+    if(placed) return;
+    const pos = toSceneRelative(diploma);
+    diploma.style.left = pos.left + 'px';
+    diploma.style.top = pos.top + 'px';
+    diploma.style.transform = 'none';
+    dragging = true;
+    diploma.classList.add('dragging');
+    diploma.setPointerCapture(e.pointerId);
+    const r = diploma.getBoundingClientRect();
+    offsetX = e.clientX - r.left;
+    offsetY = e.clientY - r.top;
+  }
+
+  function moveDrag(e){
+    if(!dragging) return;
+    const s = scene.getBoundingClientRect();
+    const x = e.clientX - s.left - offsetX;
+    const y = e.clientY - s.top - offsetY;
+    diploma.style.left = x + 'px';
+    diploma.style.top = y + 'px';
+    const overlap = rectsOverlap(diploma.getBoundingClientRect(), dropZone.getBoundingClientRect());
+    dropZone.classList.toggle('hover', overlap);
+  }
+
+  function endDrag(){
+    if(!dragging) return;
+    dragging = false;
+    diploma.classList.remove('dragging');
+    const overlap = rectsOverlap(diploma.getBoundingClientRect(), dropZone.getBoundingClientRect());
+    dropZone.classList.remove('hover');
+    if(overlap){
+      placed = true;
+      const dz = toSceneRelative(dropZone);
+      diploma.style.left = (dz.left + dropZone.offsetWidth/2 - diploma.offsetWidth/2) + 'px';
+      diploma.style.top = (dz.top + dropZone.offsetHeight/2 - diploma.offsetHeight/2) + 'px';
+      diploma.classList.add('placed');
+      dropZone.classList.add('filled');
+      burstConfetti();
+      setTimeout(showWin, 600);
+    } else {
+      diploma.style.left = '';
+      diploma.style.top = '';
+      diploma.style.transform = 'translateY(-50%)';
+    }
+  }
+
+  diploma.addEventListener('pointerdown', startDrag);
+  window.addEventListener('pointermove', moveDrag);
+  window.addEventListener('pointerup', endDrag);
+
+  document.getElementById('continueBtn').addEventListener('click', () => {
+    document.getElementById('introOverlay').classList.add('hidden');
+  });
+}
+
+function showWin(){
+  document.getElementById('playScreen').style.display = 'none';
+  document.getElementById('winPanel').classList.add('show');
+}
+
+function burstConfetti(){
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const colors = ['#ffd166','#cfd8ff','#ffffff','#ff9ec1'];
+  const pieces = Array.from({length:140}, () => ({
+    x: Math.random()*canvas.width, y: -20 - Math.random()*canvas.height*.3,
+    w: 6 + Math.random()*6, h: 8 + Math.random()*10,
+    vy: 2 + Math.random()*3, vx: -1.5 + Math.random()*3,
+    rot: Math.random()*360, vr: -6 + Math.random()*12,
+    color: colors[Math.floor(Math.random()*colors.length)]
+  }));
+  let frame = 0;
+  function draw(){
+    frame++;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot * Math.PI/180);
+      ctx.fillStyle = p.color; ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h); ctx.restore();
+    });
+    if(frame < 150) requestAnimationFrame(draw); else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+window.addEventListener('resize', () => {
+  const canvas = document.getElementById('confettiCanvas');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  populateContent();
+  initCap();
+  initGallery();
+  initRevealAnimations();
+  initHearts();
+});
+</script>
+</body>
+</html>

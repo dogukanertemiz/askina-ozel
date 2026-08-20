@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sana Özel — Teşekkür & Özür</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Dancing+Script:wght@600;700&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-1:#1c1712; --bg-2:#2b2318; --bg-3:#3a2f1f;
+    --accent:#d9a66c; --accent-soft:#e8c99a;
+    --text:#f5ece0; --text-dim:#c9b89c;
+    --card:rgba(255,255,255,.05); --border:rgba(217,166,108,.32);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Cormorant Garamond',serif;
+    background:linear-gradient(160deg,var(--bg-1),var(--bg-2) 45%,var(--bg-3));
+    color:var(--text); overflow-x:hidden; min-height:100vh; position:relative;
+  }
+  h1,h2{font-family:'Playfair Display',serif}
+  .script{font-family:'Dancing Script',cursive}
+  section{position:relative; z-index:2; padding:100px 24px; max-width:880px; margin:0 auto}
+
+  .hearts-bg{position:fixed; inset:0; pointer-events:none; z-index:1; overflow:hidden}
+  .heart{position:absolute; bottom:-40px; color:var(--accent); opacity:.4; font-size:15px; animation:floatUp linear forwards}
+  @keyframes floatUp{ to{ transform:translateY(-108vh); opacity:0 } }
+
+  .intro-overlay{
+    position:fixed; inset:0; z-index:50; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:26px;
+    background:radial-gradient(circle at 50% 40%,var(--bg-3),var(--bg-1));
+    transition:opacity .9s ease, visibility .9s ease;
+  }
+  .intro-overlay.hidden{opacity:0; visibility:hidden; pointer-events:none}
+  .envelope{width:110px; height:74px; position:relative; cursor:pointer; animation:pulse 2.6s ease-in-out infinite}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+  .envelope .body{position:absolute; inset:0; background:linear-gradient(135deg,var(--accent-soft),var(--accent)); border-radius:6px; box-shadow:0 10px 40px rgba(217,166,108,.3)}
+  .envelope .flap{position:absolute; top:0; left:0; width:0; height:0; border-left:55px solid transparent; border-right:55px solid transparent; border-top:40px solid var(--bg-3); transform-origin:top; transition:transform .5s ease}
+  .intro-overlay.opening .flap{transform:rotateX(180deg)}
+  .envelope .seal{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:18px; z-index:2}
+  .intro-text{font-size:1.2rem; color:var(--text-dim); text-align:center; max-width:400px}
+  .intro-btn{font-family:'Cormorant Garamond',serif; font-size:1.02rem; letter-spacing:.12em; text-transform:uppercase; background:transparent; border:1px solid var(--border); color:var(--accent-soft); padding:12px 28px; border-radius:30px; cursor:pointer; transition:.3s}
+  .intro-btn:hover{background:var(--accent); color:var(--bg-1)}
+
+  .hero{min-height:80vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:18px}
+  .kicker{letter-spacing:.35em; text-transform:uppercase; font-size:.72rem; color:var(--accent-soft)}
+  .hero h1{font-size:clamp(2.3rem,6vw,4rem); color:var(--text); line-height:1.15}
+  .hero p.sub{font-size:1.2rem; color:var(--text-dim); max-width:520px; line-height:1.6}
+  .divider{width:56px; height:1px; background:var(--accent); margin:6px 0}
+  .scroll-cue{margin-top:36px; font-size:.85rem; color:var(--text-dim); letter-spacing:.2em}
+
+  .section-title{text-align:center; font-size:2rem; margin-bottom:40px}
+
+  .reasons-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px}
+  .reason-card{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:26px 24px; font-size:1.1rem; line-height:1.55}
+  .reason-card::before{content:'✦'; color:var(--accent-soft); display:block; margin-bottom:10px; font-size:1rem}
+
+  .gallery{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:16px; margin-top:50px}
+  .gallery img{width:100%; height:230px; object-fit:cover; border-radius:10px; border:1px solid var(--border); cursor:pointer; transition:transform .4s ease}
+  .gallery img:hover{transform:scale(1.03)}
+  .lightbox{position:fixed; inset:0; background:rgba(10,7,4,.92); display:none; align-items:center; justify-content:center; z-index:60; padding:30px}
+  .lightbox.open{display:flex}
+  .lightbox img{max-width:90%; max-height:85vh; border-radius:8px}
+  .lightbox .close{position:absolute; top:24px; right:32px; font-size:2rem; color:var(--accent-soft); cursor:pointer; background:none; border:none}
+
+  .letter-card{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:48px 40px; opacity:0; transform:translateY(28px); transition:opacity 1s ease, transform 1s ease}
+  .letter-card.visible{opacity:1; transform:translateY(0)}
+  .letter-body{font-size:1.2rem; line-height:1.9; color:var(--text)}
+  .letter-body p{margin-bottom:1.1em}
+  .signature{margin-top:28px; text-align:right}
+  .signature .name{font-family:'Dancing Script',cursive; font-size:2.1rem; color:var(--accent-soft)}
+  .signature .date{color:var(--text-dim); font-size:.92rem}
+
+  .song{text-align:center}
+  .vinyl{width:100px; height:100px; margin:0 auto 22px; border-radius:50%; background:radial-gradient(circle at center,var(--bg-1) 0 16px,var(--accent) 17px 19px,var(--bg-1) 20px 100%); border:2px solid var(--border); animation:spin 6s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .song-info{font-size:1.3rem; margin-bottom:20px}
+  .song-info .artist{color:var(--text-dim); font-size:1rem}
+  .song iframe{border-radius:12px; border:1px solid var(--border)}
+  #songSection.hide{display:none}
+
+  .footer{text-align:center; padding:66px 24px 86px; color:var(--text-dim)}
+  .footer .heart-line{font-size:1.4rem; color:var(--accent); margin-bottom:10px}
+
+  @media(max-width:520px){ section{padding:64px 18px} .letter-card{padding:32px 22px} }
+</style>
+</head>
+<body>
+
+<div class="intro-overlay" id="introOverlay">
+  <div class="envelope" id="envelope">
+    <div class="body"></div>
+    <div class="flap"></div>
+    <div class="seal" id="sealIcon">💌</div>
+  </div>
+  <div class="intro-text" id="introText">Sana söylemek istediğim bir şey var...</div>
+  <button class="intro-btn" id="openBtn">Aç</button>
+</div>
+
+<div class="hearts-bg" id="heartsBg"></div>
+
+<section class="hero">
+  <div class="kicker" id="kickerText">Sana Özel</div>
+  <h1 id="heroTitle">İsim</h1>
+  <div class="divider"></div>
+  <p class="sub" id="heroSub"></p>
+  <div class="scroll-cue">aşağı kaydır ↓</div>
+</section>
+
+<section class="reasons-section">
+  <h2 class="section-title" id="reasonsTitle">Nedenlerim</h2>
+  <div class="reasons-grid" id="reasonsGrid"></div>
+  <div class="gallery" id="gallery"></div>
+</section>
+
+<section class="letter">
+  <h2 class="section-title" id="letterTitle">Sana Yazdıklarım</h2>
+  <div class="letter-card" id="letterCard">
+    <div class="letter-body" id="letterBody"></div>
+    <div class="signature">
+      <div class="name" id="signatureName">İmza</div>
+      <div class="date" id="signatureDate"></div>
+    </div>
+  </div>
+</section>
+
+<section class="song" id="songSection">
+  <h2 class="section-title">Bunu Dinlerken Oku</h2>
+  <div class="vinyl"></div>
+  <div class="song-info">
+    <div id="songName">Şarkı Adı</div>
+    <div class="artist" id="songArtist">Sanatçı</div>
+  </div>
+  <div id="songEmbedWrap"></div>
+</section>
+
+<div class="footer">
+  <div class="heart-line" id="footerLine">✦ ✦ ✦</div>
+  <div id="footerText">Kalbimden geldi.</div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <button class="close" id="lightboxClose">×</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<script>
+/* ============================================================
+   DEĞİŞTİR: Sipariş bilgilerine göre aşağıdaki CONFIG'i doldur.
+   pageType: "ozur" ya da "tesekkur" — başlık/alt metin/footer buna göre
+   otomatik ayarlanır (customTitle/customSubtitle ile istersen ez).
+   ============================================================ */
+const CONFIG = {
+  pageType: "ozur",                                 // DEĞİŞTİR: "ozur" | "tesekkur"
+  partnerName: "İsim",                              // DEĞİŞTİR: hitap edilecek kişinin adı
+  customTitle: "",                                  // DEĞİŞTİR (opsiyonel): boşsa pageType'a göre otomatik başlık kullanılır
+  customSubtitle: "",                               // DEĞİŞTİR (opsiyonel): boşsa pageType'a göre otomatik alt metin kullanılır
+  senderName: "Sen",                                // DEĞİŞTİR: gönderenin adı
+  signatureDate: "",                                // DEĞİŞTİR
+
+  reasons: [                                        // DEĞİŞTİR: 3-6 kısa madde — neden özür/teşekkür ediyorsun
+    "Çünkü sabrını hak etmediğim halde bana gösterdin.",
+    "Çünkü her koşulda yanımda oldun.",
+    "Çünkü seni üzdüğüm günlerde bile beni terk etmedin."
+  ],
+
+  photos: [],                                       // DEĞİŞTİR (opsiyonel): boş bırakılabilir, doluysa galeri gösterilir
+  // Örnek: ["https://picsum.photos/600/800?random=121", "https://picsum.photos/600/800?random=122"]
+
+  letter: `Buraya mektubun ilk paragrafı gelecek.
+
+İkinci paragraf, aranızda boş satır bırakarak ekleyebilirsin.
+
+Son paragraf ve kapanış cümlesi.`,                  // DEĞİŞTİR
+
+  songName: "",                                     // DEĞİŞTİR (opsiyonel): boşsa şarkı bölümü gizlenir
+  songArtist: "",                                   // DEĞİŞTİR
+  spotifyEmbedUrl: ""                                // DEĞİŞTİR
+};
+/* ============================================================ */
+
+const MODE_TEXT = {
+  ozur: {
+    kicker: "Özür Dilerim",
+    title: (name) => "Özür Dilerim, " + name,
+    subtitle: "Söylemesi zor ama söylenmesi gereken bir şey var: haksızdım, üzgünüm.",
+    reasonsTitle: "Neden Özür Diliyorum",
+    letterTitle: "Sana Yazdıklarım",
+    footerLine: "✦ ✦ ✦",
+    footerText: "Kalbimden geldi. Umarım affedersin.",
+    seal: "🕊️",
+    introText: "Sana söylemem gereken bir şey var..."
+  },
+  tesekkur: {
+    kicker: "Teşekkür Ederim",
+    title: (name) => "Teşekkür Ederim, " + name,
+    subtitle: "Bunu sana söylemem gerekiyordu: iyi ki hayatımdasın.",
+    reasonsTitle: "Neden Teşekkür Ediyorum",
+    letterTitle: "Sana Yazdıklarım",
+    footerLine: "✦ ✦ ✦",
+    footerText: "Kalbimden geldi.",
+    seal: "💌",
+    introText: "Sana söylemek istediğim bir şey var..."
+  }
+};
+
+function populateContent(){
+  const mode = MODE_TEXT[CONFIG.pageType] || MODE_TEXT.ozur;
+
+  document.title = mode.kicker + " — " + CONFIG.partnerName;
+  document.getElementById('kickerText').textContent = mode.kicker;
+  document.getElementById('heroTitle').textContent = CONFIG.customTitle || mode.title(CONFIG.partnerName);
+  document.getElementById('heroSub').textContent = CONFIG.customSubtitle || mode.subtitle;
+  document.getElementById('reasonsTitle').textContent = mode.reasonsTitle;
+  document.getElementById('letterTitle').textContent = mode.letterTitle;
+  document.getElementById('footerLine').textContent = mode.footerLine;
+  document.getElementById('footerText').textContent = mode.footerText;
+  document.getElementById('sealIcon').textContent = mode.seal;
+  document.getElementById('introText').textContent = mode.introText;
+
+  const reasonsGrid = document.getElementById('reasonsGrid');
+  CONFIG.reasons.forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'reason-card';
+    card.textContent = r;
+    reasonsGrid.appendChild(card);
+  });
+
+  const gallery = document.getElementById('gallery');
+  if(CONFIG.photos && CONFIG.photos.length){
+    CONFIG.photos.forEach((src,i) => {
+      const img = document.createElement('img');
+      img.src = src; img.alt = 'Anı ' + (i+1); img.loading = 'lazy';
+      img.addEventListener('click', () => openLightbox(src));
+      gallery.appendChild(img);
+    });
+  }
+
+  const letterBody = document.getElementById('letterBody');
+  CONFIG.letter.trim().split(/\n\s*\n/).forEach(p => {
+    const el = document.createElement('p');
+    el.textContent = p.trim();
+    letterBody.appendChild(el);
+  });
+  document.getElementById('signatureName').textContent = CONFIG.senderName;
+  document.getElementById('signatureDate').textContent = CONFIG.signatureDate ||
+    new Date().toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'});
+
+  if(CONFIG.songName){
+    document.getElementById('songName').textContent = CONFIG.songName;
+    document.getElementById('songArtist').textContent = CONFIG.songArtist;
+    if(CONFIG.spotifyEmbedUrl){
+      const wrap = document.getElementById('songEmbedWrap');
+      wrap.innerHTML = `<iframe src="${CONFIG.spotifyEmbedUrl}" width="100%" height="152" style="max-width:420px" frameborder="0" allow="autoplay; encrypted-media" loading="lazy"></iframe>`;
+    }
+  } else {
+    document.getElementById('songSection').classList.add('hide');
+  }
+}
+
+function openLightbox(src){
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+function initGallery(){
+  document.getElementById('lightboxClose').addEventListener('click', () => document.getElementById('lightbox').classList.remove('open'));
+  document.getElementById('lightbox').addEventListener('click', e => { if(e.target.id === 'lightbox') e.target.classList.remove('open'); });
+}
+
+function initRevealAnimations(){
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); } });
+  }, {threshold:.25});
+  obs.observe(document.getElementById('letterCard'));
+}
+
+function initHearts(){
+  const wrap = document.getElementById('heartsBg');
+  setInterval(() => {
+    const h = document.createElement('div');
+    h.className = 'heart';
+    h.textContent = '✦';
+    h.style.left = Math.random()*100 + 'vw';
+    h.style.fontSize = (8 + Math.random()*10) + 'px';
+    h.style.animationDuration = (8 + Math.random()*7) + 's';
+    wrap.appendChild(h);
+    setTimeout(() => h.remove(), 16000);
+  }, 550);
+}
+
+function initEnvelope(){
+  const overlay = document.getElementById('introOverlay');
+  const env = document.getElementById('envelope');
+  const btn = document.getElementById('openBtn');
+  function open(){
+    overlay.classList.add('opening');
+    setTimeout(() => overlay.classList.add('hidden'), 550);
+  }
+  env.addEventListener('click', open);
+  btn.addEventListener('click', open);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  populateContent();
+  initEnvelope();
+  initGallery();
+  initRevealAnimations();
+  initHearts();
+});
+</script>
+</body>
+</html>
