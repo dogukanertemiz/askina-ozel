@@ -2,15 +2,16 @@
 
 Bu depo, "Aşkına Özel" kişiye özel sürpriz web sayfası hizmetinin tüm statik
 kodunu barındırır: tanıtım sitesi, sipariş formu ve müşteriye teslim edilen
-9 şablon. Sipariş alma süreci için [SIPARIS-SURECI.md](SIPARIS-SURECI.md)
-dosyasına bak — bu dosya teknik/veri modeli tarafını anlatır.
+17 şablon. Bu dosya hem teknik/veri modeli tarafını hem de sipariş alma &
+teslim sürecini anlatır. Genel yönü ve gelecek adımlar için
+[ROADMAP.md](ROADMAP.md) dosyasına bak.
 
 ## Klasör Yapısı
 
 ```
 index.html              → Tanıtım / satış sayfası (anasayfa)
 siparis-formu.html       → Statik sipariş formu (backend yok, özet metin üretir)
-SIPARIS-SURECI.md        → Sipariş alma & teslim süreci rehberi
+ROADMAP.md               → Yol haritası (kısa/orta/uzun vadeli adımlar)
 CLAUDE.md                → Bu dosya
 templates/
   tutkulu-gul.html        → Standart — Bordo/altın
@@ -33,15 +34,73 @@ templates/
   yeni-is-terfi.html       → Diğer — Kariyer merdiveni tırmanma, kariyer kutlaması
 ```
 
-**Mekanik çeşitliliği:** her interaktif şablonun kapı mekaniği birbirinden
-farklı tutulur (yapboz, kazıma, eşleştirme, mum söndürme, kaçan buton,
-sürükle-bırak, şişirme, sıralı tırmanma) — yeni bir interaktif şablon
-eklerken bu listede olmayan bir mekanik seç, bkz. `SIPARIS-SURECI.md`.
-
 Her şablon **tek başına çalışan, bağımsız bir HTML dosyasıdır** (harici bir
 build adımı, framework ya da paylaşılan dosya yoktur). Bu bilinçli bir
 tercih: teslim edilen dosya, müşteriye olduğu gibi (tek dosya) gönderilebilir
 ya da bir barındırma servisine sürükle-bırak ile yüklenebilir.
+
+## Şablon Kataloğu
+
+| Şablon | Stil | Kime Uygun |
+|---|---|---|
+| **Tutkulu Gül** | Bordo / altın, iddialı & romantik | Klasik, tutkulu, "büyük jest" isteyen çiftler |
+| **Mavi Rüya** | Pastel lacivert/lavanta, hayalperest | Uzak mesafe ilişkiler, "kavuşma" teması |
+| **Bal Sarısı** | Sıcak turuncu/şeftali, samimi | Uzun süreli, sıcak/ev gibi hisseden ilişkiler |
+| **Zeytin Dalı** | Adaçayı yeşili/toprak, sakin & doğal | Sade zevkli, "doğal" estetik isteyen çiftler |
+| **Onyx Zarafet** | Siyah/şampanya altını, modern & lüks | Şık, minimal, "gösterişsiz lüks" isteyen çiftler |
+| **Şeftali Tül** | Açık şeftali/pudra, masalsı & hayalperest | Genç, tatlı, "masal" temalı ilişkiler |
+
+### Romantik Olmayan Şablonlar (Doğum Günü / Arkadaşlık / Diğer)
+
+| Şablon | Stil | Kime Uygun |
+|---|---|---|
+| **Doğum Günü Şöleni** | Mor/pembe/altın, konfeti & balon dolu, şenlikçi | Herhangi bir yakının (sevgili, arkadaş, aile) doğum günü — üflenebilir interaktif pasta ve çok kişili dilek duvarı içerir |
+| **Arkadaşıma Özel** | Turuncu/turkuaz, samimi & eğlenceli | Romantik OLMAYAN, "iyi ki varsın" mesajı vermek isteyen arkadaşlar |
+| **Evlilik Teklifi** | Lacivert/şampanya altını, zarif & heyecanlı | Evlenme teklifi anı için — yüzük kutusu açılır, "Hayır" butonu kaçar, ilişki zaman çizelgesi içerir |
+| **Teşekkür & Özür** | Sıcak amber/krem, sade & içten | Özür dilemek ya da teşekkür etmek isteyen HERKES için (romantik olmak zorunda değil — aile, arkadaş, iş arkadaşı da olabilir) |
+| **Aile Günü** | Sıcak toprak/şeftali, nostaljik & sıcak | Anneler Günü ya da Babalar Günü — polaroid galeri, aile mesaj duvarı (dual-mode: anne/baba) |
+| **Mezuniyet** | Lacivert/altın, akademik & gururlu | Mezuniyet kutlaması — diplomayı sürükle-bırak mekaniği, başarı yolculuğu, tebrik duvarı |
+| **Bebek Duyurusu** | Nane yeşili/pudra, yumuşak & heyecanlı | Hamilelik duyurusu ya da doğum haberi — şişirilip patlatılan balon mekaniği, opsiyonel geri sayım |
+| **Evcil Hayvan Anısı** | Alacakaranlık lavanta/mavi, sakin & teselli edici | Kaybedilen bir evcil hayvanı anmak için — oyun/konfeti YOK, dil bilinçli olarak sade ve tesellı edici |
+| **Yeni İş / Terfi** | Petrol yeşili/altın, profesyonel & enerjik | Yeni iş ya da terfi kutlaması — kariyer merdiveni tırmanma mekaniği (sırayla basamaklara tıklama), tebrik duvarı |
+
+Bu şablonlarda dil **romantik değil, samimi/arkadaşça** tutulmalı — mektup
+içeriğini toplarken müşteriye bunu hatırlat (ör. "sevgilim" yerine "dostum",
+"aşkım" yerine "iyi ki varsın" gibi ifadeler kullanılmalı). Doğum Günü
+Şöleni'nde ayrıca birden fazla kişiden (arkadaş grubu, aile) kısa dilek
+toplanabilir — bkz. aşağıdaki checklist'teki "Dilek duvarı" maddesi.
+
+### İnteraktif Konsept Şablonlar (Mini Oyunlu — Premium)
+
+Bunlar sadece renk/görsel değil, gerçekten **oynanabilir bir mekanik** içeriyor —
+bu yüzden "3 saniyede AI ile yapılır" itirazına karşı en güçlü ürünler. Fiyat
+bandı bu yüzden standart şablonlardan daha yüksek tutulabilir (bkz. fiyatlandırma).
+
+| Şablon | Mekanik | Kime Uygun |
+|---|---|---|
+| **Puzzle Aşkı** | Müşterinin fotoğrafından 3x3 sürgülü yapboz — çözünce mektup açılır | "Efor sarf ettirsin" isteyen, oyunsever çiftler |
+| **Kazı Kazan Sürprizi** | Kazınabilir kart — fare/parmakla kazıyınca altındaki mesaj/görsel çıkar | Klasik "kazı kazan" heyecanını sevenler |
+| **Hafıza Kartları** | 6 çiftlik hafıza/eşleştirme oyunu — tamamlanınca mektup açılır | Eğlenceli, oyun gecesi temalı çiftler |
+
+**Mekanik çeşitliliği:** Katalogdaki her interaktif/oyunlu şablonun "kapı"
+mekaniği **birbirinden farklı olmalı**, aksi halde şablonlar "tekrarlayan"
+hissi verir (bu bir kez yaşandı ve düzeltildi). Şu an kullanılan mekanikler:
+
+| Mekanik | Şablon |
+|---|---|
+| Sürgülü yapboz (3x3) | Puzzle Aşkı |
+| Kazıma (canvas) | Kazı Kazan Sürprizi |
+| Eşleştirme (hafıza kartları) | Hafıza Kartları |
+| Çoklu elemanı sırasız söndürme (mumlar) | Doğum Günü Şöleni |
+| Kaçan buton + karar (evet/hayır) | Evlilik Teklifi |
+| Sürükle-bırak | Mezuniyet |
+| Tekrarlayan tıklama / şişirme | Bebek Duyurusu |
+| Sıralı tırmanma (adım adım) | Yeni İş / Terfi |
+
+Yeni bir interaktif şablon eklerken bu tablodaki mekaniklerden **birini
+tekrar etme** — listede olmayan yeni bir etkileşim türü bul (ör. sürükleyerek
+kaydırma, çevirme/rotate, sesli komut, zamanlayıcı yarışı vb.), ve hem bu
+tabloya hem de aşağıdaki Veri Modeli tablosuna ekleme yapmayı unutma.
 
 ## Veri Modeli ("pages" tablosu)
 
@@ -97,26 +156,78 @@ olarak `milestones` (ilişki zaman çizelgesi) gerektirir. `Evcil Hayvan
 Anısı` özellikle hassas bir şablondur — oyun mekaniği ya da konfeti
 kullanılmaz, ton her zaman sakin ve tesellı edici tutulmalıdır.
 
+## Sipariş Alırken Toplanacak Bilgiler (Checklist)
+
+Müşteriden şunları iste (form ya da DM üzerinden):
+
+1. **Hangi şablon** istiyor (17 şablondan biri, ya da "sen seç" derse ilişki
+   tanımına göre öner — sevgili için romantik şablonlardan biri, arkadaş için
+   "Arkadaşıma Özel", doğum günü için "Doğum Günü Şöleni")
+2. **İlişki tipi** (sevgili / arkadaş / aile — mektubun dilini belirler:
+   romantik şablonlarda "aşkım" gibi ifadeler, Arkadaşıma Özel'de "dostum"
+   gibi samimi ifadeler kullanılır)
+3. **Partnerin/arkadaşın/kutlanan kişinin adı** (sayfada hitap edilecek isim)
+4. **Sipariş vereninin adı** (imza/gönderen olarak)
+5. **Özel tarih** (yıldönümü, buluşma, doğum günü vs. — geri sayım için)
+6. **3-5 fotoğraf** (galeri için — yoksa placeholder ile teslim edip sonra
+   müşterinin kendi eklemesi istenebilir)
+7. **Mesaj/mektup içeriği** — ya müşteri kendi yazsın ya da "şunları anlat: nasıl
+   tanıştık, en sevdiğim özelliği, ona ne hissettiriyor" gibi 3-4 madde versin,
+   ben bunlardan akıcı bir mektup yazarım
+8. **Şarkı adı ve sanatçı** (Spotify linki varsa onu da iste)
+9. **Şablona özel ek bilgiler** (opsiyonel):
+   - Doğum Günü Şöleni / Bebek Duyurusu → **dilek duvarı**: birden fazla
+     kişiden (arkadaş grubu, aile) kısa mesaj, her biri isim + mesaj olarak
+   - Evlilik Teklifi → **ilişki zaman çizelgesi**: 3-5 önemli an, her biri
+     başlık + kısa açıklama olarak (ör. "İlk Tanıştığımız Gün: ...")
+   - Teşekkür & Özür → **özür mü teşekkür mü** olduğu + 3-6 kısa neden maddesi
+   - Aile Günü → **anne mi baba mı** olduğu
+   - Mezuniyet / Yeni İş-Terfi → **tebrik duvarı** (isim + mesaj) ve varsa
+     **yolculuk/kariyer zaman çizelgesi** (başlık + açıklama)
+   - Evcil Hayvan Anısı → **birlikte geçirilen süre** (ör. "7 Yıl") — bu
+     şablonda dil sakin ve tesellı edici tutulmalı, oyun/konfeti kullanılmaz
+10. **Teslim tarihi/aciliyet** (aynı gün mü, 24 saat mi)
+
 ## Bir Siparişi Doldurma Adımları
 
-1. [SIPARIS-SURECI.md](SIPARIS-SURECI.md)'deki checklist ile bilgileri topla
-   (ya da `siparis-formu.html`'in ürettiği özet metni kullan).
+1. Yukarıdaki checklist ile bilgileri topla (ya da `siparis-formu.html`'in
+   ürettiği özet metni kullan). Bana şu formatta ilet: *"[Şablon adı] ile
+   sipariş: partner adı X, gönderen Y, tarih Z, fotoğraflar [ekli/açıklama],
+   mektup: [madde madde ya da tam metin], şarkı: [isim - sanatçı]"*
 2. İlgili `templates/*.html` dosyasını aç.
-3. `<script>` içindeki `CONFIG` nesnesini, yukarıdaki tabloya göre doldur.
-   HTML/CSS'e dokunma — tüm içerik `CONFIG`'ten JS ile enjekte edilir.
+3. `<script>` içindeki `CONFIG` nesnesini, yukarıdaki Veri Modeli tablosuna
+   göre doldur. HTML/CSS'e dokunma — tüm içerik `CONFIG`'ten JS ile enjekte
+   edilir. İnteraktif şablonlarda ayrıca JS içindeki `PUZZLE_IMAGE`, kazı
+   kazan altındaki görsel/mesaj, ve hafıza kartlarındaki `SYMBOLS` dizisi de
+   müşteriye göre güncellenir.
 4. Fotoğraf URL'lerini müşterinin gönderdiği görsellerle değiştir (şimdilik
    `picsum.photos` placeholder kullanılıyor).
-5. Dosyayı olduğu gibi teslim et ya da Vercel/Netlify'a sürükle-bırak ile
-   yükle.
+5. Dosyayı hızlıca gözden geçir (isim/tarih doğru mu), gerekiyorsa Vercel/
+   Netlify'a sürükle-bırak ile yükle ya da doğrudan HTML dosyasını müşteriye
+   gönder.
+6. Linki/dosyayı müşteriye teslim et.
+
+## Fiyatlandırma (hatırlatma)
+
+- Başlangıç: 799 TL — hazır şablon, 1 galeri, geri sayım, 1 şarkı
+- Premium: 1.299 TL — sınırsız revizyon, video arka plan seçeneği
+- VIP: 1.899 TL — öncelikli aynı gün teslim + sesli mesaj/animasyon eklentisi
+- **Oyunlu (Puzzle / Kazı Kazan / Hafıza Kartları): 1.599-2.199 TL** — gerçek bir
+  mekanik içerdiği ve kolayca kopyalanamadığı için standart şablonlardan daha
+  yüksek fiyatlandırılır; içerik pazarlamasında "bu sadece bir görsel değil,
+  gerçek bir oyun" vurgusu öne çıkarılmalı
+- **Doğum Günü Şöleni** ve **Arkadaşıma Özel**, standart Başlangıç/Premium/VIP
+  fiyatlandırmasına dahildir (Doğum Günü Şöleni'ndeki üflenebilir pasta ve
+  konfeti efekti bonus bir dokunuş olarak sunulur, ayrı ücretlendirilmez)
 
 ## Tanıtım Sitesi ve Sipariş Formu
 
 - `index.html`: Şablon kataloğu `TEMPLATES` dizisi (dosyanın sonundaki
   `<script>` içinde) üzerinden otomatik render edilir. **Yeni bir şablon
-  eklediğinde hem bu diziye hem de `SIPARIS-SURECI.md`'deki tabloya
+  eklediğinde hem bu diziye hem de yukarıdaki Şablon Kataloğu tablolarına
   ekleme yapmayı unutma.**
 - `siparis-formu.html`: Backend'i yok — müşteri formu doldurunca, JS bir
-  özet metni üretir (SIPARIS-SURECI.md'deki formatla birebir uyumlu) ve
+  özet metni üretir (yukarıdaki checklist ile birebir uyumlu format) ve
   WhatsApp/e-posta linkleriyle gönderilmesini sağlar. `BUSINESS.whatsapp`
   ve `BUSINESS.email` değerlerini gerçek bilgilerle güncelle
   (`siparis-formu.html` dosyasının sonundaki `<script>` bloğunda,
@@ -136,4 +247,14 @@ kullanılmaz, ton her zaman sakin ve tesellı edici tutulmalıdır.
   tamamlanınca aynı yapı (hero → ... → footer) açılır. Arkadaşıma Özel'de
   zarf yerine hediye kutusu animasyonu kullanılır.
 - Her şablonun kendine özgü bir renk paleti ve font kombinasyonu vardır
-  (bkz. `SIPARIS-SURECI.md` tablosundaki stil açıklamaları).
+  (bkz. yukarıdaki Şablon Kataloğu tablosundaki stil açıklamaları).
+
+## Notlar
+
+- Fotoğraflar için şimdilik picsum.photos placeholder kullanılıyor — gerçek
+  siparişte müşterinin gönderdiği fotoğraflarla değiştirilecek
+- Şablonlara yeni tema eklemek istersen bu dosyaya (Klasör Yapısı, Şablon
+  Kataloğu, Veri Modeli tabloları) ekleme yapmayı unutma, böylece süreç
+  güncel kalır
+- İleride otomasyona (form + veritabanı + otomatik üretim) geçilecekse bu
+  dosyadaki veri modeli zaten hazır — detaylı plan için [ROADMAP.md](ROADMAP.md)
