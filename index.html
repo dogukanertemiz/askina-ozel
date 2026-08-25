@@ -12,10 +12,11 @@
   :root{
     --bordo:#2A0D10; --wine:#3A1116; --bordo-deep:#1c070a;
     --cream:#F8F0EB; --powder:#E8C7C2; --pink:#F4DDD8; --white:#FFFFFF;
-    --ink:#2A0D10; --ink-dim:rgba(42,13,16,.62);
+    --ink:#2A0D10; --ink-dim:rgba(42,13,16,.6);
     --paper:#F8F0EB; --paper-dim:rgba(248,240,235,.74);
-    --line-dark:rgba(248,240,235,.16); --line-light:rgba(42,13,16,.12);
-    --shadow:0 30px 70px rgba(23,6,8,.22);
+    --line-dark:rgba(248,240,235,.16); --line-light:rgba(42,13,16,.08);
+    --shadow-sm:0 14px 34px rgba(23,6,8,.10);
+    --shadow-lg:0 40px 90px rgba(23,6,8,.26);
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth}
@@ -33,7 +34,7 @@
   img{max-width:100%; display:block}
   button{font:inherit; background:none; border:none; cursor:pointer; color:inherit}
   .wrap{max-width:1180px; margin:0 auto; padding:0 22px}
-  .icon{width:20px; height:20px; flex-shrink:0}
+  .icon{display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; width:20px; height:20px; flex-shrink:0}
   .icon svg{width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round}
   .reveal{opacity:0; transform:translateY(22px); transition:opacity .8s ease, transform .8s ease}
   .reveal.in-view{opacity:1; transform:none}
@@ -73,22 +74,24 @@
   .mobile-menu .btn{margin-top:14px}
 
   /* Hero */
-  .hero{padding-top:70px; background:var(--bordo)}
-  .hero-grid{display:grid; grid-template-columns:1fr}
-  .hero-panel{padding:64px 24px 56px; position:relative}
-  .hero-panel.dark{background:var(--bordo); color:var(--cream)}
-  .hero-panel.darker{background:var(--bordo-deep); color:var(--cream)}
-  .hero-panel.light{background:var(--cream); color:var(--ink)}
-  .hero-panel .inner{max-width:440px; margin:0 auto}
+  .hero{position:relative; padding-top:70px; background:radial-gradient(120% 90% at 82% 8%, var(--wine) 0%, var(--bordo) 46%, var(--bordo-deep) 100%); color:var(--cream); overflow:hidden}
+  .hero-deco{position:absolute; right:-1%; bottom:-6%; width:clamp(150px,20vw,260px); opacity:.1; pointer-events:none; z-index:0}
+  .hero-deco svg{width:100%; height:auto; display:block; stroke:var(--cream); fill:none; stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round}
+  .hero-top{position:relative; z-index:1; padding:64px 22px 56px; display:grid; grid-template-columns:1fr; gap:56px; align-items:center}
+  .hero-copy{max-width:520px}
   .kicker{letter-spacing:.24em; text-transform:uppercase; font-size:.7rem; font-weight:600; margin-bottom:16px; opacity:.85}
-  .hero-panel h1{font-size:clamp(2rem,7vw,2.5rem); line-height:1.18; margin-bottom:20px; font-weight:600}
-  .hero-panel h1 em{font-style:italic; font-weight:500}
-  .hero-panel > .inner > p{font-size:1.04rem; line-height:1.65; opacity:.86; margin-bottom:30px; max-width:420px}
-  .hero-ctas{display:flex; flex-wrap:wrap; gap:14px; margin-bottom:34px}
+  .hero-copy h1{font-size:clamp(2.1rem,7.4vw,3.1rem); line-height:1.14; margin-bottom:22px; font-weight:600}
+  .hero-copy h1 em{font-style:italic; font-weight:500}
+  .hero-copy p{font-size:1.06rem; line-height:1.65; opacity:.86; margin-bottom:32px; max-width:440px}
+  .hero-ctas{display:flex; flex-wrap:wrap; gap:14px; margin-bottom:36px}
   .mini-feats{display:flex; flex-wrap:wrap; gap:22px 26px}
   .mini-feat{display:flex; align-items:center; gap:8px; font-size:.82rem; font-weight:500; opacity:.85}
 
-  .mock{position:relative; background:var(--white); border:1px solid var(--line-light); border-radius:22px; padding:20px 20px 24px; box-shadow:var(--shadow); max-width:340px; margin:0 auto}
+  .hero-visual{position:relative; max-width:340px; margin:0 auto}
+  .hero-visual-eyebrow{text-align:center; letter-spacing:.2em; text-transform:uppercase; font-size:.68rem; font-weight:600; opacity:.75; margin-bottom:18px}
+  .hero-deco-photo{position:absolute; top:26px; right:-14px; width:118px; aspect-ratio:3/4; border-radius:12px; overflow:hidden; transform:rotate(7deg); box-shadow:var(--shadow-lg); border:6px solid var(--cream); z-index:0}
+  .hero-deco-photo img{width:100%; height:100%; object-fit:cover}
+  .mock{position:relative; z-index:1; background:var(--white); color:var(--ink); border-radius:22px; padding:20px 20px 24px; box-shadow:var(--shadow-lg)}
   .mock-heart{text-align:center; font-size:1rem; color:var(--bordo); margin-bottom:6px}
   .mock-name{font-family:'Playfair Display',serif; font-style:italic; font-size:1.5rem; text-align:center; margin-bottom:16px}
   .mock-photo{border-radius:14px; overflow:hidden; margin-bottom:16px; aspect-ratio:4/3}
@@ -106,13 +109,21 @@
   .mock-gallery div{flex:1; aspect-ratio:1; border-radius:9px; overflow:hidden}
   .mock-gallery img{width:100%; height:100%; object-fit:cover}
   .mock-cta{text-align:center; margin-top:20px}
+  .hero-visual-caption{text-align:center; margin-top:20px; font-size:.86rem; opacity:.85}
+  .hero-visual-caption em{font-style:italic}
 
-  .steps-mini{counter-reset:m; margin-bottom:30px}
+  .hero-belt{position:relative; z-index:1; padding:0 22px 76px; text-align:center}
+  .hero-belt-head h2{font-size:clamp(1.4rem,3.6vw,1.85rem); font-weight:600; margin-bottom:38px; line-height:1.3; max-width:480px; margin-left:auto; margin-right:auto}
+  .hero-belt-head h2 em{font-style:italic; font-weight:500}
+  .steps-mini{max-width:900px; margin:0 auto; text-align:left}
   .step-mini{display:flex; gap:16px; padding:16px 0; border-bottom:1px solid var(--line-dark)}
   .step-mini:last-child{border-bottom:none}
-  .step-mini .num{font-family:'Playfair Display',serif; font-size:.95rem; width:32px; height:32px; border-radius:50%; border:1px solid rgba(248,240,235,.35); display:flex; align-items:center; justify-content:center; flex-shrink:0}
+  .step-mini .num{font-family:'Playfair Display',serif; font-size:.95rem; width:32px; height:32px; border-radius:50%; border:1px solid rgba(248,240,235,.35); display:flex; align-items:center; justify-content:center; flex-shrink:0; position:relative; z-index:1; background:var(--bordo)}
   .step-mini h3{font-size:1.02rem; font-weight:600; margin-bottom:4px}
   .step-mini p{font-size:.86rem; line-height:1.5; opacity:.78}
+
+  .hero-wave{line-height:0}
+  .hero-wave svg{display:block; width:100%; height:56px}
 
   /* Sections generic */
   section{padding:84px 0}
@@ -125,27 +136,29 @@
   /* Benefits */
   .bg-cream{background:var(--cream)}
   .bg-pink{background:var(--pink)}
-  .bg-bordo{background:var(--bordo); color:var(--cream)}
   .benefits{display:grid; grid-template-columns:1fr 1fr; gap:16px}
-  .benefit{background:var(--white); border:1px solid var(--line-light); border-radius:16px; padding:26px 22px; text-align:center}
-  .benefit .icon{margin:0 auto 14px; width:26px; height:26px; color:var(--bordo)}
+  .benefit{background:var(--white); border:1px solid var(--line-light); border-radius:16px; padding:26px 22px; text-align:center; box-shadow:var(--shadow-sm); transition:.3s}
+  .benefit:hover{transform:translateY(-3px)}
+  .benefit .icon{margin:0 auto 16px; width:52px; height:52px; padding:13px; color:var(--bordo); background:var(--pink); border-radius:50%}
   .benefit h3{font-size:1.02rem; margin-bottom:8px; font-weight:600}
   .benefit p{color:var(--ink-dim); font-size:.88rem; line-height:1.5}
 
-  /* Steps full */
-  .steps{display:grid; grid-template-columns:1fr; gap:18px}
-  .step{background:var(--white); border:1px solid var(--line-light); border-radius:18px; padding:30px 26px}
-  .step .num{font-family:'Playfair Display',serif; font-size:1.9rem; font-style:italic; color:var(--bordo); opacity:.45; margin-bottom:10px}
-  .step h3{font-size:1.14rem; margin-bottom:8px; font-weight:600}
-  .step p{color:var(--ink-dim); font-size:.94rem; line-height:1.55}
+  /* Nasıl Çalışır — bağlı zaman çizelgesi */
+  .how-list{max-width:720px; margin:0 auto; position:relative}
+  .how-list::before{content:''; position:absolute; left:27px; top:8px; bottom:8px; width:1px; background:var(--line-light)}
+  .how-item{display:flex; gap:24px; padding:22px 0}
+  .how-item .num{width:56px; height:56px; border-radius:50%; background:var(--white); border:1px solid var(--line-light); box-shadow:var(--shadow-sm); display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif; font-style:italic; font-size:1.3rem; color:var(--bordo); flex-shrink:0; position:relative; z-index:1}
+  .how-item .content{padding-top:10px}
+  .how-item h3{font-size:1.14rem; margin-bottom:6px; font-weight:600}
+  .how-item p{color:var(--ink-dim); font-size:.95rem; line-height:1.6; max-width:460px}
   .showcase-link{text-align:center; margin-top:44px}
   .showcase-link a{font-size:.92rem; font-weight:600; border-bottom:1px solid var(--bordo); padding-bottom:3px}
 
   /* Gallery */
   .filter-note{text-align:center; color:var(--ink-dim); font-size:.92rem; margin-bottom:36px}
   .gallery-grid{display:grid; grid-template-columns:1fr; gap:20px}
-  .tpl-card{background:var(--white); border:1px solid var(--line-light); border-radius:18px; overflow:hidden; display:flex; flex-direction:column; transition:.3s}
-  .tpl-card:hover{transform:translateY(-4px); box-shadow:var(--shadow)}
+  .tpl-card{background:var(--white); border:1px solid var(--line-light); border-radius:18px; overflow:hidden; display:flex; flex-direction:column; box-shadow:var(--shadow-sm); transition:.3s}
+  .tpl-card:hover{transform:translateY(-4px); box-shadow:var(--shadow-lg)}
   .tpl-swatch{height:112px; position:relative; display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif; font-style:italic; font-size:1.25rem; color:rgba(255,255,255,.92)}
   .tpl-body{padding:22px 22px 24px; flex:1; display:flex; flex-direction:column}
   .tpl-tag{display:inline-block; font-size:.66rem; letter-spacing:.1em; text-transform:uppercase; font-weight:700; padding:4px 11px; border-radius:20px; margin-bottom:12px; align-self:flex-start; border:1px solid transparent}
@@ -158,11 +171,12 @@
   .tpl-body p{color:var(--ink-dim); font-size:.9rem; line-height:1.5; margin-bottom:18px; flex:1}
   .tpl-preview{align-self:flex-start; font-size:.82rem; font-weight:600; letter-spacing:.03em; color:var(--bordo); border-bottom:1px solid var(--bordo); padding-bottom:2px}
 
-  /* Instagram section */
-  .ig-wrap{display:grid; grid-template-columns:1fr; gap:36px; align-items:start}
-  .ig-card{background:var(--bordo-deep); border-radius:20px; padding:28px 24px}
+  /* Instagram panel (rounded inset, aynı dil cta-banner ile) */
+  .ig-panel{background:radial-gradient(120% 100% at 15% 0%, var(--wine) 0%, var(--bordo) 55%, var(--bordo-deep) 100%); color:var(--cream); border-radius:30px; padding:56px 26px}
+  .ig-wrap{display:grid; grid-template-columns:1fr; gap:32px; align-items:start}
+  .ig-card{background:rgba(0,0,0,.18); border:1px solid rgba(248,240,235,.12); border-radius:20px; padding:26px 22px}
   .ig-profile{display:flex; align-items:center; gap:16px; margin-bottom:20px}
-  .ig-avatar{width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg,var(--wine),var(--bordo)); border:2px solid var(--powder); display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif; font-size:1.5rem; flex-shrink:0}
+  .ig-avatar{width:60px; height:60px; border-radius:50%; background:rgba(248,240,235,.1); border:1.5px solid var(--powder); display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif; font-size:1.4rem; flex-shrink:0}
   .ig-handle{font-weight:600; font-size:1.02rem}
   .ig-stats{display:flex; gap:18px; margin-top:4px}
   .ig-stats div{font-size:.8rem; opacity:.75}
@@ -182,8 +196,8 @@
 
   /* Pricing */
   .pricing-grid{display:grid; grid-template-columns:1fr; gap:18px}
-  .price-card{background:var(--white); border:1px solid var(--line-light); border-radius:18px; padding:32px 26px; text-align:center; display:flex; flex-direction:column}
-  .price-card.featured{border-color:var(--bordo); box-shadow:var(--shadow)}
+  .price-card{background:var(--white); border:1px solid var(--line-light); border-radius:18px; padding:32px 26px; text-align:center; display:flex; flex-direction:column; box-shadow:var(--shadow-sm)}
+  .price-card.featured{border-color:var(--bordo); box-shadow:var(--shadow-lg)}
   .price-name{font-size:1.1rem; letter-spacing:.02em; margin-bottom:6px; font-weight:600; font-family:'Playfair Display',serif}
   .price-amount{font-family:'Playfair Display',serif; font-size:2rem; margin-bottom:18px; font-weight:600}
   .price-amount span{font-size:.9rem; color:var(--ink-dim); font-family:'Inter',sans-serif; font-weight:500}
@@ -193,7 +207,7 @@
 
   /* FAQ */
   .faq{max-width:720px; margin:0 auto}
-  details{background:var(--white); border:1px solid var(--line-light); border-radius:14px; margin-bottom:12px; padding:18px 22px}
+  details{background:var(--white); border:1px solid var(--line-light); border-radius:14px; margin-bottom:12px; padding:18px 22px; box-shadow:var(--shadow-sm)}
   summary{cursor:pointer; font-size:1.02rem; font-weight:600; list-style:none; display:flex; justify-content:space-between; align-items:center; gap:16px}
   summary::-webkit-details-marker{display:none}
   summary::after{content:'+'; font-size:1.3rem; color:var(--bordo); flex-shrink:0}
@@ -201,9 +215,11 @@
   details p{color:var(--ink-dim); margin-top:13px; line-height:1.6; font-size:.94rem}
 
   /* CTA banner */
-  .cta-banner{background:var(--bordo); color:var(--cream); border-radius:26px; padding:56px 30px; text-align:center; margin:0 22px}
-  .cta-banner h2{font-size:clamp(1.5rem,4.5vw,2.1rem); margin-bottom:12px; font-weight:600}
-  .cta-banner p{color:var(--paper-dim); font-size:1.02rem; margin-bottom:30px}
+  .cta-banner{position:relative; background:radial-gradient(120% 130% at 85% 110%, var(--wine) 0%, var(--bordo) 55%, var(--bordo-deep) 100%); color:var(--cream); border-radius:30px; padding:60px 30px; text-align:center; overflow:hidden}
+  .cta-banner .quote{position:absolute; top:-.3em; left:50%; transform:translateX(-50%); font-family:'Playfair Display',serif; font-size:7rem; opacity:.08; line-height:1; pointer-events:none}
+  .cta-banner h2{position:relative; font-size:clamp(1.5rem,4.5vw,2.1rem); margin-bottom:12px; font-weight:600}
+  .cta-banner p{position:relative; color:var(--paper-dim); font-size:1.02rem; margin-bottom:30px}
+  .cta-banner .btn{position:relative}
   section#cta{padding:70px 0}
 
   /* Footer */
@@ -223,10 +239,14 @@
 
   @media(min-width:700px){
     .benefits{grid-template-columns:repeat(4,1fr)}
-    .steps{grid-template-columns:repeat(2,1fr)}
     .gallery-grid{grid-template-columns:repeat(2,1fr)}
     .pricing-grid{grid-template-columns:repeat(2,1fr)}
     .footer-grid{grid-template-columns:1.3fr 1fr 1fr}
+  }
+  @media(min-width:820px){
+    .steps-mini{display:flex; gap:28px; position:relative; padding-top:6px}
+    .steps-mini::before{content:''; position:absolute; top:27px; left:0; right:0; height:1px; background:rgba(248,240,235,.18)}
+    .step-mini{flex:1; flex-direction:column; align-items:flex-start; border-bottom:none; padding:0; gap:14px}
   }
   @media(min-width:980px){
     .nav-links{display:flex}
@@ -234,15 +254,15 @@
     .burger{display:none}
     .sticky-cta{display:none}
     body{padding-bottom:0 !important}
-    .hero-grid{grid-template-columns:1.05fr 1fr 1fr}
-    .hero-panel{padding:96px 40px}
-    .hero-panel .inner{max-width:none}
-    .steps{grid-template-columns:repeat(4,1fr)}
+    .hero-top{grid-template-columns:1.1fr .9fr; padding:104px 40px 84px; gap:40px}
+    .hero-copy{max-width:none}
+    .hero-belt{padding:0 40px 100px}
     .gallery-grid{grid-template-columns:repeat(3,1fr)}
     .pricing-grid{grid-template-columns:repeat(4,1fr)}
     .price-card.featured{transform:scale(1.04)}
+    .ig-panel{padding:72px 56px}
     .ig-wrap{grid-template-columns:.85fr 1.15fr; gap:50px}
-    .cta-banner{margin:0 auto; max-width:920px; padding:64px 60px}
+    .cta-banner{max-width:920px; margin:0 auto; padding:70px 70px}
   }
   @media(max-width:979px){
     body{padding-bottom:70px}
@@ -280,65 +300,77 @@
   </div>
 </div>
 
-<div id="top"></div>
-<header class="hero">
-  <div class="hero-grid">
+<header class="hero" id="top">
+  <div class="hero-deco" aria-hidden="true">
+    <svg viewBox="0 0 140 340">
+      <path d="M70,330 C55,290 85,262 66,222 C47,182 90,152 66,112 C46,80 88,58 68,22"/>
+      <path d="M70,268 C88,258 96,240 84,224 C96,236 92,256 70,268 Z"/>
+      <path d="M64,268 C46,258 38,240 50,224 C38,236 42,256 64,268 Z"/>
+      <path d="M64,196 C82,186 90,168 78,152 C90,164 86,184 64,196 Z"/>
+      <path d="M70,150 C88,140 96,122 84,106 C96,118 92,138 70,150 Z"/>
+      <circle cx="68" cy="30" r="4"/>
+      <path d="M68,26 C88,20 96,4 84,-6 C100,4 96,26 68,26 Z" transform="translate(0,4)"/>
+      <path d="M68,26 C48,20 40,4 52,-6 C36,4 40,26 68,26 Z" transform="translate(0,4)"/>
+      <path d="M68,20 C82,12 84,0 74,-8 C86,-2 88,14 68,20 Z" transform="translate(0,4)"/>
+    </svg>
+  </div>
 
-    <div class="hero-panel dark reveal">
-      <div class="inner">
-        <div class="kicker">Sevgiline, Arkadaşına, Her Özel Ana</div>
-        <h1>Bazı hikâyeler bir <em>hediyeden fazlasını</em> hak eder.</h1>
-        <p>Duygularınızı, anılarınızı ve sevginizi kalpten olanlara siz verin. Fotoğraflarınız, mektubunuz ve şarkınızla ona özel tek bir sayfa hazırlıyoruz.</p>
-        <div class="hero-ctas">
-          <a href="siparis-formu.html" class="btn btn-light">Ona Özel Sayfa Oluştur ♡</a>
-          <a href="#sablonlar" class="btn btn-outline-light">Şablonlara Göz At</a>
-        </div>
-        <div class="mini-feats">
-          <div class="mini-feat"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 20s-7.2-4.4-9.6-8.7C.8 8 2.3 4.2 6.2 4.2c2 0 3.6 1.2 4.1 2.7.5-1.4 2.1-2.7 4.1-2.7 3.9 0 5.4 3.8 3.8 7.1C19.2 15.6 12 20 12 20z"/></svg></span>Kişiselleştir</div>
-          <div class="mini-feat"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 2l2 6.2 6.2 2-6.2 2L12 18.4l-2-6.2-6.2-2L10 8.2z"/></svg></span>Hazır tasarımlar</div>
-          <div class="mini-feat"><span class="icon"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M9 3v6"/></svg></span>Anı kutusu</div>
-          <div class="mini-feat"><span class="icon"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>Sürpriz önerileri</div>
-        </div>
+  <div class="wrap hero-top">
+    <div class="hero-copy reveal">
+      <div class="kicker">Sevgiline, Arkadaşına, Her Özel Ana</div>
+      <h1>Bazı hikâyeler bir <em>hediyeden fazlasını</em> hak eder.</h1>
+      <p>Duygularınızı, anılarınızı ve sevginizi kalpten olanlara siz verin. Fotoğraflarınız, mektubunuz ve şarkınızla ona özel tek bir sayfa hazırlıyoruz.</p>
+      <div class="hero-ctas">
+        <a href="siparis-formu.html" class="btn btn-light">Ona Özel Sayfa Oluştur ♡</a>
+        <a href="#sablonlar" class="btn btn-outline-light">Şablonlara Göz At</a>
+      </div>
+      <div class="mini-feats">
+        <div class="mini-feat"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 20s-7.2-4.4-9.6-8.7C.8 8 2.3 4.2 6.2 4.2c2 0 3.6 1.2 4.1 2.7.5-1.4 2.1-2.7 4.1-2.7 3.9 0 5.4 3.8 3.8 7.1C19.2 15.6 12 20 12 20z"/></svg></span>Kişiselleştir</div>
+        <div class="mini-feat"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 2l2 6.2 6.2 2-6.2 2L12 18.4l-2-6.2-6.2-2L10 8.2z"/></svg></span>Hazır tasarımlar</div>
+        <div class="mini-feat"><span class="icon"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M9 3v6"/></svg></span>Anı kutusu</div>
+        <div class="mini-feat"><span class="icon"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>Sürpriz önerileri</div>
       </div>
     </div>
 
-    <div class="hero-panel light reveal">
-      <div class="inner">
-        <div class="kicker" style="text-align:center">Kalbinden Gelen Her Söz Bir Yeri Var ♡</div>
-        <h2 class="serif" style="text-align:center; font-size:clamp(1.4rem,3.4vw,1.7rem); font-weight:600; margin-bottom:30px; line-height:1.3">İşte senin <em style="font-style:italic; font-weight:500">hikâyen</em> böyle bir sayfaya dönüşür.</h2>
-        <div class="mock">
-          <div class="mock-heart">♡</div>
-          <div class="mock-name">İyi ki Varsın</div>
-          <div class="mock-photo"><img src="https://picsum.photos/seed/askina-hero/500/375" alt="Örnek çift fotoğrafı"></div>
-          <div class="mock-note">Sana Yazdığım Bu Satırlar…</div>
-          <div class="mock-letter">"Her satırda biraz ben, her kelimede biraz sen var…"</div>
-          <div class="mock-player">
-            <div class="mock-play"><span class="icon"><svg viewBox="0 0 24 24" style="stroke:none; fill:currentColor"><path d="M7 5l12 7-12 7z"/></svg></span></div>
-            <div class="mock-track"><div class="t">Bizim Şarkımız</div><div class="a">02:45</div></div>
-          </div>
-          <div class="mock-gallery-label">Bizi Anlatanlar</div>
-          <div class="mock-gallery">
-            <div><img src="https://picsum.photos/seed/askina-g1/200/200" alt=""></div>
-            <div><img src="https://picsum.photos/seed/askina-g2/200/200" alt=""></div>
-          </div>
-          <div class="mock-cta"><a href="siparis-formu.html" class="btn btn-dark btn-block">Hikâyeni Oluştur</a></div>
+    <div class="hero-visual reveal">
+      <div class="hero-visual-eyebrow">Kalbinden Gelen Her Söz Bir Yeri Var ♡</div>
+      <div class="hero-deco-photo"><img src="https://picsum.photos/seed/askina-deco/300/400" alt=""></div>
+      <div class="mock">
+        <div class="mock-heart">♡</div>
+        <div class="mock-name">İyi ki Varsın</div>
+        <div class="mock-photo"><img src="https://picsum.photos/seed/askina-hero/500/375" alt="Örnek çift fotoğrafı"></div>
+        <div class="mock-note">Sana Yazdığım Bu Satırlar…</div>
+        <div class="mock-letter">"Her satırda biraz ben, her kelimede biraz sen var…"</div>
+        <div class="mock-player">
+          <div class="mock-play"><span class="icon"><svg viewBox="0 0 24 24" style="stroke:none; fill:currentColor"><path d="M7 5l12 7-12 7z"/></svg></span></div>
+          <div class="mock-track"><div class="t">Bizim Şarkımız</div><div class="a">02:45</div></div>
         </div>
-      </div>
-    </div>
-
-    <div class="hero-panel darker reveal">
-      <div class="inner">
-        <div class="kicker">Seni Sadece Anlayan Anlar…</div>
-        <h2 style="font-size:clamp(1.5rem,3.6vw,1.85rem); font-weight:600; margin-bottom:26px; line-height:1.28">Sen sadece anılarını paylaş.<br><em style="font-style:italic; font-weight:500">Gerisine biz halledelim…</em></h2>
-        <div class="steps-mini">
-          <div class="step-mini"><div class="num">1</div><div><h3>Bilgilerini Paylaş</h3><p>Fotoğraflarını, mektubunu, şarkını ve anılarını bize gönder.</p></div></div>
-          <div class="step-mini"><div class="num">2</div><div><h3>Sayfanı Hazırlayalım</h3><p>Sana özel, romantik bir web sayfası tasarlayalım.</p></div></div>
-          <div class="step-mini"><div class="num">3</div><div><h3>Sürpriz Zamanı</h3><p>Linkini al, sevdiğine gönder.</p></div></div>
-          <div class="step-mini"><div class="num">4</div><div><h3>Anın Hep Kalsın</h3><p>Hazırlanan sayfa uzun süre erişilebilir olsun.</p></div></div>
+        <div class="mock-gallery-label">Bizi Anlatanlar</div>
+        <div class="mock-gallery">
+          <div><img src="https://picsum.photos/seed/askina-g1/200/200" alt=""></div>
+          <div><img src="https://picsum.photos/seed/askina-g2/200/200" alt=""></div>
         </div>
+        <div class="mock-cta"><a href="siparis-formu.html" class="btn btn-dark btn-block">Hikâyeni Oluştur</a></div>
       </div>
+      <div class="hero-visual-caption">İşte senin <em>hikâyen</em> böyle bir sayfaya dönüşür.</div>
     </div>
+  </div>
 
+  <div class="hero-belt reveal">
+    <div class="hero-belt-head">
+      <div class="kicker">Seni Sadece Anlayan Anlar…</div>
+      <h2>Sen sadece anılarını paylaş.<br><em>Gerisine biz halledelim…</em></h2>
+    </div>
+    <div class="steps-mini">
+      <div class="step-mini"><div class="num">1</div><div><h3>Bilgilerini Paylaş</h3><p>Fotoğraflarını, mektubunu, şarkını ve anılarını bize gönder.</p></div></div>
+      <div class="step-mini"><div class="num">2</div><div><h3>Sayfanı Hazırlayalım</h3><p>Sana özel, romantik bir web sayfası tasarlayalım.</p></div></div>
+      <div class="step-mini"><div class="num">3</div><div><h3>Sürpriz Zamanı</h3><p>Linkini al, sevdiğine gönder.</p></div></div>
+      <div class="step-mini"><div class="num">4</div><div><h3>Anın Hep Kalsın</h3><p>Hazırlanan sayfa uzun süre erişilebilir olsun.</p></div></div>
+    </div>
+  </div>
+
+  <div class="hero-wave" aria-hidden="true">
+    <svg viewBox="0 0 1440 100" preserveAspectRatio="none"><path d="M0,40 C280,92 480,0 720,22 C960,44 1160,96 1440,32 L1440,100 L0,100 Z" style="fill:var(--cream)"></path></svg>
   </div>
 </header>
 
@@ -374,26 +406,22 @@
     <div class="section-kicker">Süreç</div>
     <h2 class="section-title reveal">Nasıl <em>Çalışır?</em></h2>
     <p class="section-sub reveal">4 basit adımda, sevdiğine özel sayfası hazır.</p>
-    <div class="steps">
-      <div class="step reveal">
+    <div class="how-list">
+      <div class="how-item reveal">
         <div class="num">01</div>
-        <h3>Şablonunu Seç</h3>
-        <p>6 stilden ya da 3 interaktif oyunlu şablondan birini seç, emin değilsen sana öneririz.</p>
+        <div class="content"><h3>Şablonunu Seç</h3><p>17 şablondan — 6 stil, 3 interaktif oyunlu ve özel günlere göre olanlardan — birini seç, emin değilsen sana öneririz.</p></div>
       </div>
-      <div class="step reveal">
+      <div class="how-item reveal">
         <div class="num">02</div>
-        <h3>Bilgilerini Gönder</h3>
-        <p>Partnerinin adı, özel tarih, 3-5 fotoğraf, mektup ve şarkı bilgisini formdan ilet.</p>
+        <div class="content"><h3>Bilgilerini Gönder</h3><p>Partnerinin adı, özel tarih, 3-5 fotoğraf, mektup ve şarkı bilgisini formdan ilet.</p></div>
       </div>
-      <div class="step reveal">
+      <div class="how-item reveal">
         <div class="num">03</div>
-        <h3>Biz Hazırlıyoruz</h3>
-        <p>Şablonu bilgilerinle doldurup teslime hazır hale getiriyoruz.</p>
+        <div class="content"><h3>Biz Hazırlıyoruz</h3><p>Şablonu bilgilerinle doldurup teslime hazır hale getiriyoruz.</p></div>
       </div>
-      <div class="step reveal">
+      <div class="how-item reveal">
         <div class="num">04</div>
-        <h3>Teslim Al</h3>
-        <p>Linkini ya da dosyanı al, sevdiğine gönder. İzlerken mutlu ol.</p>
+        <div class="content"><h3>Teslim Al</h3><p>Linkini ya da dosyanı al, sevdiğine gönder. İzlerken mutlu ol.</p></div>
       </div>
     </div>
     <div class="showcase-link reveal">
@@ -411,47 +439,49 @@
   </div>
 </section>
 
-<section class="bg-bordo">
+<section class="bg-cream">
   <div class="wrap">
-    <div class="section-kicker" style="color:var(--powder); opacity:1">Sosyal</div>
-    <h2 class="section-title reveal" style="color:var(--cream)">Instagram'da böyle <em>görünür.</em></h2>
-    <p class="section-sub light reveal">Beğendiğin bir sayfayı arkadaşlarınla paylaşmadan önce, markamızı Instagram'da da keşfedebilirsin.</p>
-    <div class="ig-wrap">
-      <div class="ig-card reveal">
-        <div class="ig-profile">
-          <div class="ig-avatar">♡</div>
-          <div>
-            <div class="ig-handle">@askinaozel</div>
-            <div class="ig-stats">
-              <div><b>180</b>Gönderi</div>
-              <div><b>9,4B</b>Takipçi</div>
-              <div><b>12</b>Takip</div>
+    <div class="ig-panel reveal">
+      <div class="section-kicker" style="color:var(--powder); opacity:1">Sosyal</div>
+      <h2 class="section-title" style="color:var(--cream)">Instagram'da böyle <em>görünür.</em></h2>
+      <p class="section-sub light">Beğendiğin bir sayfayı arkadaşlarınla paylaşmadan önce, markamızı Instagram'da da keşfedebilirsin.</p>
+      <div class="ig-wrap">
+        <div class="ig-card">
+          <div class="ig-profile">
+            <div class="ig-avatar">♡</div>
+            <div>
+              <div class="ig-handle">@askinaozel</div>
+              <div class="ig-stats">
+                <div><b>180</b>Gönderi</div>
+                <div><b>9,4B</b>Takipçi</div>
+                <div><b>12</b>Takip</div>
+              </div>
             </div>
           </div>
+          <div class="ig-bio">Sevginizi en güzel anlatmanın yolu.<br>✦ Kişiye özel hikâye sayfaları<br>✦ Fotoğraf • Müzik • Mektup</div>
+          <div class="ig-actions">
+            <a href="https://instagram.com/askinaozel" target="_blank" rel="noopener" class="btn btn-light">Takip Et</a>
+            <a href="siparis-formu.html" class="btn btn-outline-light">Mesaj</a>
+          </div>
         </div>
-        <div class="ig-bio">Sevginizi en güzel anlatmanın yolu.<br>✦ Kişiye özel hikâye sayfaları<br>✦ Fotoğraf • Müzik • Mektup</div>
-        <div class="ig-actions">
-          <a href="https://instagram.com/askinaozel" target="_blank" rel="noopener" class="btn btn-light">Takip Et</a>
-          <a href="siparis-formu.html" class="btn btn-outline-light">Mesaj</a>
+        <div class="ig-grid">
+          <div class="ig-tile" style="background:linear-gradient(135deg,#5c0f1a,#8b1a2b)"><span>Romantik fotoğraflar</span></div>
+          <div class="ig-tile" style="background:linear-gradient(135deg,#432112,#c97a3d)"><span>Mektuplar</span></div>
+          <div class="ig-tile" style="background:linear-gradient(135deg,#123044,#ffb347)"><span>Hediye fikirleri</span></div>
+          <div class="ig-tile" style="background:linear-gradient(135deg,#301a5c,#ff6b9d)"><span>Nasıl çalışır?</span></div>
+          <div class="ig-tile" style="background:linear-gradient(135deg,#1c2350,#3f47a8)"><span>Örnek hikâyeler</span></div>
+          <div class="ig-tile" style="background:linear-gradient(135deg,#0a0a0a,#3a3226)"><span>Yorumlar</span></div>
+          <div class="ig-tile" style="background:linear-gradient(135deg,#33122c,#f4c95d)"><span>Puzzle Aşkı</span></div>
+          <div class="ig-tile" style="background:linear-gradient(135deg,#28311f,#6b7d4f)"><span>Zeytin Dalı</span></div>
+          <div class="ig-tile" style="background:linear-gradient(135deg,#151b3d,#ffd166)"><span>Mezuniyet</span></div>
         </div>
       </div>
-      <div class="ig-grid reveal">
-        <div class="ig-tile" style="background:linear-gradient(135deg,#5c0f1a,#8b1a2b)"><span>Romantik fotoğraflar</span></div>
-        <div class="ig-tile" style="background:linear-gradient(135deg,#432112,#c97a3d)"><span>Mektuplar</span></div>
-        <div class="ig-tile" style="background:linear-gradient(135deg,#123044,#ffb347)"><span>Hediye fikirleri</span></div>
-        <div class="ig-tile" style="background:linear-gradient(135deg,#301a5c,#ff6b9d)"><span>Nasıl çalışır?</span></div>
-        <div class="ig-tile" style="background:linear-gradient(135deg,#1c2350,#3f47a8)"><span>Örnek hikâyeler</span></div>
-        <div class="ig-tile" style="background:linear-gradient(135deg,#0a0a0a,#3a3226)"><span>Yorumlar</span></div>
-        <div class="ig-tile" style="background:linear-gradient(135deg,#33122c,#f4c95d)"><span>Puzzle Aşkı</span></div>
-        <div class="ig-tile" style="background:linear-gradient(135deg,#28311f,#6b7d4f)"><span>Zeytin Dalı</span></div>
-        <div class="ig-tile" style="background:linear-gradient(135deg,#151b3d,#ffd166)"><span>Mezuniyet</span></div>
+      <div class="highlights">
+        <a class="highlight" href="#sablonlar"><div class="ring">♡</div><span>Örnek Sayfalar</span></a>
+        <a class="highlight" href="#nasil-calisir"><div class="ring">✦</div><span>Nasıl Çalışır?</span></a>
+        <a class="highlight" href="#sss"><div class="ring">?</div><span>S.S.S</span></a>
+        <a class="highlight" href="https://instagram.com/askinaozel" target="_blank" rel="noopener"><div class="ring">♡</div><span>Yorumlar</span></a>
       </div>
-    </div>
-    <div class="highlights">
-      <a class="highlight reveal" href="#sablonlar"><div class="ring">♡</div><span>Örnek Sayfalar</span></a>
-      <a class="highlight reveal" href="#nasil-calisir"><div class="ring">✦</div><span>Nasıl Çalışır?</span></a>
-      <a class="highlight reveal" href="#sss"><div class="ring">?</div><span>S.S.S</span></a>
-      <a class="highlight reveal" href="https://instagram.com/askinaozel" target="_blank" rel="noopener"><div class="ring">♡</div><span>Yorumlar</span></a>
     </div>
   </div>
 </section>
@@ -546,6 +576,7 @@
 
 <section id="cta" class="bg-cream">
   <div class="cta-banner reveal">
+    <div class="quote" aria-hidden="true">❝</div>
     <h2>Bir çiçek birkaç gün,<br>bu sayfa yıllarca kalır.</h2>
     <p>Sen anılarını gönder, biz hikâyene dönüştürelim.</p>
     <a href="siparis-formu.html" class="btn btn-light">Sevgiline Unutamayacağı Bir Hediye Ver ♡</a>

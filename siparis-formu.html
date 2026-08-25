@@ -7,97 +7,112 @@
 <meta name="description" content="Sevgiline özel sayfan için bilgilerini gönder.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg-1:#1a0508; --bg-2:#2b0a10; --bg-3:#3a0e14;
-    --accent:#d4af37; --accent-soft:#e8c874;
-    --text:#f5e6d3; --text-dim:#c9a98f;
-    --card:rgba(255,255,255,.05); --card-strong:rgba(255,255,255,.08); --border:rgba(212,175,55,.3);
-    --danger:#e08585;
+    --bordo:#2A0D10; --wine:#3A1116; --bordo-deep:#1c070a;
+    --cream:#F8F0EB; --powder:#E8C7C2; --pink:#F4DDD8; --white:#FFFFFF;
+    --ink:#2A0D10; --ink-dim:rgba(42,13,16,.6);
+    --line-light:rgba(42,13,16,.1); --line-soft:rgba(42,13,16,.08);
+    --shadow-sm:0 14px 34px rgba(23,6,8,.10);
+    --shadow-lg:0 40px 90px rgba(23,6,8,.22);
+    --danger:#a83a30;
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth}
   body{
-    font-family:'Cormorant Garamond',serif;
-    background:linear-gradient(160deg,var(--bg-1),var(--bg-2) 40%,var(--bg-3));
-    color:var(--text); min-height:100vh;
+    font-family:'Inter',sans-serif;
+    background:var(--cream);
+    color:var(--ink); min-height:100vh; -webkit-font-smoothing:antialiased;
   }
   h1,h2,h3{font-family:'Playfair Display',serif}
-  a{color:var(--accent-soft)}
-  .wrap{max-width:760px; margin:0 auto; padding:0 24px}
+  a{color:var(--bordo)}
+  .wrap{max-width:760px; margin:0 auto; padding:0 22px}
 
-  .nav{position:sticky; top:0; z-index:40; backdrop-filter:blur(10px); background:rgba(26,5,8,.75); border-bottom:1px solid var(--border)}
+  .nav{position:sticky; top:0; z-index:40; backdrop-filter:blur(10px); background:rgba(248,240,235,.88); border-bottom:1px solid var(--line-light)}
   .nav .wrap{display:flex; align-items:center; justify-content:space-between; height:70px; max-width:900px}
-  .logo{font-family:'Playfair Display',serif; font-size:1.3rem; color:var(--accent-soft)}
-  .logo span{color:var(--text)}
-  .back-link{font-size:1rem; color:var(--text-dim)}
-  .back-link:hover{color:var(--accent-soft)}
+  .logo{display:flex; align-items:center; gap:7px; font-family:'Playfair Display',serif; font-size:1.22rem}
+  .logo b{font-weight:700}
+  .logo .icon{width:16px; height:16px; color:var(--bordo)}
+  .icon{display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box}
+  .icon svg{width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round}
+  .back-link{font-size:.92rem; font-weight:500; color:var(--ink-dim); display:flex; align-items:center; gap:6px}
+  .back-link:hover{color:var(--bordo)}
 
-  main{padding:60px 0 100px}
+  main{padding:56px 0 100px}
   .form-head{text-align:center; margin-bottom:44px}
-  .kicker{letter-spacing:.4em; text-transform:uppercase; font-size:.72rem; color:var(--accent-soft); margin-bottom:14px}
-  .form-head h1{font-size:clamp(1.9rem,4vw,2.6rem); margin-bottom:14px}
-  .form-head p{color:var(--text-dim); font-size:1.15rem; max-width:520px; margin:0 auto}
+  .kicker{letter-spacing:.26em; text-transform:uppercase; font-size:.72rem; font-weight:600; color:var(--bordo); opacity:.8; margin-bottom:14px}
+  .form-head h1{font-size:clamp(1.9rem,4vw,2.5rem); margin-bottom:14px; font-weight:600}
+  .form-head p{color:var(--ink-dim); font-size:1.05rem; line-height:1.6; max-width:500px; margin:0 auto}
 
-  .card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:36px 32px; margin-bottom:24px}
-  .card h2{font-size:1.3rem; margin-bottom:6px; font-weight:600}
-  .card .step-note{color:var(--text-dim); font-size:.95rem; margin-bottom:24px}
+  .progress-track{display:flex; gap:6px; margin-bottom:48px}
+  .progress-track span{flex:1; height:3px; border-radius:3px; background:var(--line-light)}
 
-  label{display:block; font-size:1.05rem; margin-bottom:8px; color:var(--text)}
+  .card{background:var(--white); border:1px solid var(--line-light); box-shadow:var(--shadow-sm); border-radius:20px; padding:32px 28px; margin-bottom:20px}
+  .card h2{font-size:1.2rem; margin-bottom:6px; font-weight:600; display:flex; align-items:center; gap:10px}
+  .card h2 .step-badge{width:30px; height:30px; border-radius:50%; background:var(--pink); color:var(--bordo); font-family:'Playfair Display',serif; font-style:italic; font-size:.95rem; display:flex; align-items:center; justify-content:center; flex-shrink:0}
+  .card .step-note{color:var(--ink-dim); font-size:.92rem; line-height:1.55; margin-bottom:22px; margin-left:40px}
+
+  label{display:block; font-size:.94rem; font-weight:500; margin-bottom:8px; color:var(--ink)}
   .req{color:var(--danger); font-size:.85rem}
-  .field{margin-bottom:22px}
+  .field{margin-bottom:20px}
   .field:last-child{margin-bottom:0}
   input[type=text], input[type=date], input[type=tel], input[type=email], textarea, select{
-    width:100%; font-family:'Cormorant Garamond',serif; font-size:1.05rem; color:var(--text);
-    background:rgba(0,0,0,.2); border:1px solid var(--border); border-radius:10px; padding:12px 14px;
-    outline:none; transition:.25s;
+    width:100%; font-family:'Inter',sans-serif; font-size:.96rem; color:var(--ink);
+    background:var(--cream); border:1px solid var(--line-light); border-radius:12px; padding:12px 14px;
+    outline:none; transition:.2s;
   }
-  input:focus, textarea:focus, select:focus{border-color:var(--accent)}
-  textarea{resize:vertical; min-height:90px; line-height:1.5}
+  input:focus, textarea:focus, select:focus{border-color:var(--bordo); background:var(--white)}
+  textarea{resize:vertical; min-height:90px; line-height:1.55; font-family:'Inter',sans-serif}
   select{cursor:pointer}
-  ::placeholder{color:var(--text-dim); opacity:.7}
-  .hint{color:var(--text-dim); font-size:.88rem; margin-top:6px}
+  ::placeholder{color:var(--ink-dim); opacity:.65}
+  .hint{color:var(--ink-dim); font-size:.85rem; margin-top:6px; line-height:1.5}
 
-  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:20px}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:18px}
   .radio-group{display:flex; flex-direction:column; gap:10px}
-  .radio-opt{display:flex; align-items:flex-start; gap:10px; background:rgba(0,0,0,.15); border:1px solid var(--border); border-radius:10px; padding:12px 14px; cursor:pointer}
-  .radio-opt input{width:auto; margin-top:4px}
-  .radio-opt .opt-title{font-weight:600}
-  .radio-opt .opt-price{color:var(--accent-soft); font-size:.9rem}
-  .radio-opt .opt-desc{color:var(--text-dim); font-size:.9rem}
+  .radio-opt{display:flex; align-items:flex-start; gap:12px; background:var(--cream); border:1px solid var(--line-light); border-radius:14px; padding:14px 16px; cursor:pointer; transition:.2s}
+  .radio-opt:hover{border-color:var(--powder)}
+  .radio-opt:has(input:checked){background:var(--pink); border-color:var(--bordo)}
+  .radio-opt input{width:auto; margin-top:4px; accent-color:var(--bordo)}
+  .radio-opt .opt-title{font-weight:600; font-size:.98rem}
+  .radio-opt .opt-price{color:var(--bordo); font-size:.88rem; font-weight:600}
+  .radio-opt .opt-desc{color:var(--ink-dim); font-size:.88rem; margin-top:2px}
 
-  .letter-mode{display:flex; gap:10px; margin-bottom:16px}
-  .mode-btn{flex:1; text-align:center; padding:10px; border:1px solid var(--border); border-radius:10px; cursor:pointer; font-size:.98rem; color:var(--text-dim)}
-  .mode-btn.active{background:var(--accent); color:var(--bg-1); border-color:var(--accent); font-weight:600}
+  .letter-mode{display:flex; gap:10px; margin-bottom:18px}
+  .mode-btn{flex:1; text-align:center; padding:11px; border:1px solid var(--line-light); border-radius:999px; cursor:pointer; font-size:.9rem; font-weight:600; color:var(--ink-dim); transition:.2s; background:var(--cream)}
+  .mode-btn.active{background:var(--bordo); color:var(--cream); border-color:var(--bordo)}
   .letter-panel{display:none}
   .letter-panel.active{display:block}
 
   .checkbox-row{display:flex; align-items:flex-start; gap:10px; margin-top:6px}
-  .checkbox-row input{width:auto; margin-top:4px}
-  .checkbox-row label{margin:0; font-size:.98rem; color:var(--text-dim)}
+  .checkbox-row input{width:auto; margin-top:4px; accent-color:var(--bordo)}
+  .checkbox-row label{margin:0; font-size:.9rem; font-weight:400; color:var(--ink-dim); line-height:1.5}
 
   .submit-row{text-align:center; margin-top:8px}
-  .btn{display:inline-block; font-family:'Cormorant Garamond',serif; font-weight:600; font-size:1.05rem; letter-spacing:.06em; text-transform:uppercase; padding:14px 34px; border-radius:30px; transition:.3s; cursor:pointer; border:1px solid var(--accent); background:var(--accent); color:var(--bg-1)}
-  .btn:hover{background:var(--accent-soft)}
-  .btn-outline{background:transparent; color:var(--accent-soft)}
-  .btn-outline:hover{background:var(--accent); color:var(--bg-1)}
-  .error-msg{color:var(--danger); font-size:.95rem; margin-top:14px; text-align:center; display:none}
+  .btn{display:inline-flex; align-items:center; gap:8px; font-family:'Inter',sans-serif; font-weight:600; font-size:.92rem; letter-spacing:.03em; padding:15px 32px; border-radius:999px; transition:.25s; cursor:pointer; border:1px solid transparent; white-space:nowrap}
+  .btn-dark{background:var(--bordo); color:var(--cream); border-color:var(--bordo)}
+  .btn-dark:hover{background:var(--bordo-deep)}
+  .btn-outline{background:transparent; color:var(--bordo); border-color:var(--bordo)}
+  .btn-outline:hover{background:var(--bordo); color:var(--cream)}
+  .error-msg{color:var(--danger); font-size:.92rem; margin-top:16px; text-align:center; display:none; font-weight:500}
 
   #resultCard{display:none}
   #resultCard.show{display:block}
-  .result-actions{display:flex; gap:14px; flex-wrap:wrap; margin-top:18px}
-  #summaryOutput{width:100%; min-height:280px; font-family:'Menlo','Courier New',monospace; font-size:.92rem; line-height:1.6; white-space:pre-wrap; background:rgba(0,0,0,.3); border:1px solid var(--border); border-radius:10px; padding:18px; color:var(--text)}
-  .copy-note{color:var(--accent-soft); font-size:.9rem; margin-top:8px; display:none}
+  .result-actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:18px}
+  #summaryOutput{width:100%; min-height:280px; font-family:'Menlo','Courier New',monospace; font-size:.88rem; line-height:1.6; white-space:pre-wrap; background:var(--cream); border:1px solid var(--line-light); border-radius:14px; padding:18px; color:var(--ink)}
+  .copy-note{color:var(--bordo); font-size:.88rem; font-weight:600; margin-top:8px; display:none}
 
-  @media(max-width:600px){ .grid2{grid-template-columns:1fr} .card{padding:26px 20px} }
+  @media(max-width:600px){ .grid2{grid-template-columns:1fr} .card{padding:24px 20px} .card .step-note{margin-left:0} }
 </style>
 </head>
 <body>
 
 <nav class="nav">
   <div class="wrap">
-    <div class="logo">Aşkına <span>Özel</span></div>
+    <a href="index.html" class="logo">
+      <span class="icon"><svg viewBox="0 0 24 24"><path d="M12 20s-7.2-4.4-9.6-8.7C.8 8 2.3 4.2 6.2 4.2c2 0 3.6 1.2 4.1 2.7.5-1.4 2.1-2.7 4.1-2.7 3.9 0 5.4 3.8 3.8 7.1C19.2 15.6 12 20 12 20z"/></svg></span>
+      Aşkına <b>Özel</b>
+    </a>
     <a href="index.html" class="back-link">← Anasayfaya Dön</a>
   </div>
 </nav>
@@ -111,10 +126,14 @@
       bağlantısı oluşturacağız.</p>
     </div>
 
+    <div class="progress-track" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+
     <form id="orderForm" novalidate>
 
       <div class="card">
-        <h2>1. Şablon</h2>
+        <h2><span class="step-badge">1</span>Şablon</h2>
         <div class="step-note">Emin değilsen "Siz önerin" seçeneğini işaretleyebilirsin.</div>
         <div class="field">
           <label for="template">Hangi şablonu istiyorsun? <span class="req">*</span></label>
@@ -144,7 +163,7 @@
       </div>
 
       <div class="card">
-        <h2>2. Paket</h2>
+        <h2><span class="step-badge">2</span>Paket</h2>
         <div class="step-note">Fiyatlar hakkında detay için anasayfadaki fiyatlandırma bölümüne bakabilirsin.</div>
         <div class="field">
           <div class="radio-group">
@@ -169,7 +188,7 @@
       </div>
 
       <div class="card">
-        <h2>3. Kişi Bilgileri</h2>
+        <h2><span class="step-badge">3</span>Kişi Bilgileri</h2>
         <div class="grid2">
           <div class="field">
             <label for="partnerName">Partnerinin adı <span class="req">*</span></label>
@@ -194,7 +213,7 @@
       </div>
 
       <div class="card">
-        <h2>4. Fotoğraflar</h2>
+        <h2><span class="step-badge">4</span>Fotoğraflar</h2>
         <div class="step-note">Bu form fotoğraf yüklemez — 3-5 fotoğrafı sipariş özetiyle birlikte
         WhatsApp veya e-posta üzerinden ayrıca gönder.</div>
         <div class="field">
@@ -204,7 +223,7 @@
       </div>
 
       <div class="card">
-        <h2>5. Mektup</h2>
+        <h2><span class="step-badge">5</span>Mektup</h2>
         <div class="letter-mode">
           <div class="mode-btn active" data-mode="full">Kendim yazacağım</div>
           <div class="mode-btn" data-mode="bullets">Siz yazın, ben anlatayım</div>
@@ -236,7 +255,7 @@
       </div>
 
       <div class="card">
-        <h2>6. Şarkı</h2>
+        <h2><span class="step-badge">6</span>Şarkı</h2>
         <div class="grid2">
           <div class="field">
             <label for="songName">Şarkı adı</label>
@@ -254,7 +273,7 @@
       </div>
 
       <div class="card">
-        <h2>7. Şablona Özel Ek Bilgiler <span style="color:var(--text-dim); font-size:.85rem; font-weight:400;">(opsiyonel)</span></h2>
+        <h2><span class="step-badge">7</span>Şablona Özel Ek Bilgiler <span style="color:var(--ink-dim); font-size:.82rem; font-weight:400;">(opsiyonel)</span></h2>
         <div class="step-note">
           Seçtiğin şablona göre doldur — diğerleri boş kalabilir:<br>
           • <strong>Doğum Günü Şöleni / Bebek Duyurusu:</strong> dilek duvarı için her satıra "İsim: Mesaj"<br>
@@ -270,7 +289,7 @@
       </div>
 
       <div class="card">
-        <h2>8. Teslim & İletişim</h2>
+        <h2><span class="step-badge">8</span>Teslim & İletişim</h2>
         <div class="field">
           <label for="urgency">Teslim aciliyeti</label>
           <select id="urgency">
@@ -296,19 +315,19 @@
       </div>
 
       <div class="submit-row">
-        <button type="submit" class="btn">Özeti Oluştur</button>
+        <button type="submit" class="btn btn-dark">Özeti Oluştur ♡</button>
         <div class="error-msg" id="errorMsg">Lütfen yıldızlı (*) alanları doldur.</div>
       </div>
     </form>
 
     <div class="card" id="resultCard">
       <h2>Sipariş Özetin Hazır 🎉</h2>
-      <div class="step-note">Aşağıdaki metni kopyala ya da doğrudan WhatsApp/e-posta ile gönder.
+      <div class="step-note" style="margin-left:0">Aşağıdaki metni kopyala ya da doğrudan WhatsApp/e-posta ile gönder.
       Bu format, siparişini hızlıca hazırlamamız için tam ihtiyacımız olan bilgiyi içeriyor.</div>
       <textarea id="summaryOutput" readonly></textarea>
       <div class="copy-note" id="copyNote">Panoya kopyalandı ✓</div>
       <div class="result-actions">
-        <button type="button" class="btn" id="copyBtn">Metni Kopyala</button>
+        <button type="button" class="btn btn-dark" id="copyBtn">Metni Kopyala</button>
         <a class="btn btn-outline" id="whatsappLink" href="#" target="_blank" rel="noopener">WhatsApp ile Gönder</a>
         <a class="btn btn-outline" id="emailLink" href="#">E-posta ile Gönder</a>
       </div>
