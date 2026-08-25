@@ -1,6 +1,6 @@
-# Aşkına Özel — Proje Rehberi
+# Kalpte Saklı — Proje Rehberi
 
-Bu depo, "Aşkına Özel" kişiye özel sürpriz web sayfası hizmetinin tüm statik
+Bu depo, "Kalpte Saklı" kişiye özel sürpriz web sayfası hizmetinin tüm statik
 kodunu barındırır: tanıtım sitesi, sipariş formu ve müşteriye teslim edilen
 18 şablon. Bu dosya hem teknik/veri modeli tarafını hem de sipariş alma &
 teslim sürecini anlatır. Genel yönü ve gelecek adımlar için
@@ -212,14 +212,14 @@ Müşteriden şunları iste (form ya da DM üzerinden):
 
 ## Fiyatlandırma (hatırlatma)
 
-- Başlangıç: 799 TL — hazır şablon, 1 galeri, geri sayım, 1 şarkı
-- Premium: 1.299 TL — sınırsız revizyon, video arka plan seçeneği
-- VIP: 1.899 TL — öncelikli aynı gün teslim + sesli mesaj/animasyon eklentisi
-- **Oyunlu (Puzzle / Kazı Kazan / Hafıza Kartları): 1.599-2.199 TL** — gerçek bir
-  mekanik içerdiği ve kolayca kopyalanamadığı için standart şablonlardan daha
-  yüksek fiyatlandırılır; içerik pazarlamasında "bu sadece bir görsel değil,
-  gerçek bir oyun" vurgusu öne çıkarılmalı
-- **Doğum Günü Şöleni** ve **Arkadaşıma Özel**, standart Başlangıç/Premium/VIP
+- Başlangıç: 200 TL — hazır şablon (7 stilden biri), 1 galeri, geri sayım, 1 şarkı
+- **İnteraktif: 300 TL** — Puzzle Aşkı / Kazı Kazan Sürprizi / Hafıza Kartları
+  arasından biri; gerçek bir mekanik içerdiği ve kolayca kopyalanamadığı için
+  Başlangıç'tan daha yüksek fiyatlandırılır; içerik pazarlamasında "bu sadece
+  bir görsel değil, gerçek bir oyun" vurgusu öne çıkarılmalı
+- Özel Tasarım: 500 TL — sınırsız revizyon, öncelikli/aynı gün teslim, video
+  arka plan ya da sesli mesaj gibi ekstra özelleştirmeler
+- **Doğum Günü Şöleni** ve **Arkadaşıma Özel**, standart Başlangıç/Özel Tasarım
   fiyatlandırmasına dahildir (Doğum Günü Şöleni'ndeki üflenebilir pasta ve
   konfeti efekti bonus bir dokunuş olarak sunulur, ayrı ücretlendirilmez)
 

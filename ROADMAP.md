@@ -1,4 +1,4 @@
-# Aşkına Özel — Yol Haritası
+# Kalpte Saklı — Yol Haritası
 
 Bu dosya, projenin mevcut durumunu ve olası sonraki adımlarını özetler.
 Teknik/veri modeli detayları ve sipariş alma & teslim süreci için

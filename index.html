@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aşkına Özel — Sevgiline Özel Bir Sayfa</title>
+<title>Kalpte Saklı — Sevgiline Özel Bir Sayfa</title>
 <meta name="description" content="Sevgiline, arkadaşına ya da özel bir güne özel, kişiselleştirilmiş bir sürpriz web sayfası. Fotoğraflarını, mektubunu ve şarkını gönder, gerisini biz hazırlayalım.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Dancing+Script:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bordo:#2A0D10; --wine:#3A1116; --bordo-deep:#1c070a;
@@ -54,9 +54,15 @@
   /* Nav */
   .nav{position:fixed; top:0; left:0; right:0; z-index:50; background:rgba(248,240,235,.88); backdrop-filter:blur(10px); border-bottom:1px solid var(--line-light)}
   .nav .wrap{display:flex; align-items:center; justify-content:space-between; height:70px}
-  .logo{display:flex; align-items:center; gap:7px; font-family:'Playfair Display',serif; font-size:1.28rem; letter-spacing:.01em}
-  .logo .icon{width:16px; height:16px; color:var(--bordo)}
-  .logo b{font-weight:700}
+  .logo{display:flex; align-items:center; gap:10px}
+  .logo-icon{position:relative; width:26px; height:23px; flex-shrink:0; margin-top:2px}
+  .logo-icon::before, .logo-icon::after{content:''; position:absolute; top:0; width:13px; height:21px; background:var(--bordo); border-radius:13px 13px 0 0}
+  .logo-icon::before{left:13px; transform:rotate(-45deg); transform-origin:0 100%}
+  .logo-icon::after{left:0; transform:rotate(45deg); transform-origin:100% 100%}
+  .logo-word{display:flex; flex-direction:column; align-items:flex-start; line-height:1}
+  .logo-text{font-family:'Dancing Script',cursive; font-weight:700; font-size:2.05rem; color:var(--bordo); line-height:1; letter-spacing:.01em}
+  .logo-flourish{width:100%; height:11px; margin-top:1px}
+  .logo-flourish path{fill:none; stroke:var(--bordo); stroke-width:1.5; stroke-linecap:round}
   .nav-links{display:none; gap:34px; align-items:center}
   .nav-links a{font-size:.94rem; font-weight:500; color:var(--ink-dim); transition:.2s}
   .nav-links a:hover{color:var(--bordo)}
@@ -136,6 +142,11 @@
   /* Benefits */
   .bg-cream{background:var(--cream)}
   .bg-pink{background:var(--pink)}
+  .bg-bordo{background:radial-gradient(120% 100% at 50% 0%, var(--wine) 0%, var(--bordo) 55%, var(--bordo-deep) 100%); color:var(--cream)}
+  .bg-bordo .section-kicker{color:var(--powder); opacity:1}
+  .bg-bordo .section-title{color:var(--cream)}
+  .bg-bordo .section-title em{color:var(--powder)}
+  .bg-bordo .filter-note{color:var(--paper-dim)}
   .benefits{display:grid; grid-template-columns:1fr 1fr; gap:16px}
   .benefit{background:var(--white); border:1px solid var(--line-light); border-radius:16px; padding:26px 22px; text-align:center; box-shadow:var(--shadow-sm); transition:.3s}
   .benefit:hover{transform:translateY(-3px)}
@@ -159,7 +170,9 @@
   .gallery-grid{display:grid; grid-template-columns:1fr; gap:20px}
   .tpl-card{background:var(--white); border:1px solid var(--line-light); border-radius:18px; overflow:hidden; display:flex; flex-direction:column; box-shadow:var(--shadow-sm); transition:.3s}
   .tpl-card:hover{transform:translateY(-4px); box-shadow:var(--shadow-lg)}
-  .tpl-swatch{height:112px; position:relative; display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif; font-style:italic; font-size:1.25rem; color:rgba(255,255,255,.92)}
+  .tpl-swatch{height:112px; position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden}
+  .tpl-swatch::after{content:''; position:absolute; inset:0; background:linear-gradient(to bottom, rgba(0,0,0,.12), rgba(0,0,0,.6))}
+  .tpl-swatch span{position:relative; z-index:1; font-family:'Playfair Display',serif; font-style:italic; font-size:1.25rem; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,.65); text-align:center; padding:0 14px}
   .tpl-body{padding:22px 22px 24px; flex:1; display:flex; flex-direction:column}
   .tpl-tag{display:inline-block; font-size:.66rem; letter-spacing:.1em; text-transform:uppercase; font-weight:700; padding:4px 11px; border-radius:20px; margin-bottom:12px; align-self:flex-start; border:1px solid transparent}
   .tpl-tag.std{color:var(--bordo); background:var(--powder)}
@@ -225,7 +238,12 @@
   /* Footer */
   footer{padding:56px 0 108px; background:var(--bordo-deep); color:var(--cream); border-top:1px solid var(--line-dark)}
   .footer-grid{display:grid; grid-template-columns:1fr; gap:34px; margin-bottom:40px}
-  footer .f-logo{display:flex; align-items:center; gap:7px; font-family:'Playfair Display',serif; font-size:1.2rem; margin-bottom:12px}
+  footer .f-logo{display:flex; align-items:center; gap:9px; margin-bottom:14px}
+  footer .f-logo .logo-icon{width:22px; height:19px; margin-top:2px}
+  footer .f-logo .logo-icon::before, footer .f-logo .logo-icon::after{width:11px; height:18px; border-radius:11px 11px 0 0; background:var(--cream)}
+  footer .f-logo .logo-icon::before{left:11px}
+  footer .f-logo .logo-text{font-family:'Dancing Script',cursive; font-weight:700; font-size:1.75rem; color:var(--cream); line-height:1}
+  footer .f-logo .logo-flourish path{stroke:var(--cream)}
   footer h4{font-size:.82rem; letter-spacing:.14em; text-transform:uppercase; opacity:.7; margin-bottom:16px; font-weight:600}
   footer > .wrap > .footer-grid > div > p{color:var(--paper-dim); font-size:.92rem; line-height:1.65; max-width:320px}
   footer ul li{margin-bottom:10px}
@@ -240,7 +258,7 @@
   @media(min-width:700px){
     .benefits{grid-template-columns:repeat(4,1fr)}
     .gallery-grid{grid-template-columns:repeat(2,1fr)}
-    .pricing-grid{grid-template-columns:repeat(2,1fr)}
+    .pricing-grid{grid-template-columns:repeat(3,1fr)}
     .footer-grid{grid-template-columns:1.3fr 1fr 1fr}
   }
   @media(min-width:820px){
@@ -258,7 +276,7 @@
     .hero-copy{max-width:none}
     .hero-belt{padding:0 40px 100px}
     .gallery-grid{grid-template-columns:repeat(3,1fr)}
-    .pricing-grid{grid-template-columns:repeat(4,1fr)}
+    .pricing-grid{grid-template-columns:repeat(3,1fr)}
     .price-card.featured{transform:scale(1.04)}
     .ig-panel{padding:72px 56px}
     .ig-wrap{grid-template-columns:.85fr 1.15fr; gap:50px}
@@ -274,8 +292,13 @@
 <nav class="nav">
   <div class="wrap">
     <a href="#top" class="logo">
-      <span class="icon"><svg viewBox="0 0 24 24"><path d="M12 20s-7.2-4.4-9.6-8.7C.8 8 2.3 4.2 6.2 4.2c2 0 3.6 1.2 4.1 2.7.5-1.4 2.1-2.7 4.1-2.7 3.9 0 5.4 3.8 3.8 7.1C19.2 15.6 12 20 12 20z"/></svg></span>
-      Aşkına <b>Özel</b>
+      <span class="logo-icon" aria-hidden="true"></span>
+      <span class="logo-word">
+        <span class="logo-text">Kalpte Saklı</span>
+        <svg class="logo-flourish" viewBox="0 0 120 12" preserveAspectRatio="none">
+          <path d="M2,4 C22,-3 32,10 52,4 C72,-3 82,10 102,4 C110,1.5 114,3 118,5"/>
+        </svg>
+      </span>
     </a>
     <div class="nav-links">
       <a href="#nasil-calisir">Nasıl Çalışır</a>
@@ -430,7 +453,7 @@
   </div>
 </section>
 
-<section id="sablonlar" class="bg-cream">
+<section id="sablonlar" class="bg-bordo">
   <div class="wrap">
     <div class="section-kicker">Katalog</div>
     <h2 class="section-title reveal">Aşağıdaki stillerden biriyle<br><em>senin hikâyen</em> de böyle görünür</h2>
@@ -450,7 +473,7 @@
           <div class="ig-profile">
             <div class="ig-avatar">♡</div>
             <div>
-              <div class="ig-handle">@askinaozel</div>
+              <div class="ig-handle">@kalptesakli</div>
               <div class="ig-stats">
                 <div><b>180</b>Gönderi</div>
                 <div><b>9,4B</b>Takipçi</div>
@@ -460,7 +483,7 @@
           </div>
           <div class="ig-bio">Sevginizi en güzel anlatmanın yolu.<br>✦ Kişiye özel hikâye sayfaları<br>✦ Fotoğraf • Müzik • Mektup</div>
           <div class="ig-actions">
-            <a href="https://instagram.com/askinaozel" target="_blank" rel="noopener" class="btn btn-light">Takip Et</a>
+            <a href="https://instagram.com/kalptesakli" target="_blank" rel="noopener" class="btn btn-light">Takip Et</a>
             <a href="siparis-formu.html" class="btn btn-outline-light">Mesaj</a>
           </div>
         </div>
@@ -480,7 +503,7 @@
         <a class="highlight" href="#sablonlar"><div class="ring">♡</div><span>Örnek Sayfalar</span></a>
         <a class="highlight" href="#nasil-calisir"><div class="ring">✦</div><span>Nasıl Çalışır?</span></a>
         <a class="highlight" href="#sss"><div class="ring">?</div><span>S.S.S</span></a>
-        <a class="highlight" href="https://instagram.com/askinaozel" target="_blank" rel="noopener"><div class="ring">♡</div><span>Yorumlar</span></a>
+        <a class="highlight" href="https://instagram.com/kalptesakli" target="_blank" rel="noopener"><div class="ring">♡</div><span>Yorumlar</span></a>
       </div>
     </div>
   </div>
@@ -494,7 +517,7 @@
     <div class="pricing-grid">
       <div class="price-card reveal">
         <div class="price-name">Başlangıç</div>
-        <div class="price-amount">799 <span>TL</span></div>
+        <div class="price-amount">200 <span>TL</span></div>
         <ul class="price-feats">
           <li>Hazır şablon (7 stilden biri)</li>
           <li>1 fotoğraf galerisi</li>
@@ -504,32 +527,23 @@
         <a href="siparis-formu.html" class="btn btn-outline-dark btn-block">Seç</a>
       </div>
       <div class="price-card featured reveal">
-        <div class="price-name">Premium</div>
-        <div class="price-amount">1.299 <span>TL</span></div>
-        <ul class="price-feats">
-          <li>Başlangıç paketindeki her şey</li>
-          <li>Sınırsız revizyon</li>
-          <li>Video arka plan seçeneği</li>
-        </ul>
-        <a href="siparis-formu.html" class="btn btn-dark btn-block">Seç</a>
-      </div>
-      <div class="price-card reveal">
-        <div class="price-name">VIP</div>
-        <div class="price-amount">1.899 <span>TL</span></div>
-        <ul class="price-feats">
-          <li>Premium paketindeki her şey</li>
-          <li>Öncelikli, aynı gün teslim</li>
-          <li>Sesli mesaj / animasyon eklentisi</li>
-        </ul>
-        <a href="siparis-formu.html" class="btn btn-outline-dark btn-block">Seç</a>
-      </div>
-      <div class="price-card reveal">
-        <div class="price-name">Oyunlu</div>
-        <div class="price-amount">1.599–2.199 <span>TL</span></div>
+        <div class="price-name">İnteraktif</div>
+        <div class="price-amount">300 <span>TL</span></div>
         <ul class="price-feats">
           <li>Puzzle, Kazı Kazan veya Hafıza Kartları</li>
           <li>Gerçek, oynanabilir bir mekanik</li>
           <li>Kopyalanamayan, unutulmaz deneyim</li>
+        </ul>
+        <a href="siparis-formu.html" class="btn btn-dark btn-block">Seç</a>
+      </div>
+      <div class="price-card reveal">
+        <div class="price-name">Özel Tasarım</div>
+        <div class="price-amount">500 <span>TL</span></div>
+        <ul class="price-feats">
+          <li>Başlangıç paketindeki her şey</li>
+          <li>Sınırsız revizyon</li>
+          <li>Video arka plan / sesli mesaj seçeneği</li>
+          <li>Öncelikli, aynı gün teslim</li>
         </ul>
         <a href="siparis-formu.html" class="btn btn-outline-dark btn-block">Seç</a>
       </div>
@@ -544,9 +558,9 @@
     <div class="faq">
       <details open>
         <summary>Teslim süresi ne kadar?</summary>
-        <p>Standart paketlerde genelde birkaç saat içinde teslim ederiz. VIP pakette öncelikli
-        aynı gün teslim garantisi vardır. Yoğunluğa göre süre değişebilir, sipariş sırasında
-        netleştiririz.</p>
+        <p>Standart paketlerde genelde birkaç saat içinde teslim ederiz. Özel Tasarım pakette
+        öncelikli aynı gün teslim garantisi vardır. Yoğunluğa göre süre değişebilir, sipariş
+        sırasında netleştiririz.</p>
       </details>
       <details>
         <summary>Fotoğraf göndermem şart mı?</summary>
@@ -567,8 +581,8 @@
       </details>
       <details>
         <summary>Revizyon yapabiliyor muyum?</summary>
-        <p>Başlangıç paketinde teslim öncesi küçük düzeltmeler yapılır; Premium ve VIP paketlerde
-        sınırsız revizyon hakkın vardır.</p>
+        <p>Başlangıç ve İnteraktif paketlerinde teslim öncesi küçük düzeltmeler yapılır; Özel
+        Tasarım paketinde sınırsız revizyon hakkın vardır.</p>
       </details>
     </div>
   </div>
@@ -587,7 +601,15 @@
   <div class="wrap">
     <div class="footer-grid">
       <div>
-        <div class="f-logo">♡ Aşkına Özel</div>
+        <div class="f-logo">
+          <span class="logo-icon" aria-hidden="true"></span>
+          <span class="logo-word">
+            <span class="logo-text">Kalpte Saklı</span>
+            <svg class="logo-flourish" viewBox="0 0 120 12" preserveAspectRatio="none">
+              <path d="M2,4 C22,-3 32,10 52,4 C72,-3 82,10 102,4 C110,1.5 114,3 118,5" fill="none" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </span>
+        </div>
         <p>Anılarınızı dijital bir hikâyeye dönüştürüyoruz. Her sipariş, tamamen o hikâyeye göre tasarlanır.</p>
       </div>
       <div>
@@ -605,13 +627,13 @@
         <ul>
           <!-- DEĞİŞTİR: gerçek iletişim bilgileriyle güncelle -->
           <li><a href="https://wa.me/905000000000">WhatsApp</a></li>
-          <li><a href="mailto:siparis@askinaozel.com">siparis@askinaozel.com</a></li>
-          <li><a href="https://instagram.com/askinaozel">Instagram — @askinaozel</a></li>
+          <li><a href="mailto:siparis@kalptesakli.com">siparis@kalptesakli.com</a></li>
+          <li><a href="https://instagram.com/kalptesakli">Instagram — @kalptesakli</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      <div>© <span id="year"></span> Aşkına Özel. Tüm hakları saklıdır.</div>
+      <div>© <span id="year"></span> Kalpte Saklı. Tüm hakları saklıdır.</div>
       <div class="footer-legal">
         <a href="#">Gizlilik Politikası</a>
         <a href="#">KVKK</a>
@@ -681,7 +703,7 @@
     const card = document.createElement('div');
     card.className = 'tpl-card reveal';
     card.innerHTML = `
-      <div class="tpl-swatch" style="background:${t.gradient}">${t.name}</div>
+      <div class="tpl-swatch" style="background:${t.gradient}"><span>${t.name}</span></div>
       <div class="tpl-body">
         <span class="tpl-tag ${TAG_CLASS[t.tag] || ''}">${t.tag}</span>
         <h3>${t.name}</h3>

@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sipariş Formu — Aşkına Özel</title>
+<title>Sipariş Formu — Kalpte Saklı</title>
 <meta name="description" content="Sevgiline özel sayfan için bilgilerini gönder.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700&family=Dancing+Script:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bordo:#2A0D10; --wine:#3A1116; --bordo-deep:#1c070a;
@@ -31,9 +31,15 @@
 
   .nav{position:sticky; top:0; z-index:40; backdrop-filter:blur(10px); background:rgba(248,240,235,.88); border-bottom:1px solid var(--line-light)}
   .nav .wrap{display:flex; align-items:center; justify-content:space-between; height:70px; max-width:900px}
-  .logo{display:flex; align-items:center; gap:7px; font-family:'Playfair Display',serif; font-size:1.22rem}
-  .logo b{font-weight:700}
-  .logo .icon{width:16px; height:16px; color:var(--bordo)}
+  .logo{display:flex; align-items:center; gap:10px}
+  .logo-icon{position:relative; width:25px; height:22px; flex-shrink:0; margin-top:2px}
+  .logo-icon::before, .logo-icon::after{content:''; position:absolute; top:0; width:12.5px; height:20px; background:var(--bordo); border-radius:12.5px 12.5px 0 0}
+  .logo-icon::before{left:12.5px; transform:rotate(-45deg); transform-origin:0 100%}
+  .logo-icon::after{left:0; transform:rotate(45deg); transform-origin:100% 100%}
+  .logo-word{display:flex; flex-direction:column; align-items:flex-start; line-height:1}
+  .logo-text{font-family:'Dancing Script',cursive; font-weight:700; font-size:1.95rem; color:var(--bordo); line-height:1}
+  .logo-flourish{width:100%; height:11px; margin-top:1px}
+  .logo-flourish path{fill:none; stroke:var(--bordo); stroke-width:1.5; stroke-linecap:round}
   .icon{display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box}
   .icon svg{width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round}
   .back-link{font-size:.92rem; font-weight:500; color:var(--ink-dim); display:flex; align-items:center; gap:6px}
@@ -110,8 +116,13 @@
 <nav class="nav">
   <div class="wrap">
     <a href="index.html" class="logo">
-      <span class="icon"><svg viewBox="0 0 24 24"><path d="M12 20s-7.2-4.4-9.6-8.7C.8 8 2.3 4.2 6.2 4.2c2 0 3.6 1.2 4.1 2.7.5-1.4 2.1-2.7 4.1-2.7 3.9 0 5.4 3.8 3.8 7.1C19.2 15.6 12 20 12 20z"/></svg></span>
-      Aşkına <b>Özel</b>
+      <span class="logo-icon" aria-hidden="true"></span>
+      <span class="logo-word">
+        <span class="logo-text">Kalpte Saklı</span>
+        <svg class="logo-flourish" viewBox="0 0 120 12" preserveAspectRatio="none">
+          <path d="M2,4 C22,-3 32,10 52,4 C72,-3 82,10 102,4 C110,1.5 114,3 118,5"/>
+        </svg>
+      </span>
     </a>
     <a href="index.html" class="back-link">← Anasayfaya Dön</a>
   </div>
@@ -169,20 +180,16 @@
         <div class="field">
           <div class="radio-group">
             <label class="radio-opt">
-              <input type="radio" name="package" value="Başlangıç (799 TL)">
-              <div><div class="opt-title">Başlangıç <span class="opt-price">— 799 TL</span></div><div class="opt-desc">Hazır şablon, 1 galeri, geri sayım, 1 şarkı</div></div>
+              <input type="radio" name="package" value="Başlangıç (200 TL)">
+              <div><div class="opt-title">Başlangıç <span class="opt-price">— 200 TL</span></div><div class="opt-desc">Hazır şablon, 1 galeri, geri sayım, 1 şarkı</div></div>
             </label>
             <label class="radio-opt">
-              <input type="radio" name="package" value="Premium (1.299 TL)">
-              <div><div class="opt-title">Premium <span class="opt-price">— 1.299 TL</span></div><div class="opt-desc">Sınırsız revizyon, video arka plan seçeneği</div></div>
+              <input type="radio" name="package" value="İnteraktif (300 TL)">
+              <div><div class="opt-title">İnteraktif <span class="opt-price">— 300 TL</span></div><div class="opt-desc">Puzzle / Kazı Kazan / Hafıza Kartları — gerçek bir mekanik</div></div>
             </label>
             <label class="radio-opt">
-              <input type="radio" name="package" value="VIP (1.899 TL)">
-              <div><div class="opt-title">VIP <span class="opt-price">— 1.899 TL</span></div><div class="opt-desc">Öncelikli aynı gün teslim + sesli mesaj/animasyon</div></div>
-            </label>
-            <label class="radio-opt">
-              <input type="radio" name="package" value="Oyunlu (1.599–2.199 TL)">
-              <div><div class="opt-title">Oyunlu Şablon <span class="opt-price">— 1.599–2.199 TL</span></div><div class="opt-desc">Puzzle / Kazı Kazan / Hafıza Kartları</div></div>
+              <input type="radio" name="package" value="Özel Tasarım (500 TL)">
+              <div><div class="opt-title">Özel Tasarım <span class="opt-price">— 500 TL</span></div><div class="opt-desc">Sınırsız revizyon, öncelikli teslim, video arka plan/sesli mesaj</div></div>
             </label>
           </div>
         </div>
@@ -296,7 +303,7 @@
           <select id="urgency">
             <option>Standart (birkaç saat)</option>
             <option>24 saat içinde</option>
-            <option>Aynı gün / acil (VIP)</option>
+            <option>Aynı gün / acil (Özel Tasarım)</option>
           </select>
         </div>
         <div class="grid2">
@@ -343,7 +350,7 @@
    ============================================================ */
 const BUSINESS = {
   whatsapp: "905000000000",           // DEĞİŞTİR
-  email: "siparis@askinaozel.com"     // DEĞİŞTİR
+  email: "siparis@kalptesakli.com"    // DEĞİŞTİR
 };
 
 // Letter mode toggle
