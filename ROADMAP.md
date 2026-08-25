@@ -8,7 +8,7 @@ Teknik/veri modeli detayları ve sipariş alma & teslim süreci için
 
 - ✅ Tanıtım sitesi (`index.html`) — şablon kataloğu otomatik render ediliyor
 - ✅ Statik sipariş formu (`siparis-formu.html`) — backend yok, özet metin üretiyor
-- ✅ 17 teslim şablonu (`templates/`): 6 standart, 3 interaktif (yapboz, kazı
+- ✅ 18 teslim şablonu (`templates/`): 7 standart, 3 interaktif (yapboz, kazı
   kazan, hafıza kartları), + doğum günü, arkadaşlık, evlilik teklifi,
   teşekkür/özür, aile günü, mezuniyet, bebek duyurusu, evcil hayvan anısı,
   yeni iş/terfi

@@ -2,7 +2,7 @@
 
 Bu depo, "Aşkına Özel" kişiye özel sürpriz web sayfası hizmetinin tüm statik
 kodunu barındırır: tanıtım sitesi, sipariş formu ve müşteriye teslim edilen
-17 şablon. Bu dosya hem teknik/veri modeli tarafını hem de sipariş alma &
+18 şablon. Bu dosya hem teknik/veri modeli tarafını hem de sipariş alma &
 teslim sürecini anlatır. Genel yönü ve gelecek adımlar için
 [ROADMAP.md](ROADMAP.md) dosyasına bak.
 
@@ -20,6 +20,7 @@ templates/
   zeytin-dali.html         → Standart — Adaçayı yeşili/toprak
   onyx-zarafet.html        → Standart — Siyah/şampanya altını
   seftali-tul.html         → Standart — Açık şeftali/pudra (açık tema)
+  altin-saat.html          → Standart — Sinematik altın/siyah, plak çalar & fotoğraflı anı zaman çizelgesi
   puzzle-aski.html         → İnteraktif — 3x3 sürgülü yapboz
   kazi-kazan-surprizi.html → İnteraktif — Kazınabilir kart
   hafiza-kartlari.html     → İnteraktif — Hafıza/eşleştirme oyunu
@@ -49,6 +50,7 @@ ya da bir barındırma servisine sürükle-bırak ile yüklenebilir.
 | **Zeytin Dalı** | Adaçayı yeşili/toprak, sakin & doğal | Sade zevkli, "doğal" estetik isteyen çiftler |
 | **Onyx Zarafet** | Siyah/şampanya altını, modern & lüks | Şık, minimal, "gösterişsiz lüks" isteyen çiftler |
 | **Şeftali Tül** | Açık şeftali/pudra, masalsı & hayalperest | Genç, tatlı, "masal" temalı ilişkiler |
+| **Altın Saat** | Sinematik siyah/altın, sıcak & nostaljik | Plak çalar ve fotoğraflı "ilk"ler zaman çizelgesi isteyen, sinematik/vintage estetik seven çiftler |
 
 ### Romantik Olmayan Şablonlar (Doğum Günü / Arkadaşlık / Diğer)
 
@@ -132,6 +134,7 @@ uyumludur:
 
 | Şablon | Ek alan | Açıklama |
 |---|---|---|
+| Altın Saat | `memories` | "İlk"lerinizden 3-5 tanesi: `{date, title, photo}` dizisi (küçük fotoğraf + başlık + tarih, plak çalar bölümünün üstünde ayrı bir zaman çizelgesi olarak gösterilir) |
 | Puzzle Aşkı | `PUZZLE_IMAGE` | Yapbozda kullanılacak **kare** (1:1) fotoğraf |
 | Kazı Kazan Sürprizi | `scratchImage`, `scratchMessage` | Kartın altından çıkacak görsel ve kısa mesaj |
 | Hafıza Kartları | `SYMBOLS` | 6 elemanlı emoji/sembol dizisi (12 karta çoğaltılır) |
@@ -160,7 +163,7 @@ kullanılmaz, ton her zaman sakin ve tesellı edici tutulmalıdır.
 
 Müşteriden şunları iste (form ya da DM üzerinden):
 
-1. **Hangi şablon** istiyor (17 şablondan biri, ya da "sen seç" derse ilişki
+1. **Hangi şablon** istiyor (18 şablondan biri, ya da "sen seç" derse ilişki
    tanımına göre öner — sevgili için romantik şablonlardan biri, arkadaş için
    "Arkadaşıma Özel", doğum günü için "Doğum Günü Şöleni")
 2. **İlişki tipi** (sevgili / arkadaş / aile — mektubun dilini belirler:
