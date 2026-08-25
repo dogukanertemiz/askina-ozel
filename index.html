@@ -168,11 +168,10 @@
   /* Gallery */
   .filter-note{text-align:center; color:var(--ink-dim); font-size:.92rem; margin-bottom:36px}
   .gallery-grid{display:grid; grid-template-columns:1fr; gap:20px}
-  .tpl-card{background:var(--white); border:1px solid var(--line-light); border-radius:18px; overflow:hidden; display:flex; flex-direction:column; box-shadow:var(--shadow-sm); transition:.3s}
+  .tpl-card{background:var(--white); color:var(--ink); border:1px solid var(--line-light); border-radius:18px; overflow:hidden; display:flex; flex-direction:column; box-shadow:var(--shadow-sm); transition:.3s}
   .tpl-card:hover{transform:translateY(-4px); box-shadow:var(--shadow-lg)}
   .tpl-swatch{height:112px; position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden}
-  .tpl-swatch::after{content:''; position:absolute; inset:0; background:linear-gradient(to bottom, rgba(0,0,0,.12), rgba(0,0,0,.6))}
-  .tpl-swatch span{position:relative; z-index:1; font-family:'Playfair Display',serif; font-style:italic; font-size:1.25rem; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,.65); text-align:center; padding:0 14px}
+  .tpl-swatch span{position:relative; z-index:1; font-family:'Playfair Display',serif; font-style:italic; font-weight:600; font-size:1.05rem; color:var(--cream); text-align:center; background:var(--bordo-deep); border:1.5px solid rgba(248,240,235,.3); padding:8px 18px; border-radius:999px; max-width:calc(100% - 28px); box-shadow:0 6px 18px rgba(0,0,0,.4)}
   .tpl-body{padding:22px 22px 24px; flex:1; display:flex; flex-direction:column}
   .tpl-tag{display:inline-block; font-size:.66rem; letter-spacing:.1em; text-transform:uppercase; font-weight:700; padding:4px 11px; border-radius:20px; margin-bottom:12px; align-self:flex-start; border:1px solid transparent}
   .tpl-tag.std{color:var(--bordo); background:var(--powder)}
@@ -180,7 +179,7 @@
   .tpl-tag.birthday{color:var(--bordo); background:var(--pink)}
   .tpl-tag.friend{color:var(--bordo); background:var(--white); border-color:var(--bordo)}
   .tpl-tag.other{color:var(--bordo); background:var(--cream); border-color:var(--powder)}
-  .tpl-body h3{font-size:1.22rem; margin-bottom:8px; font-weight:600; font-family:'Playfair Display',serif}
+  .tpl-body h3{font-size:1.22rem; margin-bottom:8px; font-weight:600; font-family:'Playfair Display',serif; color:var(--ink)}
   .tpl-body p{color:var(--ink-dim); font-size:.9rem; line-height:1.5; margin-bottom:18px; flex:1}
   .tpl-preview{align-self:flex-start; font-size:.82rem; font-weight:600; letter-spacing:.03em; color:var(--bordo); border-bottom:1px solid var(--bordo); padding-bottom:2px}
 
