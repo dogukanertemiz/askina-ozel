@@ -8,6 +8,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700&family=Dancing+Script:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- DEĞİŞTİR: Supabase istemci kütüphanesi — projedeki "yalnızca Google Fonts harici bağımlı" kuralının
+     gerçek dosya yükleme ve sipariş kaydı için ikinci bilinçli istisnasıdır (bkz. CLAUDE.md). -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
   :root{
     --bordo:#2A0D10; --wine:#3A1116; --bordo-deep:#1c070a;
@@ -74,6 +77,19 @@
   ::placeholder{color:var(--ink-dim); opacity:.65}
   .hint{color:var(--ink-dim); font-size:.85rem; margin-top:6px; line-height:1.5}
 
+  .upload-zone{border:2px dashed var(--line-light); border-radius:14px; padding:30px 20px; text-align:center; cursor:pointer; transition:.2s; background:var(--cream)}
+  .upload-zone:hover, .upload-zone.dragover{border-color:var(--bordo); background:var(--pink)}
+  .upload-icon{font-size:1.7rem; margin-bottom:8px}
+  .upload-text{color:var(--ink-dim); font-size:.9rem}
+  .upload-link{color:var(--bordo); font-weight:600; text-decoration:underline}
+  .upload-previews{display:grid; grid-template-columns:repeat(auto-fill,minmax(80px,1fr)); gap:10px; margin-top:14px}
+  .upload-thumb{position:relative; aspect-ratio:1; border-radius:10px; overflow:hidden; background:var(--line-light)}
+  .upload-thumb img{width:100%; height:100%; object-fit:cover; display:block}
+  .upload-thumb .remove-btn{position:absolute; top:4px; right:4px; width:20px; height:20px; border-radius:50%; background:rgba(23,6,8,.7); color:#fff; font-size:.8rem; line-height:1; display:flex; align-items:center; justify-content:center; cursor:pointer; border:none; padding:0}
+  .save-status{font-size:.85rem; color:var(--ink-dim); margin-top:10px; display:none}
+  .save-status.ok{color:#2f6b3a}
+  .save-status.err{color:var(--danger)}
+
   .grid2{display:grid; grid-template-columns:1fr 1fr; gap:18px}
   .radio-group{display:flex; flex-direction:column; gap:10px}
   .radio-opt{display:flex; align-items:flex-start; gap:12px; background:var(--cream); border:1px solid var(--line-light); border-radius:14px; padding:14px 16px; cursor:pointer; transition:.2s}
@@ -138,7 +154,7 @@
     </div>
 
     <div class="progress-track" aria-hidden="true">
-      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
     </div>
 
     <form id="orderForm" novalidate>
@@ -150,26 +166,26 @@
           <label for="template">Hangi şablonu istiyorsun? <span class="req">*</span></label>
           <select id="template" required>
             <option value="">Seçiniz...</option>
-            <option>Tutkulu Gül — Bordo/altın, iddialı & romantik</option>
-            <option>Mavi Rüya — Pastel lacivert/lavanta, hayalperest</option>
-            <option>Bal Sarısı — Sıcak turuncu/şeftali, samimi</option>
-            <option>Zeytin Dalı — Adaçayı yeşili/toprak, sakin & doğal</option>
-            <option>Onyx Zarafet — Siyah/şampanya altını, modern & lüks</option>
-            <option>Şeftali Tül — Açık şeftali/pudra, masalsı & hayalperest</option>
-            <option>Altın Saat — Sinematik altın tonları, plak çalar & fotoğraflı anı zaman çizelgesi</option>
-            <option>Puzzle Aşkı (İnteraktif) — Yapboz çözünce mektup açılır</option>
-            <option>Kazı Kazan Sürprizi (İnteraktif) — Kazıyınca mesaj çıkar</option>
-            <option>Hafıza Kartları (İnteraktif) — Eşleştirince mektup açılır</option>
-            <option>Doğum Günü Şöleni — Üflenebilir pasta, konfeti, dilek duvarı</option>
-            <option>Arkadaşıma Özel — Samimi, arkadaşça dille "iyi ki varsın" sayfası</option>
-            <option>Evlilik Teklifi — Yüzük kutusu, kaçan "Hayır" butonu, zaman çizelgesi</option>
-            <option>Teşekkür & Özür — İçten, sade bir dille (romantik olmak zorunda değil)</option>
-            <option>Aile Günü — Anneler/Babalar Günü için</option>
-            <option>Mezuniyet — Diplomayı sürükle-bırak, başarı yolculuğu</option>
-            <option>Bebek Duyurusu — Balonu şişir & patlat, hamilelik/doğum haberi</option>
-            <option>Evcil Hayvan Anısı — Sakin, teselli edici bir anı sayfası</option>
-            <option>Yeni İş / Terfi — Kariyer merdiveni tırmanma, terfi kutlaması</option>
-            <option>Siz önerin</option>
+            <option value="tutkulu-gul">Tutkulu Gül — Bordo/altın, iddialı & romantik</option>
+            <option value="mavi-ruya">Mavi Rüya — Pastel lacivert/lavanta, hayalperest</option>
+            <option value="bal-sarisi">Bal Sarısı — Sıcak turuncu/şeftali, samimi</option>
+            <option value="zeytin-dali">Zeytin Dalı — Adaçayı yeşili/toprak, sakin & doğal</option>
+            <option value="onyx-zarafet">Onyx Zarafet — Siyah/şampanya altını, modern & lüks</option>
+            <option value="seftali-tul">Şeftali Tül — Açık şeftali/pudra, masalsı & hayalperest</option>
+            <option value="altin-saat">Altın Saat — Sinematik altın tonları, plak çalar & fotoğraflı anı zaman çizelgesi</option>
+            <option value="puzzle-aski">Puzzle Aşkı (İnteraktif) — Yapboz çözünce mektup açılır</option>
+            <option value="kazi-kazan-surprizi">Kazı Kazan Sürprizi (İnteraktif) — Kazıyınca mesaj çıkar</option>
+            <option value="hafiza-kartlari">Hafıza Kartları (İnteraktif) — Eşleştirince mektup açılır</option>
+            <option value="dogum-gunu-solen">Doğum Günü Şöleni — Üflenebilir pasta, konfeti, dilek duvarı</option>
+            <option value="arkadasima-ozel">Arkadaşıma Özel — Samimi, arkadaşça dille "iyi ki varsın" sayfası</option>
+            <option value="evlilik-teklifi">Evlilik Teklifi — Yüzük kutusu, kaçan "Hayır" butonu, zaman çizelgesi</option>
+            <option value="tesekkur-ozur">Teşekkür & Özür — İçten, sade bir dille (romantik olmak zorunda değil)</option>
+            <option value="aile-gunu">Aile Günü — Anneler/Babalar Günü için</option>
+            <option value="mezuniyet">Mezuniyet — Diplomayı sürükle-bırak, başarı yolculuğu</option>
+            <option value="bebek-duyurusu">Bebek Duyurusu — Balonu şişir & patlat, hamilelik/doğum haberi</option>
+            <option value="evcil-hayvan-anisi">Evcil Hayvan Anısı — Sakin, teselli edici bir anı sayfası</option>
+            <option value="yeni-is-terfi">Yeni İş / Terfi — Kariyer merdiveni tırmanma, terfi kutlaması</option>
+            <option value="siz-onerin">Siz önerin</option>
           </select>
         </div>
       </div>
@@ -180,16 +196,16 @@
         <div class="field">
           <div class="radio-group">
             <label class="radio-opt">
-              <input type="radio" name="package" value="Başlangıç (200 TL)">
+              <input type="radio" name="package" value="Başlangıç (200 TL)" data-price="200">
               <div><div class="opt-title">Başlangıç <span class="opt-price">— 200 TL</span></div><div class="opt-desc">Hazır şablon, 1 galeri, geri sayım, 1 şarkı</div></div>
             </label>
             <label class="radio-opt">
-              <input type="radio" name="package" value="İnteraktif (300 TL)">
+              <input type="radio" name="package" value="İnteraktif (300 TL)" data-price="300">
               <div><div class="opt-title">İnteraktif <span class="opt-price">— 300 TL</span></div><div class="opt-desc">Puzzle / Kazı Kazan / Hafıza Kartları — gerçek bir mekanik</div></div>
             </label>
             <label class="radio-opt">
-              <input type="radio" name="package" value="Özel Tasarım (500 TL)">
-              <div><div class="opt-title">Özel Tasarım <span class="opt-price">— 500 TL</span></div><div class="opt-desc">Sınırsız revizyon, öncelikli teslim, video arka plan/sesli mesaj</div></div>
+              <input type="radio" name="package" value="Özel Tasarım (500 TL)" data-price="500">
+              <div><div class="opt-title">Özel Tasarım <span class="opt-price">— 500 TL</span></div><div class="opt-desc">Sınırsız revizyon, öncelikli teslim</div></div>
             </label>
           </div>
         </div>
@@ -222,11 +238,21 @@
 
       <div class="card">
         <h2><span class="step-badge">4</span>Fotoğraflar</h2>
-        <div class="step-note">Bu form fotoğraf yüklemez — 3-5 fotoğrafı sipariş özetiyle birlikte
-        WhatsApp veya e-posta üzerinden ayrıca gönder.</div>
+        <div class="step-note">3-5 fotoğrafını doğrudan buradan yükleyebilirsin. Bazı şablonlar
+        (Puzzle Aşkı, Kazı Kazan Sürprizi, Altın Saat gibi) ek bir fotoğraf ister — detayını
+        aşağıdaki "Şablona Özel Bilgiler" bölümünde göreceksin.</div>
+        <div class="field">
+          <label>Fotoğraflarını yükle</label>
+          <div class="upload-zone" id="uploadZone">
+            <input type="file" id="photoInput" accept="image/*" multiple hidden>
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">Fotoğrafları buraya sürükle-bırak ya da <span class="upload-link">dosya seç</span></div>
+          </div>
+          <div class="upload-previews" id="uploadPreviews"></div>
+        </div>
         <div class="field">
           <label for="photoNote">Fotoğraflar hakkında not (opsiyonel)</label>
-          <textarea id="photoNote" placeholder="Örn. 4 fotoğraf göndereceğim, en sevdiğim ikimizin plajdaki fotoğrafı kapak olsun."></textarea>
+          <textarea id="photoNote" placeholder="Örn. En sevdiğim ikimizin plajdaki fotoğrafı kapak olsun."></textarea>
         </div>
       </div>
 
@@ -281,23 +307,30 @@
       </div>
 
       <div class="card">
-        <h2><span class="step-badge">7</span>Şablona Özel Ek Bilgiler <span style="color:var(--ink-dim); font-size:.82rem; font-weight:400;">(opsiyonel)</span></h2>
-        <div class="step-note">
-          Seçtiğin şablona göre doldur — diğerleri boş kalabilir:<br>
-          • <strong>Doğum Günü Şöleni / Bebek Duyurusu:</strong> dilek duvarı için her satıra "İsim: Mesaj"<br>
-          • <strong>Evlilik Teklifi:</strong> ilişki zaman çizelgesi için her satıra "Başlık: Açıklama" (örn. "İlk Tanıştığımız Gün: ...")<br>
-          • <strong>Teşekkür & Özür:</strong> nedenler için her satıra bir madde, ayrıca özür mü teşekkür mü olduğunu belirt<br>
-          • <strong>Aile Günü:</strong> anne mi baba mı olduğunu belirt<br>
-          • <strong>Mezuniyet / Yeni İş-Terfi:</strong> tebrik mesajları için "İsim: Mesaj", varsa yolculuk/kariyer zaman çizelgesi için "Başlık: Açıklama"<br>
-          • <strong>Evcil Hayvan Anısı:</strong> birlikte geçirilen süre (örn. "7 Yıl")
-        </div>
-        <div class="field">
-          <textarea id="wishes" placeholder="Ailen: Nice yaşlara!&#10;En yakın arkadaşın: İyi ki varsın!&#10;— ya da —&#10;İlk Tanıştığımız Gün: ...&#10;— ya da —&#10;Özür: Çünkü seni üzdüm ve bunu telafi etmek istiyorum."></textarea>
+        <h2><span class="step-badge">7</span>Ekstra Dokunuşlar <span style="color:var(--ink-dim); font-size:.82rem; font-weight:400;">(opsiyonel)</span></h2>
+        <div class="step-note">Bunlar her şablonda kullanılabilir — hiçbirini doldurmazsan sayfa normal haliyle teslim edilir.</div>
+
+        <div class="grid2">
+          <div class="field">
+            <label for="capsuleDate">Anı kutusu — açılış tarihi</label>
+            <input type="date" id="capsuleDate">
+            <div class="hint">Bu tarihte sayfada gizli bir mesaj otomatik açılır.</div>
+          </div>
+          <div class="field">
+            <label for="capsuleMessage">Anı kutusu — mesajı</label>
+            <input type="text" id="capsuleMessage" placeholder="O gün açılacak kısa mesaj">
+          </div>
         </div>
       </div>
 
       <div class="card">
-        <h2><span class="step-badge">8</span>Teslim & İletişim</h2>
+        <h2><span class="step-badge">8</span>Şablona Özel Bilgiler <span style="color:var(--ink-dim); font-size:.82rem; font-weight:400;">(opsiyonel)</span></h2>
+        <div class="step-note" id="templateExtraNote">1. adımda bir şablon seçtiğinde, o şablona özel sorular burada otomatik görünecek.</div>
+        <div id="templateExtraFields"></div>
+      </div>
+
+      <div class="card">
+        <h2><span class="step-badge">9</span>Teslim & İletişim</h2>
         <div class="field">
           <label for="urgency">Teslim aciliyeti</label>
           <select id="urgency">
@@ -323,8 +356,9 @@
       </div>
 
       <div class="submit-row">
-        <button type="submit" class="btn btn-dark">Özeti Oluştur ♡</button>
+        <button type="submit" class="btn btn-dark" id="submitBtn">Özeti Oluştur ♡</button>
         <div class="error-msg" id="errorMsg">Lütfen yıldızlı (*) alanları doldur.</div>
+        <div class="save-status" id="saveStatus"></div>
       </div>
     </form>
 
@@ -350,8 +384,71 @@
    ============================================================ */
 const BUSINESS = {
   whatsapp: "905000000000",           // DEĞİŞTİR
-  email: "siparis@kalptesakli.com"    // DEĞİŞTİR
+  email: "kalptesakli0@gmail.com"
 };
+
+/* ============================================================
+   Supabase — sipariş kaydı ve fotoğraf yükleme.
+   Bu anahtar herkese açık (anon) bir anahtardır, gizli değildir;
+   gerçek güvenlik Supabase tarafındaki Row Level Security (RLS)
+   kurallarıyla sağlanır (bkz. CLAUDE.md → Admin Paneli / Backend).
+   ============================================================ */
+const SUPABASE_URL = "https://xbugzmxcdjdnqikdoelb.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhidWd6bXhjZGpkbnFpa2RvZWxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxMTU2NzcsImV4cCI6MjEwMzY5MTY3N30.U_ezStZg_l3aExdYckfQZJbZSOptnEoK439vEL4ab2k";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+function makeId(){
+  if(window.crypto && crypto.randomUUID){ try { return crypto.randomUUID(); } catch(e){} }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random()*16|0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
+// Fotoğraf yükleme alanı
+let selectedPhotos = [];
+const uploadZone = document.getElementById('uploadZone');
+const photoInput = document.getElementById('photoInput');
+const uploadPreviews = document.getElementById('uploadPreviews');
+
+uploadZone.addEventListener('click', () => photoInput.click());
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  addPhotos(e.dataTransfer.files);
+});
+photoInput.addEventListener('change', () => { addPhotos(photoInput.files); photoInput.value = ''; });
+
+function addPhotos(fileList){
+  Array.from(fileList).forEach(file => {
+    if(!file.type.startsWith('image/')) return;
+    if(selectedPhotos.length >= 8) return;
+    selectedPhotos.push(file);
+  });
+  renderPreviews();
+}
+
+function renderPreviews(){
+  uploadPreviews.innerHTML = '';
+  selectedPhotos.forEach((file, i) => {
+    const div = document.createElement('div');
+    div.className = 'upload-thumb';
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(file);
+    img.alt = 'Yüklenen fotoğraf ' + (i + 1);
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'remove-btn';
+    removeBtn.setAttribute('aria-label', 'Kaldır');
+    removeBtn.textContent = '×';
+    removeBtn.addEventListener('click', () => { selectedPhotos.splice(i, 1); renderPreviews(); });
+    div.appendChild(img);
+    div.appendChild(removeBtn);
+    uploadPreviews.appendChild(div);
+  });
+}
 
 // Letter mode toggle
 document.querySelectorAll('.mode-btn').forEach(btn => {
@@ -363,7 +460,156 @@ document.querySelectorAll('.mode-btn').forEach(btn => {
   });
 });
 
-function val(id){ return document.getElementById(id).value.trim(); }
+function val(id){ const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+/* ============================================================
+   Şablona özel form alanları — 1. adımda seçilen şablona göre
+   "Şablona Özel Bilgiler" kartı otomatik değişir. Yeni bir şablon
+   eklediğinde (ve ekstra bir CONFIG alanı gerekiyorsa) buraya da
+   bir girdi ekle — bkz. CLAUDE.md'deki Veri Modeli tablosu.
+   ============================================================ */
+const TEMPLATE_EXTRAS = {
+  'puzzle-aski': {
+    note: 'Bu şablon, fotoğrafını 3x3 parçaya bölüp yapboz haline getiriyor — çözünce mektup açılır.',
+    fields: [
+      { id:'extraPuzzlePhoto', label:'Yapbozda kullanılacak fotoğraf notu', type:'text', placeholder:'KARE (1:1) oranlı bir fotoğraf olmalı — hangisini istediğini yaz, dosyayı ayrıca WhatsApp/e-posta ile gönder' }
+    ]
+  },
+  'kazi-kazan-surprizi': {
+    note: 'Kazınınca kartın altından bir görsel ve kısa bir mesaj çıkacak.',
+    fields: [
+      { id:'extraScratchMessage', label:'Kazınınca çıkacak kısa mesaj', type:'text', placeholder:'Örn. Seni Seviyorum! ♡' },
+      { id:'extraScratchPhoto', label:'Kazınınca çıkacak görsel notu', type:'text', placeholder:'Hangi fotoğraf/görsel olsun? Dosyayı ayrıca WhatsApp/e-posta ile gönder' }
+    ]
+  },
+  'hafiza-kartlari': {
+    note: 'Hafıza kartlarında varsayılan olarak aşk temalı emojiler kullanılır, istersen değiştirebiliriz.',
+    fields: [
+      { id:'extraSymbols', label:'Özel istediğin 6 sembol/emoji var mı? (opsiyonel)', type:'text', placeholder:'Örn. 🌹 ☕ ✈️ 🎵 🐶 💍' }
+    ]
+  },
+  'evlilik-teklifi': {
+    fields: [
+      { id:'extraMilestones', label:'İlişki zaman çizelgesi (her satıra "Başlık: Açıklama", 3-5 önemli an)', type:'textarea', placeholder:'İlk Tanıştığımız Gün: ...\nİlk Tatilimiz: ...\nEve Taşındığımız Gün: ...' }
+    ]
+  },
+  'altin-saat': {
+    fields: [
+      { id:'extraMemories', label:'"İlk"leriniz (her satıra "Tarih | Başlık", 3-5 tane)', type:'textarea', placeholder:'14 Şubat 2024 | İlk Tanıştığımız Gün\n2 Mart 2024 | İlk Kahvemiz' },
+      { id:'extraMemoriesPhoto', label:'Bu anılara ait fotoğraflar notu', type:'text', placeholder:'Fotoğrafları ayrıca WhatsApp/e-posta ile gönder' }
+    ]
+  },
+  'dogum-gunu-solen': {
+    fields: [
+      { id:'extraAge', label:'Yaş (opsiyonel rozet)', type:'text', placeholder:'Örn. 25' },
+      { id:'extraWishes', label:'Dilek duvarı (opsiyonel, her satıra "İsim: Mesaj")', type:'textarea', placeholder:'Ailen: Nice yaşlara!\nEn yakın arkadaşın: İyi ki varsın!' }
+    ]
+  },
+  'bebek-duyurusu': {
+    fields: [
+      { id:'extraRevealType', name:'extraRevealType', label:'Durum', type:'radio', options:[{value:'bekliyoruz',label:'Bekliyoruz (geri sayım gösterilsin)'},{value:'dogdu',label:'Doğdu'}] },
+      { id:'extraRevealColor', name:'extraRevealColor', label:'Konfeti rengi', type:'radio', options:[{value:'pink',label:'Pembe (kız)'},{value:'blue',label:'Mavi (erkek)'},{value:'neutral',label:'Nötr'}] },
+      { id:'extraParentNames', label:'Anne-baba adları', type:'text', placeholder:'Örn. Ayşe & Mehmet' },
+      { id:'extraBabyName', label:'Bebek adı (varsa)', type:'text' },
+      { id:'extraWishes', label:'Dilek duvarı (opsiyonel)', type:'textarea' }
+    ]
+  },
+  'tesekkur-ozur': {
+    fields: [
+      { id:'extraPageType', name:'extraPageType', label:'Bu sayfa özür için mi, teşekkür için mi?', type:'radio', options:[{value:'ozur',label:'Özür'},{value:'tesekkur',label:'Teşekkür'}] },
+      { id:'extraReasons', label:'Nedenler (her satıra bir madde, 3-6 madde)', type:'textarea' }
+    ]
+  },
+  'aile-gunu': {
+    fields: [
+      { id:'extraPageType', name:'extraPageType', label:'Anne mi, baba mı?', type:'radio', options:[{value:'anne',label:'Anne'},{value:'baba',label:'Baba'}] },
+      { id:'extraReasons', label:'Senden öğrendiklerim (her satıra bir madde)', type:'textarea' },
+      { id:'extraFamilyWishes', label:'Aile mesaj duvarı (opsiyonel, "İsim: Mesaj")', type:'textarea' }
+    ]
+  },
+  'mezuniyet': {
+    fields: [
+      { id:'extraDegree', label:'Bölüm/derece (opsiyonel rozet)', type:'text', placeholder:'Örn. Bilgisayar Mühendisliği' },
+      { id:'extraMilestones', label:'Başarı yolculuğu (opsiyonel, "Başlık: Açıklama")', type:'textarea' },
+      { id:'extraWishes', label:'Tebrik duvarı (opsiyonel, "İsim: Mesaj")', type:'textarea' }
+    ]
+  },
+  'yeni-is-terfi': {
+    fields: [
+      { id:'extraRole', label:'Unvan (opsiyonel rozet)', type:'text', placeholder:'Örn. Kıdemli Yazılım Mühendisi' },
+      { id:'extraMilestones', label:'Kariyer zaman çizelgesi (opsiyonel)', type:'textarea' },
+      { id:'extraWishes', label:'Tebrik duvarı (opsiyonel)', type:'textarea' }
+    ]
+  },
+  'evcil-hayvan-anisi': {
+    fields: [
+      { id:'extraYearsTogether', label:'Birlikte geçirilen süre', type:'text', placeholder:'Örn. 7 Yıl' }
+    ]
+  }
+};
+
+function renderTemplateExtras(){
+  const slug = document.getElementById('template').value;
+  const wrap = document.getElementById('templateExtraFields');
+  const config = TEMPLATE_EXTRAS[slug];
+  wrap.innerHTML = '';
+
+  if(!slug){
+    wrap.innerHTML = '<div class="hint">Önce yukarıdan bir şablon seç — o şablona özel sorular burada görünecek.</div>';
+    return;
+  }
+  if(!config){
+    wrap.innerHTML = '<div class="hint">Bu şablon için ekstra bir bilgiye gerek yok — devam edebilirsin. 🎉</div>';
+    return;
+  }
+  if(config.note){
+    const noteEl = document.createElement('div');
+    noteEl.className = 'hint';
+    noteEl.style.marginBottom = '16px';
+    noteEl.textContent = config.note;
+    wrap.appendChild(noteEl);
+  }
+  config.fields.forEach(f => {
+    const fieldWrap = document.createElement('div');
+    fieldWrap.className = 'field';
+    if(f.type === 'radio'){
+      const opts = f.options.map(o => `
+        <label class="radio-opt">
+          <input type="radio" name="${f.name}" value="${o.value}">
+          <div class="opt-title">${o.label}</div>
+        </label>`).join('');
+      fieldWrap.innerHTML = `<label>${f.label}</label><div class="radio-group">${opts}</div>`;
+    } else if(f.type === 'textarea'){
+      fieldWrap.innerHTML = `<label for="${f.id}">${f.label}</label><textarea id="${f.id}" placeholder="${f.placeholder||''}"></textarea>`;
+    } else {
+      fieldWrap.innerHTML = `<label for="${f.id}">${f.label}</label><input type="text" id="${f.id}" placeholder="${f.placeholder||''}">`;
+    }
+    wrap.appendChild(fieldWrap);
+  });
+}
+
+function collectTemplateExtras(){
+  const slug = document.getElementById('template').value;
+  const config = TEMPLATE_EXTRAS[slug];
+  if(!config) return '';
+  const lines = [];
+  config.fields.forEach(f => {
+    if(f.type === 'radio'){
+      const checked = document.querySelector(`input[name="${f.name}"]:checked`);
+      if(checked){
+        const opt = f.options.find(o => o.value === checked.value);
+        lines.push(`${f.label}: ${opt ? opt.label : checked.value}`);
+      }
+    } else {
+      const v = val(f.id);
+      if(v) lines.push(`${f.label}: ${v}`);
+    }
+  });
+  return lines.join('\n');
+}
+
+document.getElementById('template').addEventListener('change', renderTemplateExtras);
+renderTemplateExtras();
 
 function formatDate(iso){
   if(!iso) return '';
@@ -371,10 +617,12 @@ function formatDate(iso){
   return d.toLocaleDateString('tr-TR', {day:'numeric', month:'long', year:'numeric'});
 }
 
-document.getElementById('orderForm').addEventListener('submit', function(e){
+document.getElementById('orderForm').addEventListener('submit', async function(e){
   e.preventDefault();
 
-  const template = val('template');
+  const templateSelect = document.getElementById('template');
+  const templateSlug = templateSelect.value;
+  const template = templateSelect.value ? templateSelect.options[templateSelect.selectedIndex].text : '';
   const partnerName = val('partnerName');
   const senderName = val('senderName');
   const confirmed = document.getElementById('confirmCheck').checked;
@@ -406,7 +654,7 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
 
   const songLine = [val('songName'), val('songArtist')].filter(Boolean).join(' - ') || 'Belirtilmedi';
   const spotify = val('spotifyLink');
-  const wishesRaw = val('wishes');
+  const templateExtrasRaw = collectTemplateExtras();
 
   const lines = [
     `${template} ile sipariş`,
@@ -423,8 +671,16 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
     `Şarkı: ${songLine}${spotify ? ' | Spotify: ' + spotify : ''}`,
   ];
 
-  if(wishesRaw){
-    lines.push(``, `Şablona özel ek bilgiler:`, wishesRaw);
+  const extraTouches = [];
+  if(val('capsuleDate') || val('capsuleMessage')){
+    extraTouches.push(`Anı kutusu: ${formatDate(val('capsuleDate')) || 'Tarih belirtilmedi'} — "${val('capsuleMessage') || 'Mesaj belirtilmedi'}"`);
+  }
+  if(extraTouches.length){
+    lines.push(``, `Ekstra dokunuşlar:`, extraTouches.join('\n'));
+  }
+
+  if(templateExtrasRaw){
+    lines.push(``, `Şablona özel bilgiler:`, templateExtrasRaw);
   }
 
   lines.push(
@@ -441,7 +697,68 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
 
   document.getElementById('resultCard').classList.add('show');
   document.getElementById('resultCard').scrollIntoView({behavior:'smooth', block:'start'});
+
+  const packagePrice = packageEl ? Number(packageEl.dataset.price || 0) : null;
+  await saveOrderToDatabase({
+    templateSlug, template, packageVal, packagePrice, partnerName, senderName,
+    letterBlock, songLine, spotify, templateExtrasRaw
+  });
 });
+
+async function saveOrderToDatabase(data){
+  const statusEl = document.getElementById('saveStatus');
+  const submitBtn = document.getElementById('submitBtn');
+  statusEl.className = 'save-status';
+  statusEl.style.display = 'block';
+  statusEl.textContent = 'Kaydediliyor...';
+  submitBtn.disabled = true;
+
+  try {
+    const orderId = makeId();
+    const photoPaths = [];
+    for(const file of selectedPhotos){
+      const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+      const path = `${orderId}/${Date.now()}-${safeName}`;
+      const { error: upErr } = await sb.storage.from('order-photos').upload(path, file);
+      if(upErr) throw upErr;
+      photoPaths.push(path);
+    }
+
+    const { error: rpcErr } = await sb.rpc('create_order', {
+      order_data: {
+        template: data.templateSlug || data.template,
+        package: data.packageVal,
+        package_price: data.packagePrice,
+        partner_name: data.partnerName,
+        sender_name: data.senderName,
+        special_date: val('specialDate') || null,
+        special_date_label: val('specialDateLabel') || null,
+        letter: data.letterBlock,
+        song_name: val('songName') || null,
+        song_artist: val('songArtist') || null,
+        spotify_link: data.spotify || null,
+        photo_urls: photoPaths,
+        photo_note: val('photoNote') || null,
+        template_extra: data.templateExtrasRaw ? { raw: data.templateExtrasRaw } : null,
+        capsule_date: val('capsuleDate') || null,
+        capsule_message: val('capsuleMessage') || null,
+        urgency: val('urgency') || document.getElementById('urgency').value,
+        contact_phone: val('contactPhone') || null,
+        contact_email: val('contactEmail') || null
+      }
+    });
+    if(rpcErr) throw rpcErr;
+
+    statusEl.classList.add('ok');
+    statusEl.textContent = 'Sipariş kaydedildi ✓ (admin panelinde görünecek)';
+  } catch(err){
+    console.error('Sipariş kaydı hatası:', err);
+    statusEl.classList.add('err');
+    statusEl.textContent = 'Not: Bilgiler admin paneline kaydedilemedi, ama özet metni ve WhatsApp/e-posta linkin hazır — yine de gönderebilirsin.';
+  } finally {
+    submitBtn.disabled = false;
+  }
+}
 
 document.getElementById('copyBtn').addEventListener('click', async () => {
   const text = document.getElementById('summaryOutput').value;

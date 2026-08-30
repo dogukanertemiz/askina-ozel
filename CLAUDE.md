@@ -2,7 +2,7 @@
 
 Bu depo, "Kalpte Saklı" kişiye özel sürpriz web sayfası hizmetinin tüm statik
 kodunu barındırır: tanıtım sitesi, sipariş formu ve müşteriye teslim edilen
-18 şablon. Bu dosya hem teknik/veri modeli tarafını hem de sipariş alma &
+19 şablon. Bu dosya hem teknik/veri modeli tarafını hem de sipariş alma &
 teslim sürecini anlatır. Genel yönü ve gelecek adımlar için
 [ROADMAP.md](ROADMAP.md) dosyasına bak.
 
@@ -129,6 +129,26 @@ uyumludur:
 | `songName` | string | Şarkı adı |
 | `songArtist` | string | Sanatçı adı |
 | `spotifyEmbedUrl` | string (opsiyonel) | `open.spotify.com/embed/track/...` linki |
+| `timeCapsuleDate` | ISO datetime (opsiyonel) | Bu tarih gelince `timeCapsuleMessage` otomatik açılır ("anı kutusu") |
+| `timeCapsuleMessage` | string (opsiyonel) | `timeCapsuleDate` ile birlikte kullanılan, o tarihte ortaya çıkan gizli mesaj |
+
+Bu iki alan **tüm 19 şablonda ortak** olarak bulunur (standart, interaktif, dual-mode
+fark etmeksizin) — her şablonun footer'ından hemen önce bir kapsül alanı vardır.
+Ayrıca her şablonun footer'ının altında, sipariş formundan bağımsız, otomatik gelen
+iki özellik daha var: **ziyaret sayacı**
+("Bu sayfayı X. kez açıyorsun ♡", localStorage tabanlı, tarayıcıya özel) ve **"QR Kodu
+Göster" / "Linki Kopyala"** butonları (QR kodu `api.qrserver.com` üzerinden üretilir —
+projedeki "yalnızca Google Fonts harici bağımlı" kuralının bilinçli istisnalarından
+biridir — diğeri Supabase, bkz. aşağıdaki "Backend & Admin Paneli" bölümü — API
+anahtarı gerektirmez ve sayfa içeriğini üçüncü tarafa göndermez, sadece görsel
+üretimi için URL'yi kullanır).
+
+**Anı kutusu — ton uyumu:** Alan teknik olarak her şablonda çalışsa da,
+"gizli bir mesaj otomatik açılır" çerçevesi her şablonun tonuna uymayabilir.
+**Evcil Hayvan Anısı**'nda (bilinçli olarak sakin/tesellı edici, sürpriz
+mekaniği yok) ve **Teşekkür & Özür**'ün "özür" modunda bu alanı boş bırak —
+gecikmeli bir "sürpriz" o bağlamda yersiz kaçar. Diğer şablonlarda
+(özellikle romantik ve kutlama temalı olanlarda) rahatça kullanılabilir.
 
 İnteraktif şablonlarda ek alanlar:
 
@@ -163,7 +183,7 @@ kullanılmaz, ton her zaman sakin ve tesellı edici tutulmalıdır.
 
 Müşteriden şunları iste (form ya da DM üzerinden):
 
-1. **Hangi şablon** istiyor (18 şablondan biri, ya da "sen seç" derse ilişki
+1. **Hangi şablon** istiyor (19 şablondan biri, ya da "sen seç" derse ilişki
    tanımına göre öner — sevgili için romantik şablonlardan biri, arkadaş için
    "Arkadaşıma Özel", doğum günü için "Doğum Günü Şöleni")
 2. **İlişki tipi** (sevgili / arkadaş / aile — mektubun dilini belirler:
@@ -217,8 +237,9 @@ Müşteriden şunları iste (form ya da DM üzerinden):
   arasından biri; gerçek bir mekanik içerdiği ve kolayca kopyalanamadığı için
   Başlangıç'tan daha yüksek fiyatlandırılır; içerik pazarlamasında "bu sadece
   bir görsel değil, gerçek bir oyun" vurgusu öne çıkarılmalı
-- Özel Tasarım: 500 TL — sınırsız revizyon, öncelikli/aynı gün teslim, video
-  arka plan ya da sesli mesaj gibi ekstra özelleştirmeler
+- Özel Tasarım: 500 TL — sınırsız revizyon, öncelikli/aynı gün teslim
+- Anı kutusu (`timeCapsuleDate` / `timeCapsuleMessage`) ücretsizdir, tüm
+  paketlere dahildir.
 - **Doğum Günü Şöleni** ve **Arkadaşıma Özel**, standart Başlangıç/Özel Tasarım
   fiyatlandırmasına dahildir (Doğum Günü Şöleni'ndeki üflenebilir pasta ve
   konfeti efekti bonus bir dokunuş olarak sunulur, ayrı ücretlendirilmez)
@@ -229,19 +250,69 @@ Müşteriden şunları iste (form ya da DM üzerinden):
   `<script>` içinde) üzerinden otomatik render edilir. **Yeni bir şablon
   eklediğinde hem bu diziye hem de yukarıdaki Şablon Kataloğu tablolarına
   ekleme yapmayı unutma.**
-- `siparis-formu.html`: Backend'i yok — müşteri formu doldurunca, JS bir
-  özet metni üretir (yukarıdaki checklist ile birebir uyumlu format) ve
-  WhatsApp/e-posta linkleriyle gönderilmesini sağlar. `BUSINESS.whatsapp`
+- `siparis-formu.html`: Müşteri formu doldurunca, JS bir özet metni üretir
+  (yukarıdaki checklist ile birebir uyumlu format) ve WhatsApp/e-posta
+  linkleriyle gönderilmesini sağlar — bu akış hâlâ çalışıyor. `BUSINESS.whatsapp`
   ve `BUSINESS.email` değerlerini gerçek bilgilerle güncelle
   (`siparis-formu.html` dosyasının sonundaki `<script>` bloğunda,
   `DEĞİŞTİR:` yorumuyla işaretli).
 - `index.html` footer'ındaki iletişim linkleri de aynı şekilde
   `DEĞİŞTİR:` yorumuyla işaretli placeholder'lardır.
 
+## Backend & Admin Paneli (Supabase)
+
+Proje artık tamamen statik değil — gerçek dosya yükleme ve kalıcı sipariş
+kaydı için **Supabase** (Postgres + Storage + Auth) kullanılıyor. Bu,
+"yalnızca Google Fonts harici bağımlı" kuralının bilinçli istisnasıdır
+(bkz. `@supabase/supabase-js` CDN script'i, `siparis-formu.html` ve
+`admin.html`'de).
+
+- **Proje**: `xbugzmxcdjdnqikdoelb` (Supabase org: "Kalpte Saklı", bölge:
+  eu-central-1). Panel: `https://supabase.com/dashboard/project/xbugzmxcdjdnqikdoelb`
+- **`orders` tablosu** — her sipariş bir satır: şablon, paket, fiyat, kişi
+  bilgileri, mektup, fotoğraf yolları, şablona özel bilgiler (jsonb), anı
+  kutusu, iletişim, `status` (yeni/hazırlanıyor/teslim edildi), `paid`
+  (ödendi mi — **elle işaretlenir**, gerçek bir ödeme entegrasyonu şu an
+  yok), `admin_note` (dahili not).
+- **`order-photos` storage bucket'ı** — private (public değil); her
+  siparişin fotoğrafları `{orderId}/{dosyaAdı}` yolunda saklanır.
+- **Güvenlik (RLS)**: `orders` tablosuna herkes INSERT yapabilir (sipariş
+  formu), ama **sadece giriş yapmış (authenticated) kullanıcı** SELECT/UPDATE
+  yapabilir — yani siparişleri ve ciroyu sadece admin panelinden giriş
+  yapan görebilir. Aynı mantık `order-photos` için de geçerli.
+  ⚠️ **Önemli platform notu**: Bu projede `orders` tablosuna doğrudan
+  `anon` rolüyle REST üzerinden INSERT denemesi, RLS politikası doğru
+  kurulmuş olsa bile PostgREST/gateway katmanında sebebi belirsiz şekilde
+  reddediliyordu (fotoğraf yüklemede bu sorun yok). Bu yüzden sipariş
+  oluşturma, `public.create_order(jsonb)` adlı bir **`SECURITY DEFINER`
+  RPC fonksiyonu** üzerinden yapılıyor — client `sb.rpc('create_order', ...)`
+  çağırıyor, tabloya doğrudan `insert()` çağırmıyor. Yeni bir alan eklersen
+  hem `orders` tablosuna hem bu RPC fonksiyonuna eklemen gerekir.
+- **Admin girişi**: E-posta + şifre (`admin.html`). Sadece önceden Supabase
+  Auth'ta oluşturulmuş tek bir kullanıcı (`kalptesakli0@gmail.com`) giriş
+  yapabilir; proje genelinde yeni kullanıcı kaydı kapalı
+  (`disable_signup: true`) — başka biri kayıt olmaya çalışsa bile hesap
+  oluşmaz. "Şifremi unuttum" linki Supabase'in e-posta servisi üzerinden bir
+  sıfırlama linki gönderir (bu servis ücretsiz katmanda yavaş/güvenilmez
+  olabilir — magic link girişinin ilk denemede terk edilme sebebi buydu).
+  Yeni bir admin eklemek/e-postayı ya da şifreyi değiştirmek için Supabase
+  panelinden Authentication → Users'a git.
+  - Yönetici erişimi olan anahtarlar (**access token**, **service_role
+    key**, **db şifresi**) hiçbir dosyada saklanmıyor — sadece kurulum
+    sırasında kullanıldı. Gerekirse Supabase panelinden yenilenebilir/iptal
+    edilebilir.
+- **Ciro**: Admin panelindeki "Toplam Ciro" rakamı, `paid = true` işaretli
+  siparişlerin `package_price` toplamıdır — gerçek bir ödeme ağ geçidine
+  bağlı değildir (ödeme hâlâ WhatsApp/elden alınıyor, admin panelinden elle
+  "Ödendi" işaretlenir). İleride iyzico gibi gerçek bir ödeme sağlayıcısı
+  bağlanırsa, bu alan otomatik güncellenecek şekilde değiştirilebilir.
+
 ## Tasarım Notları
 
-- Tüm sayfalar tek dosyalık, bağımsız HTML'dir (inline CSS/JS, sadece
-  Google Fonts harici bağımlıdır).
+- Tüm sayfalar tek dosyalık, bağımsız HTML'dir (inline CSS/JS). Harici
+  bağımlılıklar bilinçli olarak sınırlı tutulur: Google Fonts (tüm sayfalar),
+  `api.qrserver.com` (şablonlardaki QR kod butonu) ve Supabase JS istemcisi
+  (`siparis-formu.html` ve `admin.html` — bkz. yukarıdaki Backend bölümü).
 - Standart şablonlarda ortak yapı: zarf açma animasyonu → hero → geri
   sayım → galeri (lightbox'lı) → mektup (scroll'da beliren) → şarkı
   (Spotify embed opsiyonel) → imza → footer.

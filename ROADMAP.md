@@ -7,12 +7,16 @@ Teknik/veri modeli detayları ve sipariş alma & teslim süreci için
 ## Mevcut Durum (Ağustos 2026)
 
 - ✅ Tanıtım sitesi (`index.html`) — şablon kataloğu otomatik render ediliyor
-- ✅ Statik sipariş formu (`siparis-formu.html`) — backend yok, özet metin üretiyor
-- ✅ 18 teslim şablonu (`templates/`): 7 standart, 3 interaktif (yapboz, kazı
+- ✅ Statik sipariş formu (`siparis-formu.html`) — backend yok, özet metin üretiyor,
+  1. adımda seçilen şablona göre 8. adımdaki soru kartı otomatik değişiyor
+- ✅ 19 teslim şablonu (`templates/`): 7 standart, 3 interaktif (yapboz, kazı
   kazan, hafıza kartları), + doğum günü, arkadaşlık, evlilik teklifi,
   teşekkür/özür, aile günü, mezuniyet, bebek duyurusu, evcil hayvan anısı,
   yeni iş/terfi
-- ⚠️ Depo henüz Git ile izlenmiyor / GitHub'a bağlı değil
+- ✅ Tüm 19 şablonda ortak etkileşim katmanı: tarihe bağlı "anı kutusu",
+  ziyaret sayacı, QR kod/link paylaşım butonları (bkz. `CLAUDE.md` → Veri Modeli)
+- ✅ Repo GitHub'a bağlı (`dogukanertemiz/askina-ozel`), canlı site Vercel'de
+  yayında ve GitHub push'larında otomatik yeniden dağıtılıyor
 - ⚠️ İletişim bilgileri (`index.html` footer, `siparis-formu.html` içindeki
   `BUSINESS` nesnesi) hâlâ placeholder
 - ⚠️ Fotoğraflar `picsum.photos` placeholder — gerçek teslimlerde elle

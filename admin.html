@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Paneli — Kalpte Saklı</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700&family=Dancing+Script:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- DEĞİŞTİR: Supabase istemci kütüphanesi — bkz. siparis-formu.html'deki aynı not. -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+  :root{
+    --bordo:#2A0D10; --wine:#3A1116; --bordo-deep:#1c070a;
+    --cream:#F8F0EB; --powder:#E8C7C2; --pink:#F4DDD8; --white:#FFFFFF;
+    --ink:#2A0D10; --ink-dim:rgba(42,13,16,.6);
+    --line-light:rgba(42,13,16,.1);
+    --shadow-sm:0 14px 34px rgba(23,6,8,.10);
+    --shadow-lg:0 40px 90px rgba(23,6,8,.22);
+    --danger:#a83a30; --ok:#2f6b3a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'Inter',sans-serif; background:var(--cream); color:var(--ink);
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:'Playfair Display',serif}
+  a{color:var(--bordo)}
+  .wrap{max-width:1100px; margin:0 auto; padding:0 22px}
+
+  .nav{position:sticky; top:0; z-index:40; backdrop-filter:blur(10px); background:rgba(248,240,235,.9); border-bottom:1px solid var(--line-light)}
+  .nav .wrap{display:flex; align-items:center; justify-content:space-between; height:70px}
+  .logo{display:flex; align-items:center; gap:10px}
+  .logo-icon{position:relative; width:22px; height:19px; flex-shrink:0; margin-top:2px}
+  .logo-icon::before, .logo-icon::after{content:''; position:absolute; top:0; width:11px; height:18px; background:var(--bordo); border-radius:11px 11px 0 0}
+  .logo-icon::before{left:11px; transform:rotate(-45deg); transform-origin:0 100%}
+  .logo-icon::after{left:0; transform:rotate(45deg); transform-origin:100% 100%}
+  .logo-text{font-family:'Dancing Script',cursive; font-weight:700; font-size:1.6rem; color:var(--bordo)}
+  .logo-tag{font-size:.7rem; letter-spacing:.15em; text-transform:uppercase; color:var(--ink-dim); background:var(--pink); padding:3px 10px; border-radius:20px; margin-left:6px}
+  .btn{display:inline-flex; align-items:center; gap:8px; font-family:'Inter',sans-serif; font-weight:600; font-size:.88rem; padding:11px 22px; border-radius:999px; transition:.2s; cursor:pointer; border:1px solid transparent; white-space:nowrap}
+  .btn-dark{background:var(--bordo); color:var(--cream); border-color:var(--bordo)}
+  .btn-dark:hover{background:var(--bordo-deep)}
+  .btn-outline{background:transparent; color:var(--bordo); border-color:var(--bordo)}
+  .btn-outline:hover{background:var(--bordo); color:var(--cream)}
+  .btn:disabled{opacity:.5; cursor:not-allowed}
+
+  main{padding:48px 0 100px}
+
+  /* Login */
+  #loginView{max-width:420px; margin:80px auto 0}
+  .login-card{background:var(--white); border:1px solid var(--line-light); border-radius:20px; padding:40px 32px; box-shadow:var(--shadow-sm); text-align:center}
+  .login-card h1{font-size:1.6rem; margin-bottom:10px}
+  .login-card p{color:var(--ink-dim); font-size:.95rem; line-height:1.55; margin-bottom:24px}
+  .login-card input{width:100%; font-family:'Inter',sans-serif; font-size:.96rem; padding:12px 14px; border:1px solid var(--line-light); border-radius:12px; background:var(--cream); margin-bottom:14px; outline:none}
+  .login-card input:focus{border-color:var(--bordo)}
+  .login-msg{font-size:.88rem; margin-top:14px; display:none; line-height:1.5}
+  .login-msg.ok{color:var(--ok); display:block}
+  .login-msg.err{color:var(--danger); display:block}
+
+  /* Dashboard */
+  #dashView{display:none}
+  .dash-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:12px}
+  .dash-head h1{font-size:1.7rem}
+
+  .stats-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:32px}
+  .stat-card{background:var(--white); border:1px solid var(--line-light); border-radius:16px; padding:22px; box-shadow:var(--shadow-sm)}
+  .stat-card .stat-label{font-size:.78rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-dim); margin-bottom:8px}
+  .stat-card .stat-value{font-family:'Playfair Display',serif; font-size:1.9rem; font-weight:600}
+  .stat-card.featured{background:var(--bordo); border-color:var(--bordo)}
+  .stat-card.featured .stat-label{color:var(--powder)}
+  .stat-card.featured .stat-value{color:var(--cream)}
+
+  .filters{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px}
+  .filters select, .filters input{font-family:'Inter',sans-serif; font-size:.9rem; padding:9px 14px; border:1px solid var(--line-light); border-radius:10px; background:var(--white); outline:none}
+  .filters input{flex:1; min-width:180px}
+
+  .order-list{display:flex; flex-direction:column; gap:14px}
+  .order-card{background:var(--white); border:1px solid var(--line-light); border-radius:16px; box-shadow:var(--shadow-sm); overflow:hidden}
+  .order-summary{display:flex; align-items:center; gap:14px; padding:18px 20px; cursor:pointer; flex-wrap:wrap}
+  .order-summary .og-date{font-size:.78rem; color:var(--ink-dim); min-width:82px}
+  .order-summary .og-main{flex:1; min-width:160px}
+  .order-summary .og-partner{font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:600}
+  .order-summary .og-tpl{font-size:.82rem; color:var(--ink-dim)}
+  .badge{display:inline-block; font-size:.72rem; font-weight:700; letter-spacing:.03em; padding:4px 11px; border-radius:20px}
+  .badge-price{background:var(--pink); color:var(--bordo)}
+  .status-select{font-family:'Inter',sans-serif; font-size:.8rem; font-weight:600; padding:6px 10px; border-radius:20px; border:1px solid var(--line-light); background:var(--cream); cursor:pointer}
+  .paid-toggle{display:flex; align-items:center; gap:6px; font-size:.82rem; font-weight:600; cursor:pointer; user-select:none}
+  .paid-toggle input{width:16px; height:16px; accent-color:var(--ok); cursor:pointer}
+  .paid-toggle.is-paid{color:var(--ok)}
+  .paid-toggle.is-unpaid{color:var(--danger)}
+  .chevron{font-size:.8rem; color:var(--ink-dim); transition:.2s}
+  .order-card.open .chevron{transform:rotate(180deg)}
+
+  .order-detail{display:none; padding:0 20px 22px; border-top:1px solid var(--line-light)}
+  .order-card.open .order-detail{display:block}
+  .detail-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:18px}
+  .detail-field{margin-bottom:14px}
+  .detail-field .df-label{font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-dim); margin-bottom:4px}
+  .detail-field .df-value{font-size:.92rem; line-height:1.55; white-space:pre-wrap}
+  .photo-row{display:flex; gap:8px; flex-wrap:wrap; margin-top:6px}
+  .photo-row img{width:64px; height:64px; object-fit:cover; border-radius:10px; border:1px solid var(--line-light); cursor:pointer}
+  .admin-note-row{display:flex; gap:8px; margin-top:16px}
+  .admin-note-row input{flex:1; font-family:'Inter',sans-serif; font-size:.88rem; padding:9px 12px; border:1px solid var(--line-light); border-radius:10px; background:var(--cream)}
+
+  .empty-state{text-align:center; padding:60px 20px; color:var(--ink-dim)}
+  .loading{text-align:center; padding:60px 20px; color:var(--ink-dim)}
+
+  @media(max-width:640px){
+    .detail-grid{grid-template-columns:1fr}
+    .order-summary{gap:10px}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <div class="logo">
+      <span class="logo-icon" aria-hidden="true"></span>
+      <span class="logo-text">Kalpte Saklı</span>
+      <span class="logo-tag">Admin</span>
+    </div>
+    <button class="btn btn-outline" id="logoutBtn" style="display:none">Çıkış Yap</button>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+
+    <div id="loginView">
+      <div class="login-card">
+        <h1>Admin Girişi</h1>
+        <p>Sadece önceden yetkilendirilmiş hesap giriş yapabilir.</p>
+        <input type="email" id="loginEmail" placeholder="ornek@mail.com" autocomplete="email">
+        <input type="password" id="loginPassword" placeholder="Şifre" autocomplete="current-password">
+        <button class="btn btn-dark" id="loginBtn" style="width:100%; justify-content:center">Giriş Yap</button>
+        <div class="login-msg" id="loginMsg"></div>
+        <a href="#" id="forgotLink" style="display:block; margin-top:14px; font-size:.85rem; color:var(--ink-dim)">Şifremi unuttum</a>
+      </div>
+    </div>
+
+    <div id="dashView">
+      <div class="dash-head">
+        <h1>Siparişler</h1>
+      </div>
+
+      <div class="stats-grid" id="statsGrid"></div>
+
+      <div class="filters">
+        <input type="text" id="searchInput" placeholder="Partner adına göre ara...">
+        <select id="statusFilter">
+          <option value="">Tüm durumlar</option>
+          <option value="yeni">Yeni</option>
+          <option value="hazırlanıyor">Hazırlanıyor</option>
+          <option value="teslim edildi">Teslim edildi</option>
+        </select>
+        <select id="paidFilter">
+          <option value="">Ödeme (hepsi)</option>
+          <option value="paid">Ödendi</option>
+          <option value="unpaid">Bekliyor</option>
+        </select>
+      </div>
+
+      <div id="orderList" class="order-list"></div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+const SUPABASE_URL = "https://xbugzmxcdjdnqikdoelb.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhidWd6bXhjZGpkbnFpa2RvZWxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxMTU2NzcsImV4cCI6MjEwMzY5MTY3N30.U_ezStZg_l3aExdYckfQZJbZSOptnEoK439vEL4ab2k";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let allOrders = [];
+
+function formatDate(iso){
+  if(!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleDateString('tr-TR', {day:'numeric', month:'short', year:'numeric'});
+}
+function formatMoney(n){
+  if(n === null || n === undefined) return '—';
+  return Number(n).toLocaleString('tr-TR') + ' TL';
+}
+
+/* ---------- Auth ---------- */
+async function initAuth(){
+  const { data: { session } } = await sb.auth.getSession();
+  if(session){ showDashboard(); } else { showLogin(); }
+
+  sb.auth.onAuthStateChange((event, session) => {
+    if(session) showDashboard(); else showLogin();
+  });
+}
+
+function showLogin(){
+  document.getElementById('loginView').style.display = 'block';
+  document.getElementById('dashView').style.display = 'none';
+  document.getElementById('logoutBtn').style.display = 'none';
+}
+
+function showDashboard(){
+  document.getElementById('loginView').style.display = 'none';
+  document.getElementById('dashView').style.display = 'block';
+  document.getElementById('logoutBtn').style.display = 'inline-flex';
+  loadOrders();
+}
+
+document.getElementById('loginBtn').addEventListener('click', async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const msg = document.getElementById('loginMsg');
+  if(!email || !password){ msg.className = 'login-msg err'; msg.textContent = 'Lütfen e-posta ve şifreni gir.'; return; }
+  msg.className = 'login-msg'; msg.style.display = 'none';
+  document.getElementById('loginBtn').disabled = true;
+  try {
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if(error) throw error;
+    // showDashboard() onAuthStateChange üzerinden otomatik tetiklenir
+  } catch(err){
+    msg.className = 'login-msg err';
+    msg.textContent = 'Giriş başarısız: e-posta ya da şifre hatalı.';
+  } finally {
+    document.getElementById('loginBtn').disabled = false;
+  }
+});
+
+document.getElementById('forgotLink').addEventListener('click', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  const msg = document.getElementById('loginMsg');
+  if(!email){ msg.className = 'login-msg err'; msg.textContent = 'Şifre sıfırlama linki için önce e-posta adresini gir.'; return; }
+  try {
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.href.split('#')[0].split('?')[0]
+    });
+    if(error) throw error;
+    msg.className = 'login-msg ok';
+    msg.textContent = 'Şifre sıfırlama linki e-postana gönderildi (gelmesi biraz sürebilir, spam klasörünü de kontrol et).';
+  } catch(err){
+    msg.className = 'login-msg err';
+    msg.textContent = 'Bir şeyler ters gitti: ' + (err.message || 'bilinmeyen hata');
+  }
+});
+
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await sb.auth.signOut();
+  showLogin();
+});
+
+/* ---------- Orders ---------- */
+async function loadOrders(){
+  const listEl = document.getElementById('orderList');
+  listEl.innerHTML = '<div class="loading">Yükleniyor...</div>';
+  const { data, error } = await sb.from('orders').select('*').order('created_at', { ascending: false });
+  if(error){
+    listEl.innerHTML = '<div class="empty-state">Siparişler yüklenemedi: ' + error.message + '</div>';
+    return;
+  }
+  allOrders = data || [];
+  renderStats();
+  renderOrders();
+}
+
+function renderStats(){
+  const total = allOrders.length;
+  const paidOrders = allOrders.filter(o => o.paid);
+  const unpaidOrders = allOrders.filter(o => !o.paid);
+  const ciro = paidOrders.reduce((sum, o) => sum + (Number(o.package_price) || 0), 0);
+  const pending = unpaidOrders.reduce((sum, o) => sum + (Number(o.package_price) || 0), 0);
+
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card featured">
+      <div class="stat-label">Toplam Ciro (Ödenen)</div>
+      <div class="stat-value">${formatMoney(ciro)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Toplam Sipariş</div>
+      <div class="stat-value">${total}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Bekleyen Ödeme</div>
+      <div class="stat-value">${formatMoney(pending)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Ödenmemiş Sipariş</div>
+      <div class="stat-value">${unpaidOrders.length}</div>
+    </div>
+  `;
+}
+
+function getFilteredOrders(){
+  const search = document.getElementById('searchInput').value.trim().toLowerCase();
+  const status = document.getElementById('statusFilter').value;
+  const paid = document.getElementById('paidFilter').value;
+  return allOrders.filter(o => {
+    if(search && !(o.partner_name || '').toLowerCase().includes(search)) return false;
+    if(status && (o.status || 'yeni') !== status) return false;
+    if(paid === 'paid' && !o.paid) return false;
+    if(paid === 'unpaid' && o.paid) return false;
+    return true;
+  });
+}
+
+function renderOrders(){
+  const listEl = document.getElementById('orderList');
+  const orders = getFilteredOrders();
+  if(!orders.length){
+    listEl.innerHTML = '<div class="empty-state">Eşleşen sipariş yok.</div>';
+    return;
+  }
+  listEl.innerHTML = '';
+  orders.forEach(o => listEl.appendChild(buildOrderCard(o)));
+}
+
+function buildOrderCard(o){
+  const card = document.createElement('div');
+  card.className = 'order-card';
+
+  const summary = document.createElement('div');
+  summary.className = 'order-summary';
+  summary.innerHTML = `
+    <div class="og-date">${formatDate(o.created_at)}</div>
+    <div class="og-main">
+      <div class="og-partner">${escapeHtml(o.partner_name || 'İsimsiz')}</div>
+      <div class="og-tpl">${escapeHtml(o.template || '—')} · ${escapeHtml(o.package || '—')}</div>
+    </div>
+    <span class="badge badge-price">${formatMoney(o.package_price)}</span>
+    <label class="paid-toggle ${o.paid ? 'is-paid' : 'is-unpaid'}">
+      <input type="checkbox" ${o.paid ? 'checked' : ''} data-id="${o.id}" class="paid-checkbox">
+      ${o.paid ? 'Ödendi' : 'Bekliyor'}
+    </label>
+    <select class="status-select" data-id="${o.id}">
+      <option value="yeni" ${o.status === 'yeni' || !o.status ? 'selected' : ''}>Yeni</option>
+      <option value="hazırlanıyor" ${o.status === 'hazırlanıyor' ? 'selected' : ''}>Hazırlanıyor</option>
+      <option value="teslim edildi" ${o.status === 'teslim edildi' ? 'selected' : ''}>Teslim edildi</option>
+    </select>
+    <span class="chevron">▾</span>
+  `;
+  summary.addEventListener('click', (e) => {
+    if(e.target.closest('.paid-checkbox') || e.target.closest('.status-select')) return;
+    card.classList.toggle('open');
+    if(card.classList.contains('open') && !card.dataset.loaded){
+      card.dataset.loaded = '1';
+      loadOrderPhotos(o, card.querySelector('.photo-row'));
+    }
+  });
+
+  const paidCheckbox = summary.querySelector('.paid-checkbox');
+  paidCheckbox.addEventListener('click', e => e.stopPropagation());
+  paidCheckbox.addEventListener('change', async () => {
+    const label = paidCheckbox.closest('.paid-toggle');
+    await sb.from('orders').update({ paid: paidCheckbox.checked }).eq('id', o.id);
+    o.paid = paidCheckbox.checked;
+    label.classList.toggle('is-paid', o.paid);
+    label.classList.toggle('is-unpaid', !o.paid);
+    label.lastChild.textContent = o.paid ? 'Ödendi' : 'Bekliyor';
+    renderStats();
+  });
+
+  const statusSelect = summary.querySelector('.status-select');
+  statusSelect.addEventListener('click', e => e.stopPropagation());
+  statusSelect.addEventListener('change', async () => {
+    await sb.from('orders').update({ status: statusSelect.value }).eq('id', o.id);
+    o.status = statusSelect.value;
+  });
+
+  const detail = document.createElement('div');
+  detail.className = 'order-detail';
+  detail.innerHTML = `
+    <div class="detail-grid">
+      <div class="detail-field"><div class="df-label">Gönderen</div><div class="df-value">${escapeHtml(o.sender_name || '—')}</div></div>
+      <div class="detail-field"><div class="df-label">Özel Tarih</div><div class="df-value">${o.special_date ? formatDate(o.special_date) : '—'}${o.special_date_label ? ' (' + escapeHtml(o.special_date_label) + ')' : ''}</div></div>
+      <div class="detail-field"><div class="df-label">Şarkı</div><div class="df-value">${escapeHtml([o.song_name, o.song_artist].filter(Boolean).join(' - ') || '—')}${o.spotify_link ? ' · ' + escapeHtml(o.spotify_link) : ''}</div></div>
+      <div class="detail-field"><div class="df-label">Aciliyet</div><div class="df-value">${escapeHtml(o.urgency || '—')}</div></div>
+      <div class="detail-field"><div class="df-label">Telefon</div><div class="df-value">${escapeHtml(o.contact_phone || '—')}</div></div>
+      <div class="detail-field"><div class="df-label">E-posta</div><div class="df-value">${escapeHtml(o.contact_email || '—')}</div></div>
+    </div>
+    <div class="detail-field"><div class="df-label">Mektup</div><div class="df-value">${escapeHtml(o.letter || '—')}</div></div>
+    ${o.photo_note ? `<div class="detail-field"><div class="df-label">Fotoğraf Notu</div><div class="df-value">${escapeHtml(o.photo_note)}</div></div>` : ''}
+    <div class="detail-field"><div class="df-label">Fotoğraflar</div><div class="photo-row">${(o.photo_urls && o.photo_urls.length) ? '' : '<span class="df-value">Yüklenmedi</span>'}</div></div>
+    ${o.template_extra && o.template_extra.raw ? `<div class="detail-field"><div class="df-label">Şablona Özel Bilgiler</div><div class="df-value">${escapeHtml(o.template_extra.raw)}</div></div>` : ''}
+    ${(o.capsule_date || o.capsule_message) ? `<div class="detail-field"><div class="df-label">Anı Kutusu</div><div class="df-value">${o.capsule_date ? formatDate(o.capsule_date) : ''} — ${escapeHtml(o.capsule_message || '')}</div></div>` : ''}
+    <div class="admin-note-row">
+      <input type="text" placeholder="Dahili not (opsiyonel, sadece admin panelinde görünür)" value="${escapeHtml(o.admin_note || '')}" class="admin-note-input" data-id="${o.id}">
+      <button type="button" class="btn btn-outline save-note-btn" data-id="${o.id}">Kaydet</button>
+    </div>
+  `;
+
+  const noteBtn = detail.querySelector('.save-note-btn');
+  noteBtn.addEventListener('click', async () => {
+    const input = detail.querySelector('.admin-note-input');
+    await sb.from('orders').update({ admin_note: input.value }).eq('id', o.id);
+    o.admin_note = input.value;
+    noteBtn.textContent = 'Kaydedildi ✓';
+    setTimeout(() => noteBtn.textContent = 'Kaydet', 1500);
+  });
+
+  card.appendChild(summary);
+  card.appendChild(detail);
+  return card;
+}
+
+async function loadOrderPhotos(o, container){
+  if(!o.photo_urls || !o.photo_urls.length) return;
+  container.innerHTML = '<span class="df-value">Yükleniyor...</span>';
+  try {
+    const { data, error } = await sb.storage.from('order-photos').createSignedUrls(o.photo_urls, 3600);
+    if(error) throw error;
+    container.innerHTML = '';
+    (data || []).forEach(item => {
+      if(!item.signedUrl) return;
+      const img = document.createElement('img');
+      img.src = item.signedUrl;
+      img.loading = 'lazy';
+      img.addEventListener('click', () => window.open(item.signedUrl, '_blank'));
+      container.appendChild(img);
+    });
+  } catch(err){
+    container.innerHTML = '<span class="df-value">Fotoğraflar yüklenemedi.</span>';
+  }
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = String(str);
+  return div.innerHTML;
+}
+
+document.getElementById('searchInput').addEventListener('input', renderOrders);
+document.getElementById('statusFilter').addEventListener('change', renderOrders);
+document.getElementById('paidFilter').addEventListener('change', renderOrders);
+
+initAuth();
+</script>
+</body>
+</html>

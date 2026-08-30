@@ -113,6 +113,25 @@
   .footer .heart-line{font-size:1.6rem; color:var(--accent); margin-bottom:10px}
 
   @media(max-width:520px){ section{padding:70px 18px} .letter-card{padding:34px 24px} .btn-row{height:150px} }
+
+
+  /* Ani kutusu / zaman kapsulu (opsiyonel) */
+  .time-capsule{display:none; text-align:center; padding:60px 24px; position:relative; z-index:2; max-width:700px; margin:0 auto}
+  .time-capsule.active{display:block; animation:capsuleReveal 1s ease}
+  @keyframes capsuleReveal{from{opacity:0; transform:scale(.94)} to{opacity:1; transform:scale(1)}}
+  .time-capsule .tc-badge{display:inline-block; font-size:.72rem; letter-spacing:.2em; text-transform:uppercase; color:var(--accent); border:1px solid var(--border); padding:6px 16px; border-radius:20px; margin-bottom:18px}
+  .time-capsule .tc-message{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:32px; font-size:1.15rem; line-height:1.8}
+
+  /* Ziyaret sayaci + sayfa araclari (footer eklentisi) */
+  .visit-counter{text-align:center; font-size:.85rem; color:var(--text-dim); margin-top:18px; letter-spacing:.02em}
+  .page-tools{display:flex; justify-content:center; gap:14px; margin-top:22px; flex-wrap:wrap}
+  .page-tools button{font-size:.82rem; letter-spacing:.05em; color:var(--text-dim); background:transparent; border:1px solid var(--border); padding:9px 18px; border-radius:20px; cursor:pointer; transition:.25s}
+  .page-tools button:hover{background:var(--accent); color:var(--bg-1); border-color:var(--accent)}
+  .qr-modal{position:fixed; inset:0; background:rgba(0,0,0,.75); z-index:70; display:flex; align-items:center; justify-content:center; padding:24px}
+  .qr-modal .qr-box{background:#fff; border-radius:16px; padding:28px; text-align:center; max-width:300px}
+  .qr-modal .qr-box img{width:220px; height:220px; display:block; margin:0 auto 14px}
+  .qr-modal .qr-box p{color:#333; font-size:.85rem; margin-bottom:14px; line-height:1.5}
+  .qr-modal .qr-close{font-size:.82rem; color:#fff; background:var(--accent); border:none; padding:9px 20px; border-radius:20px; cursor:pointer}
 </style>
 </head>
 <body>
@@ -189,10 +208,18 @@
   <div id="songEmbedWrap"></div>
 </section>
 
+<div class="time-capsule" id="timeCapsuleWrap"></div>
+
 <div class="footer">
   <div class="heart-line">💍 ♥ 💍</div>
   <div>Seninle sonsuza kadar.</div>
 </div>
+<div class="visit-counter" id="visitCounter"></div>
+<div class="page-tools">
+  <button type="button" id="qrBtn">QR Kodu Goster</button>
+  <button type="button" id="copyLinkBtn">Linki Kopyala</button>
+</div>
+
 
 <div class="lightbox" id="lightbox">
   <button class="close" id="lightboxClose">×</button>
@@ -223,15 +250,17 @@ const CONFIG = {
     "https://picsum.photos/600/800?random=114"
   ],
 
-  letter: `Buraya sözünün/mektubunun ilk paragrafı gelecek.
+  letter: `Seninle tanıştığımız günden beri hayatım hiç aynı olmadı — daha renkli, daha anlamlı, daha "ben" oldu.
 
-İkinci paragraf, aranızda boş satır bırakarak ekleyebilirsin.
+Bunca zamandır yan yana yürüdüğümüz bu yolda, senin yanımda olduğunu bilmek bana her zorluğa göğüs germe gücü verdi.
 
-Son paragraf ve kapanış cümlesi.`,                  // DEĞİŞTİR
+Bugün burada, tüm kalbimle soruyorum: Hayatımın geri kalanında da yanımda yürür müsün?`,                  // DEĞİŞTİR
 
   songName: "Şarkı Adı",                            // DEĞİŞTİR
   songArtist: "Sanatçı Adı",                        // DEĞİŞTİR
-  spotifyEmbedUrl: ""                               // DEĞİŞTİR
+  spotifyEmbedUrl: "",                               // DEĞİŞTİR
+  timeCapsuleDate: "2027-06-15T00:00:00",                    // DEĞİŞTİR (opsiyonel): bu tarih gelince asagidaki gizli mesaj acilir
+  timeCapsuleMessage: "Bugün, evet dediğin günün yıldönümü. O anı hiç unutmayacağım.", // DEĞİŞTİR (opsiyonel)
 };
 /* ============================================================ */
 
@@ -395,7 +424,54 @@ window.addEventListener('resize', () => {
   canvas.width = window.innerWidth; canvas.height = window.innerHeight;
 });
 
+function initTimeCapsule(){
+  if(!CONFIG.timeCapsuleDate || !CONFIG.timeCapsuleMessage) return;
+  const wrap = document.getElementById('timeCapsuleWrap');
+  if(!wrap) return;
+  if(Date.now() < new Date(CONFIG.timeCapsuleDate).getTime()) return;
+  wrap.innerHTML = '<div class="tc-badge">Ani Kutusu Acildi</div><div class="tc-message">' + CONFIG.timeCapsuleMessage + '</div>';
+  wrap.classList.add('active');
+}
+
+function initVisitCounter(){
+  const key = 'kalpteSakli_visits_' + location.pathname;
+  let count = 1;
+  try {
+    count = parseInt(localStorage.getItem(key) || '0', 10) + 1;
+    localStorage.setItem(key, count);
+  } catch(e){}
+  const el = document.getElementById('visitCounter');
+  if(el) el.textContent = count <= 1 ? 'Bu sayfayi ilk kez aciyorsun \u2661' : ('Bu sayfayi ' + count + '. kez aciyorsun \u2661');
+}
+
+function initPageTools(){
+  const qrBtn = document.getElementById('qrBtn');
+  const copyBtn = document.getElementById('copyLinkBtn');
+  if(qrBtn){
+    qrBtn.addEventListener('click', () => {
+      const url = location.href;
+      const modal = document.createElement('div');
+      modal.className = 'qr-modal';
+      modal.innerHTML = '<div class="qr-box"><img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(url) + '" alt="QR kod"><p>Bu sayfanin QR kodu - yazdirip bir hediyeyle birlikte verebilirsin.</p><button class="qr-close" type="button">Kapat</button></div>';
+      document.body.appendChild(modal);
+      modal.querySelector('.qr-close').addEventListener('click', () => modal.remove());
+      modal.addEventListener('click', e => { if(e.target === modal) modal.remove(); });
+    });
+  }
+  if(copyBtn){
+    copyBtn.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(location.href); } catch(e){}
+      const original = copyBtn.textContent;
+      copyBtn.textContent = 'Kopyalandi \u2713';
+      setTimeout(() => { copyBtn.textContent = original; }, 1800);
+    });
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  initTimeCapsule();
+  initVisitCounter();
+  initPageTools();
   populateContent();
   initProposal();
   initGallery();
