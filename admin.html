@@ -94,14 +94,25 @@
 
   .order-detail{display:none; padding:0 20px 22px; border-top:1px solid var(--line-light)}
   .order-card.open .order-detail{display:block}
-  .detail-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:18px}
+  .order-id-tag{font-size:.72rem; color:var(--ink-dim); font-family:'Menlo','Courier New',monospace; margin:14px 0 0}
+  .detail-section{margin-top:22px}
+  .detail-section-title{font-size:.74rem; letter-spacing:.1em; text-transform:uppercase; color:var(--bordo); font-weight:700; margin-bottom:14px; padding-bottom:8px; border-bottom:1px solid var(--line-light)}
+  .detail-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px}
   .detail-field{margin-bottom:14px}
   .detail-field .df-label{font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-dim); margin-bottom:4px}
   .detail-field .df-value{font-size:.92rem; line-height:1.55; white-space:pre-wrap}
+  .contact-links{display:flex; gap:10px; flex-wrap:wrap}
+  .contact-links a{display:inline-flex; align-items:center; gap:6px; font-size:.85rem; font-weight:600; padding:8px 16px; border-radius:20px; background:var(--cream); border:1px solid var(--line-light)}
+  .contact-links a.wa{color:#1f8a4c; border-color:#bfe3cc}
+  .contact-links a.tpl-preview-link{color:var(--bordo)}
   .photo-row{display:flex; gap:8px; flex-wrap:wrap; margin-top:6px}
-  .photo-row img{width:64px; height:64px; object-fit:cover; border-radius:10px; border:1px solid var(--line-light); cursor:pointer}
-  .admin-note-row{display:flex; gap:8px; margin-top:16px}
+  .photo-row img{width:76px; height:76px; object-fit:cover; border-radius:10px; border:1px solid var(--line-light); cursor:pointer}
+  .admin-note-row{display:flex; gap:8px; margin-top:8px}
   .admin-note-row input{flex:1; font-family:'Inter',sans-serif; font-size:.88rem; padding:9px 12px; border:1px solid var(--line-light); border-radius:10px; background:var(--cream)}
+  .detail-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:24px; padding-top:20px; border-top:1px solid var(--line-light)}
+  .btn-danger{background:transparent; color:var(--danger); border-color:var(--danger)}
+  .btn-danger:hover{background:var(--danger); color:#fff}
+  .btn-sm{padding:9px 18px; font-size:.82rem}
 
   .empty-state{text-align:center; padding:60px 20px; color:var(--ink-dim)}
   .loading{text-align:center; padding:60px 20px; color:var(--ink-dim)}
@@ -184,6 +195,31 @@ function formatMoney(n){
   if(n === null || n === undefined) return '—';
   return Number(n).toLocaleString('tr-TR') + ' TL';
 }
+function formatDateTime(iso){
+  if(!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleDateString('tr-TR', {day:'numeric', month:'short', year:'numeric'}) +
+    ' · ' + d.toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
+}
+function waLink(phone){
+  const digits = String(phone || '').replace(/\D/g, '');
+  if(!digits) return null;
+  const withCountry = digits.startsWith('0') ? '90' + digits.slice(1) : (digits.startsWith('90') ? digits : '90' + digits);
+  return 'https://wa.me/' + withCountry;
+}
+
+/* Şablon kodu -> okunabilir isim (bkz. CLAUDE.md Şablon Kataloğu) */
+const TEMPLATE_NAMES = {
+  'tutkulu-gul': 'Tutkulu Gül', 'mavi-ruya': 'Mavi Rüya', 'bal-sarisi': 'Bal Sarısı',
+  'zeytin-dali': 'Zeytin Dalı', 'onyx-zarafet': 'Onyx Zarafet', 'seftali-tul': 'Şeftali Tül',
+  'altin-saat': 'Altın Saat', 'puzzle-aski': 'Puzzle Aşkı', 'kazi-kazan-surprizi': 'Kazı Kazan Sürprizi',
+  'hafiza-kartlari': 'Hafıza Kartları', 'dogum-gunu-solen': 'Doğum Günü Şöleni',
+  'arkadasima-ozel': 'Arkadaşıma Özel', 'evlilik-teklifi': 'Evlilik Teklifi',
+  'tesekkur-ozur': 'Teşekkür & Özür', 'aile-gunu': 'Aile Günü', 'mezuniyet': 'Mezuniyet',
+  'bebek-duyurusu': 'Bebek Duyurusu', 'evcil-hayvan-anisi': 'Evcil Hayvan Anısı',
+  'yeni-is-terfi': 'Yeni İş / Terfi', 'siz-onerin': 'Siz Önerin'
+};
+function templateName(slug){ return TEMPLATE_NAMES[slug] || slug || '—'; }
 
 /* ---------- Auth ---------- */
 async function initAuth(){
@@ -325,7 +361,7 @@ function buildOrderCard(o){
     <div class="og-date">${formatDate(o.created_at)}</div>
     <div class="og-main">
       <div class="og-partner">${escapeHtml(o.partner_name || 'İsimsiz')}</div>
-      <div class="og-tpl">${escapeHtml(o.template || '—')} · ${escapeHtml(o.package || '—')}</div>
+      <div class="og-tpl">${escapeHtml(templateName(o.template))} · ${escapeHtml(o.package || '—')}</div>
     </div>
     <span class="badge badge-price">${formatMoney(o.package_price)}</span>
     <label class="paid-toggle ${o.paid ? 'is-paid' : 'is-unpaid'}">
@@ -367,25 +403,81 @@ function buildOrderCard(o){
     o.status = statusSelect.value;
   });
 
+  const wa = waLink(o.contact_phone);
   const detail = document.createElement('div');
   detail.className = 'order-detail';
   detail.innerHTML = `
-    <div class="detail-grid">
-      <div class="detail-field"><div class="df-label">Gönderen</div><div class="df-value">${escapeHtml(o.sender_name || '—')}</div></div>
-      <div class="detail-field"><div class="df-label">Özel Tarih</div><div class="df-value">${o.special_date ? formatDate(o.special_date) : '—'}${o.special_date_label ? ' (' + escapeHtml(o.special_date_label) + ')' : ''}</div></div>
-      <div class="detail-field"><div class="df-label">Şarkı</div><div class="df-value">${escapeHtml([o.song_name, o.song_artist].filter(Boolean).join(' - ') || '—')}${o.spotify_link ? ' · ' + escapeHtml(o.spotify_link) : ''}</div></div>
-      <div class="detail-field"><div class="df-label">Aciliyet</div><div class="df-value">${escapeHtml(o.urgency || '—')}</div></div>
-      <div class="detail-field"><div class="df-label">Telefon</div><div class="df-value">${escapeHtml(o.contact_phone || '—')}</div></div>
-      <div class="detail-field"><div class="df-label">E-posta</div><div class="df-value">${escapeHtml(o.contact_email || '—')}</div></div>
+    <div class="order-id-tag">Sipariş #${o.id.slice(0, 8)} · Oluşturulma: ${formatDateTime(o.created_at)}</div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">Kişi & İletişim</div>
+      <div class="detail-grid">
+        <div class="detail-field"><div class="df-label">Partner Adı</div><div class="df-value">${escapeHtml(o.partner_name || '—')}</div></div>
+        <div class="detail-field"><div class="df-label">Gönderen</div><div class="df-value">${escapeHtml(o.sender_name || '—')}</div></div>
+      </div>
+      <div class="contact-links">
+        ${wa ? `<a class="wa" href="${wa}" target="_blank" rel="noopener">💬 WhatsApp'ta Aç</a>` : ''}
+        ${o.contact_phone ? `<a href="tel:${escapeHtml(o.contact_phone)}">📞 ${escapeHtml(o.contact_phone)}</a>` : ''}
+        ${o.contact_email ? `<a href="mailto:${escapeHtml(o.contact_email)}">✉️ ${escapeHtml(o.contact_email)}</a>` : ''}
+        ${(!wa && !o.contact_phone && !o.contact_email) ? '<span class="df-value">İletişim bilgisi verilmemiş</span>' : ''}
+      </div>
     </div>
-    <div class="detail-field"><div class="df-label">Mektup</div><div class="df-value">${escapeHtml(o.letter || '—')}</div></div>
-    ${o.photo_note ? `<div class="detail-field"><div class="df-label">Fotoğraf Notu</div><div class="df-value">${escapeHtml(o.photo_note)}</div></div>` : ''}
-    <div class="detail-field"><div class="df-label">Fotoğraflar</div><div class="photo-row">${(o.photo_urls && o.photo_urls.length) ? '' : '<span class="df-value">Yüklenmedi</span>'}</div></div>
-    ${o.template_extra && o.template_extra.raw ? `<div class="detail-field"><div class="df-label">Şablona Özel Bilgiler</div><div class="df-value">${escapeHtml(o.template_extra.raw)}</div></div>` : ''}
-    ${(o.capsule_date || o.capsule_message) ? `<div class="detail-field"><div class="df-label">Anı Kutusu</div><div class="df-value">${o.capsule_date ? formatDate(o.capsule_date) : ''} — ${escapeHtml(o.capsule_message || '')}</div></div>` : ''}
-    <div class="admin-note-row">
-      <input type="text" placeholder="Dahili not (opsiyonel, sadece admin panelinde görünür)" value="${escapeHtml(o.admin_note || '')}" class="admin-note-input" data-id="${o.id}">
-      <button type="button" class="btn btn-outline save-note-btn" data-id="${o.id}">Kaydet</button>
+
+    <div class="detail-section">
+      <div class="detail-section-title">Şablon & Zamanlama</div>
+      <div class="detail-grid">
+        <div class="detail-field"><div class="df-label">Şablon</div><div class="df-value">${escapeHtml(templateName(o.template))}</div></div>
+        <div class="detail-field"><div class="df-label">Paket</div><div class="df-value">${escapeHtml(o.package || '—')} ${o.package_price ? '· ' + formatMoney(o.package_price) : ''}</div></div>
+        <div class="detail-field"><div class="df-label">Özel Tarih</div><div class="df-value">${o.special_date ? formatDate(o.special_date) : '—'}${o.special_date_label ? ' (' + escapeHtml(o.special_date_label) + ')' : ''}</div></div>
+        <div class="detail-field"><div class="df-label">Teslim Aciliyeti</div><div class="df-value">${escapeHtml(o.urgency || '—')}</div></div>
+      </div>
+      ${o.template && o.template !== 'siz-onerin' ? `<a class="contact-links tpl-preview-link" href="templates/${escapeHtml(o.template)}.html" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px; font-size:.85rem; font-weight:600; padding:8px 16px; border-radius:20px; background:var(--cream); border:1px solid var(--line-light)">🔗 Boş Şablonu Önizle</a>` : ''}
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">Canlı Sayfa</div>
+      <div class="deploy-box" data-id="${o.id}"></div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">Mektup</div>
+      <div class="detail-field"><div class="df-value">${escapeHtml(o.letter || '—')}</div></div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">Şarkı</div>
+      <div class="detail-field"><div class="df-value">${escapeHtml([o.song_name, o.song_artist].filter(Boolean).join(' - ') || '—')}${o.spotify_link ? '<br><a href="' + escapeHtml(o.spotify_link) + '" target="_blank" rel="noopener">' + escapeHtml(o.spotify_link) + '</a>' : ''}</div></div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">Fotoğraflar ${o.photo_urls && o.photo_urls.length ? '(' + o.photo_urls.length + ')' : ''}</div>
+      ${o.photo_note ? `<div class="detail-field"><div class="df-label">Not</div><div class="df-value">${escapeHtml(o.photo_note)}</div></div>` : ''}
+      <div class="photo-row">${(o.photo_urls && o.photo_urls.length) ? '' : '<span class="df-value">Yüklenmedi</span>'}</div>
+    </div>
+
+    ${o.template_extra && o.template_extra.raw ? `
+    <div class="detail-section">
+      <div class="detail-section-title">Şablona Özel Bilgiler</div>
+      <div class="detail-field"><div class="df-value">${escapeHtml(o.template_extra.raw)}</div></div>
+    </div>` : ''}
+
+    ${(o.capsule_date || o.capsule_message) ? `
+    <div class="detail-section">
+      <div class="detail-section-title">Anı Kutusu</div>
+      <div class="detail-field"><div class="df-value">${o.capsule_date ? formatDate(o.capsule_date) : 'Tarih yok'} — ${escapeHtml(o.capsule_message || '')}</div></div>
+    </div>` : ''}
+
+    <div class="detail-section">
+      <div class="detail-section-title">Dahili Not</div>
+      <div class="admin-note-row">
+        <input type="text" placeholder="Sadece admin panelinde görünür..." value="${escapeHtml(o.admin_note || '')}" class="admin-note-input" data-id="${o.id}">
+        <button type="button" class="btn btn-outline btn-sm save-note-btn" data-id="${o.id}">Kaydet</button>
+      </div>
+    </div>
+
+    <div class="detail-actions">
+      <button type="button" class="btn btn-outline btn-sm copy-summary-btn">📋 Özeti Kopyala</button>
+      <button type="button" class="btn btn-danger btn-sm delete-order-btn">🗑 Siparişi Sil</button>
     </div>
   `;
 
@@ -398,9 +490,130 @@ function buildOrderCard(o){
     setTimeout(() => noteBtn.textContent = 'Kaydet', 1500);
   });
 
+  const copyBtn = detail.querySelector('.copy-summary-btn');
+  copyBtn.addEventListener('click', async () => {
+    const text = buildOrderSummaryText(o);
+    try { await navigator.clipboard.writeText(text); } catch(e){}
+    copyBtn.textContent = 'Kopyalandı ✓';
+    setTimeout(() => copyBtn.textContent = '📋 Özeti Kopyala', 1500);
+  });
+
+  const deleteBtn = detail.querySelector('.delete-order-btn');
+  deleteBtn.addEventListener('click', () => deleteOrder(o, card));
+
+  renderDeployBox(o, detail.querySelector('.deploy-box'));
+
   card.appendChild(summary);
   card.appendChild(detail);
   return card;
+}
+
+/* ---------- Canlıya Al ---------- */
+function renderDeployBox(o, box){
+  if(!box) return;
+  if(o.live_url){
+    box.innerHTML = `
+      <div class="contact-links">
+        <a href="${escapeHtml(o.live_url)}" target="_blank" rel="noopener">🔗 Sayfayı Aç</a>
+        <button type="button" class="btn btn-outline btn-sm copy-link-btn">📋 Linki Kopyala</button>
+        <button type="button" class="btn btn-outline btn-sm deploy-btn">🚀 Yeniden Canlıya Al</button>
+      </div>
+      <div class="df-value deploy-status" style="margin-top:8px; font-size:.8rem; color:var(--ink-dim)">Son yayına alınma: ${formatDateTime(o.deployed_at)} — bilgiler değiştiyse "Yeniden Canlıya Al" ile güncelleyebilirsin.</div>
+    `;
+  } else {
+    box.innerHTML = `
+      <button type="button" class="btn btn-dark btn-sm deploy-btn">🚀 Canlıya Al</button>
+      <div class="df-value deploy-status" style="margin-top:8px; font-size:.85rem"></div>
+    `;
+  }
+  box.querySelector('.deploy-btn').addEventListener('click', () => deployOrder(o, box));
+  const copyBtn = box.querySelector('.copy-link-btn');
+  if(copyBtn){
+    copyBtn.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(o.live_url); } catch(e){}
+      copyBtn.textContent = 'Kopyalandı ✓';
+      setTimeout(() => copyBtn.textContent = '📋 Linki Kopyala', 1500);
+    });
+  }
+}
+
+async function deployOrder(o, box){
+  const btn = box.querySelector('.deploy-btn');
+  const statusEl = box.querySelector('.deploy-status');
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Yayınlanıyor...';
+  if(statusEl){
+    statusEl.textContent = 'Şablon dolduruluyor ve yayınlanıyor, bu birkaç saniye sürebilir...';
+    statusEl.style.color = 'var(--ink-dim)';
+  }
+  try {
+    const { data, error } = await sb.functions.invoke('deploy-order', { body: { order_id: o.id } });
+    if(error) throw error;
+    if(data && data.error) throw new Error(data.error);
+    if(!data || !data.live_url) throw new Error('Beklenmeyen yanıt döndü.');
+    o.live_url = data.live_url;
+    o.deployed_at = new Date().toISOString();
+    renderDeployBox(o, box);
+  } catch(err){
+    btn.disabled = false;
+    btn.textContent = original;
+    if(statusEl){
+      statusEl.textContent = 'Hata: ' + (err.message || 'bilinmeyen hata');
+      statusEl.style.color = 'var(--danger)';
+    } else {
+      alert('Canlıya alma başarısız: ' + (err.message || 'bilinmeyen hata'));
+    }
+  }
+}
+
+function buildOrderSummaryText(o){
+  const lines = [
+    `${templateName(o.template)} ile sipariş`,
+    ``,
+    `Paket: ${o.package || 'Belirtilmedi'}${o.package_price ? ' (' + formatMoney(o.package_price) + ')' : ''}`,
+    `Partner adı: ${o.partner_name || '—'}`,
+    `Gönderen: ${o.sender_name || '—'}`,
+    `Özel tarih: ${o.special_date ? formatDate(o.special_date) : 'Belirtilmedi'}${o.special_date_label ? ' (' + o.special_date_label + ')' : ''}`,
+    ``,
+    `Mektup:`,
+    o.letter || '(yok)',
+    ``,
+    `Şarkı: ${[o.song_name, o.song_artist].filter(Boolean).join(' - ') || 'Belirtilmedi'}${o.spotify_link ? ' | Spotify: ' + o.spotify_link : ''}`,
+  ];
+  if(o.template_extra && o.template_extra.raw){
+    lines.push(``, `Şablona özel bilgiler:`, o.template_extra.raw);
+  }
+  if(o.capsule_date || o.capsule_message){
+    lines.push(``, `Anı kutusu: ${o.capsule_date ? formatDate(o.capsule_date) : ''} — ${o.capsule_message || ''}`);
+  }
+  lines.push(
+    ``,
+    `Teslim aciliyeti: ${o.urgency || 'Belirtilmedi'}`,
+    `İletişim: ${[o.contact_phone, o.contact_email].filter(Boolean).join(' / ') || 'Belirtilmedi'}`,
+    `Durum: ${o.status || 'yeni'} · Ödeme: ${o.paid ? 'Ödendi' : 'Bekliyor'}`
+  );
+  if(o.live_url){
+    lines.push(``, `Canlı sayfa: ${o.live_url}`);
+  }
+  return lines.join('\n');
+}
+
+async function deleteOrder(o, card){
+  const ok = confirm(`"${o.partner_name || 'İsimsiz'}" adına oluşturulan siparişi kalıcı olarak silmek istediğine emin misin? Bu işlem geri alınamaz.`);
+  if(!ok) return;
+  try {
+    if(o.photo_urls && o.photo_urls.length){
+      await sb.storage.from('order-photos').remove(o.photo_urls);
+    }
+    const { error } = await sb.from('orders').delete().eq('id', o.id);
+    if(error) throw error;
+    allOrders = allOrders.filter(x => x.id !== o.id);
+    renderStats();
+    renderOrders();
+  } catch(err){
+    alert('Silinemedi: ' + (err.message || 'bilinmeyen hata'));
+  }
 }
 
 async function loadOrderPhotos(o, container){

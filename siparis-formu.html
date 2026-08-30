@@ -336,8 +336,9 @@
           <select id="urgency">
             <option>Standart (birkaç saat)</option>
             <option>24 saat içinde</option>
-            <option>Aynı gün / acil (Özel Tasarım)</option>
+            <option value="Aynı gün / acil (Özel Tasarım)" id="urgentOption" disabled>Aynı gün / acil — sadece Özel Tasarım pakette</option>
           </select>
+          <div class="hint" id="urgencyHint">Aynı gün/acil teslim, 2. adımda Özel Tasarım paketini seçince açılır.</div>
         </div>
         <div class="grid2">
           <div class="field">
@@ -608,8 +609,47 @@ function collectTemplateExtras(){
   return lines.join('\n');
 }
 
+/* Aynı verinin makine tarafından okunabilir hâli — admin panelindeki
+   "Canlıya Al" özelliği, siparişi doğru şablona göre otomatik doldururken
+   bunu kullanır (serbest metni tekrar parçalamaya çalışmak yerine). */
+function collectTemplateExtrasStructured(){
+  const slug = document.getElementById('template').value;
+  const config = TEMPLATE_EXTRAS[slug];
+  if(!config) return {};
+  const out = {};
+  config.fields.forEach(f => {
+    if(f.type === 'radio'){
+      const checked = document.querySelector(`input[name="${f.name}"]:checked`);
+      if(checked) out[f.id] = checked.value;
+    } else {
+      const v = val(f.id);
+      if(v) out[f.id] = v;
+    }
+  });
+  return out;
+}
+
 document.getElementById('template').addEventListener('change', renderTemplateExtras);
 renderTemplateExtras();
+
+/* "Aynı gün / acil" teslim seçeneği sadece Özel Tasarım paketi seçilince açılır —
+   aksi halde herkes ekstra ücret ödemeden en hızlı teslimi seçebilirdi. */
+function syncUrgencyToPackage(){
+  const packageEl = document.querySelector('input[name=package]:checked');
+  const isSpecial = packageEl && packageEl.value.startsWith('Özel Tasarım');
+  const urgentOption = document.getElementById('urgentOption');
+  const urgencySelect = document.getElementById('urgency');
+  const hint = document.getElementById('urgencyHint');
+  urgentOption.disabled = !isSpecial;
+  if(!isSpecial && urgencySelect.value === urgentOption.value){
+    urgencySelect.value = 'Standart (birkaç saat)';
+  }
+  hint.textContent = isSpecial
+    ? 'Özel Tasarım paketindesin — aynı gün/acil teslimi seçebilirsin.'
+    : 'Aynı gün/acil teslim, 2. adımda Özel Tasarım paketini seçince açılır.';
+}
+document.querySelectorAll('input[name=package]').forEach(el => el.addEventListener('change', syncUrgencyToPackage));
+syncUrgencyToPackage();
 
 function formatDate(iso){
   if(!iso) return '';
@@ -699,9 +739,10 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
   document.getElementById('resultCard').scrollIntoView({behavior:'smooth', block:'start'});
 
   const packagePrice = packageEl ? Number(packageEl.dataset.price || 0) : null;
+  const templateExtrasStructured = collectTemplateExtrasStructured();
   await saveOrderToDatabase({
     templateSlug, template, packageVal, packagePrice, partnerName, senderName,
-    letterBlock, songLine, spotify, templateExtrasRaw
+    letterBlock, songLine, spotify, templateExtrasRaw, templateExtrasStructured
   });
 });
 
@@ -739,7 +780,7 @@ async function saveOrderToDatabase(data){
         spotify_link: data.spotify || null,
         photo_urls: photoPaths,
         photo_note: val('photoNote') || null,
-        template_extra: data.templateExtrasRaw ? { raw: data.templateExtrasRaw } : null,
+        template_extra: data.templateExtrasRaw ? { raw: data.templateExtrasRaw, fields: data.templateExtrasStructured } : null,
         capsule_date: val('capsuleDate') || null,
         capsule_message: val('capsuleMessage') || null,
         urgency: val('urgency') || document.getElementById('urgency').value,

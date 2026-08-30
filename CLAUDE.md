@@ -237,7 +237,10 @@ Müşteriden şunları iste (form ya da DM üzerinden):
   arasından biri; gerçek bir mekanik içerdiği ve kolayca kopyalanamadığı için
   Başlangıç'tan daha yüksek fiyatlandırılır; içerik pazarlamasında "bu sadece
   bir görsel değil, gerçek bir oyun" vurgusu öne çıkarılmalı
-- Özel Tasarım: 500 TL — sınırsız revizyon, öncelikli/aynı gün teslim
+- Özel Tasarım: 500 TL — sınırsız revizyon, öncelikli/aynı gün teslim. Sipariş
+  formunda "Aynı gün / acil" teslim seçeneği, 2. adımda Özel Tasarım paketi
+  seçilmediği sürece devre dışıdır (`syncUrgencyToPackage()`) — aksi halde
+  herkes ekstra ücret ödemeden en hızlı teslimi seçebilirdi.
 - Anı kutusu (`timeCapsuleDate` / `timeCapsuleMessage`) ücretsizdir, tüm
   paketlere dahildir.
 - **Doğum Günü Şöleni** ve **Arkadaşıma Özel**, standart Başlangıç/Özel Tasarım
@@ -306,6 +309,47 @@ kaydı için **Supabase** (Postgres + Storage + Auth) kullanılıyor. Bu,
   bağlı değildir (ödeme hâlâ WhatsApp/elden alınıyor, admin panelinden elle
   "Ödendi" işaretlenir). İleride iyzico gibi gerçek bir ödeme sağlayıcısı
   bağlanırsa, bu alan otomatik güncellenecek şekilde değiştirilebilir.
+
+### Canlıya Alma ("🚀 Canlıya Al" butonu)
+
+Bir siparişi müşteriye teslim edilecek gerçek bir linke dönüştürmek artık elle
+şablon doldurup Vercel'e sürüklemek yerine admin panelinden tek tıkla yapılır.
+
+- **Nasıl çalışır**: `admin.html`'de bir siparişin detayını açtığında
+  "Canlı Sayfa" bölümünde **🚀 Canlıya Al** butonu var. Tıklandığında
+  `sb.functions.invoke('deploy-order', {body:{order_id}})` çağrılır — bu,
+  Supabase Edge Function'ı olan `supabase/functions/deploy-order/index.ts`'i
+  tetikler. Fonksiyon: (1) çağıranın gerçekten giriş yapmış admin olduğunu
+  doğrular, (2) siparişi `service_role` ile okur, (3) ilgili şablonu
+  `askina-ozel.vercel.app/templates/{slug}.html`'den çeker, (4) fotoğraflar
+  için uzun ömürlü (~5 yıl) imzalı Storage URL'leri üretir, (5) şablonun
+  `CONFIG` nesnesini regex tabanlı olarak siparişteki verilerle doldurur —
+  hem evrensel alanlar (partnerName, letter, photos, songName, timeCapsule...)
+  hem de şablona özel alanlar (`order.template_extra.fields` üzerinden, bkz.
+  `siparis-formu.html`'deki `TEMPLATE_EXTRAS`/`collectTemplateExtrasStructured()`),
+  (6) doldurulmuş tek dosyalık HTML'i Vercel API'siyle **yeni, bağımsız bir
+  proje** olarak deploy eder (her sipariş kendi kısa `vercel.app` linkini
+  alır, ana siteyle karışmaz), (7) `orders.live_url` ve `orders.deployed_at`
+  alanlarını günceller ve linki admin paneline döner.
+- **Linki müşteriye gönderme**: Deploy bittikten sonra admin panelinde
+  "🔗 Sayfayı Aç" ve "📋 Linki Kopyala" butonları belirir; link
+  `buildOrderSummaryText()`'e de otomatik eklenir ("📋 Özeti Kopyala" ile
+  WhatsApp'a yapıştırılabilir). Bilgiler değişirse (yeni fotoğraf, düzeltilen
+  mektup vb.) aynı buton "🚀 Yeniden Canlıya Al" olarak tekrar çalıştırılabilir
+  — aynı Vercel projesine yeni bir production deploy atar, link değişmez.
+- **Gerekli Edge Function secret'ları** (`supabase secrets set` ile,
+  `supabase/functions/deploy-order` dizininden): `VERCEL_TOKEN` (Vercel
+  personal access token) ve gerekirse `VERCEL_TEAM_ID` (token bir takıma
+  bağlıysa). `SUPABASE_URL`/`SUPABASE_ANON_KEY`/`SUPABASE_SERVICE_ROLE_KEY`
+  Supabase tarafından fonksiyona otomatik enjekte edilir, ayrıca eklenmez.
+  Fonksiyon `--no-verify-jwt` ile deploy edildi (gateway seviyesinde değil,
+  fonksiyon içinde `auth.getUser()` ile daha katı bir admin-oturum kontrolü
+  yapılıyor).
+- **QR kod**: Şablonlardaki QR buton `api.qrserver.com` ile `location.href`'i
+  kodluyor — yani sayfa yerelde (`file://`) açıkken anlamsız bir QR üretir,
+  sayfa Canlıya Al ile gerçek bir `vercel.app` linkine taşındıktan sonra
+  QR de otomatik olarak o linki gösterip çalışır hale gelir (ayrı bir aktivasyon
+  gerekmez).
 
 ## Tasarım Notları
 
