@@ -171,10 +171,7 @@
   .tpl-card{background:var(--white); color:var(--ink); border:1px solid var(--line-light); border-radius:18px; overflow:hidden; display:flex; flex-direction:column; box-shadow:var(--shadow-sm); transition:.3s}
   .tpl-card:hover{transform:translateY(-4px); box-shadow:var(--shadow-lg)}
   .tpl-swatch{height:112px; position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden}
-  .tpl-swatch img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; transition:transform .5s ease}
-  .tpl-card:hover .tpl-swatch img{transform:scale(1.06)}
-  .tpl-swatch::after{content:''; position:absolute; inset:0; z-index:1; background:linear-gradient(180deg, rgba(23,6,8,.12), rgba(23,6,8,.52))}
-  .tpl-swatch span{position:relative; z-index:2; font-family:'Playfair Display',serif; font-style:italic; font-weight:600; font-size:1.05rem; color:var(--cream); text-align:center; background:var(--bordo-deep); border:1.5px solid rgba(248,240,235,.3); padding:8px 18px; border-radius:999px; max-width:calc(100% - 28px); box-shadow:0 6px 18px rgba(0,0,0,.4)}
+  .tpl-swatch span{position:relative; z-index:1; font-family:'Playfair Display',serif; font-style:italic; font-weight:600; font-size:1.05rem; color:var(--cream); text-align:center; background:var(--bordo-deep); border:1.5px solid rgba(248,240,235,.3); padding:8px 18px; border-radius:999px; max-width:calc(100% - 28px); box-shadow:0 6px 18px rgba(0,0,0,.4)}
   .tpl-body{padding:22px 22px 24px; flex:1; display:flex; flex-direction:column}
   .tpl-tag{display:inline-block; font-size:.66rem; letter-spacing:.1em; text-transform:uppercase; font-weight:700; padding:4px 11px; border-radius:20px; margin-bottom:12px; align-self:flex-start; border:1px solid transparent}
   .tpl-tag.std{color:var(--bordo); background:var(--powder)}
@@ -629,25 +626,25 @@
      tabloya da eklemeyi unutma.
      ============================================================ */
   const TEMPLATES = [
-    { file:'templates/tutkulu-gul.html', name:'Tutkulu Gül', tag:'Standart', gradient:'linear-gradient(135deg,#5c0f1a,#8b1a2b)', img:'https://images.unsplash.com/photo-1550015296-7fd664acc768', desc:'Bordo & altın, iddialı ve romantik. Klasik, "büyük jest" isteyen çiftler için.' },
-    { file:'templates/mavi-ruya.html', name:'Mavi Rüya', tag:'Standart', gradient:'linear-gradient(135deg,#1c2350,#3f47a8)', img:'https://images.unsplash.com/photo-1514770643069-54183731a981', desc:'Pastel lacivert & lavanta, hayalperest. Uzak mesafe ilişkiler ve "kavuşma" teması.' },
-    { file:'templates/bal-sarisi.html', name:'Bal Sarısı', tag:'Standart', gradient:'linear-gradient(135deg,#432112,#c97a3d)', img:'https://images.unsplash.com/photo-1545396047-a84defe3941b', desc:'Sıcak turuncu & şeftali, samimi. Uzun süreli, ev gibi hissettiren ilişkiler için.' },
-    { file:'templates/zeytin-dali.html', name:'Zeytin Dalı', tag:'Standart', gradient:'linear-gradient(135deg,#28311f,#6b7d4f)', img:'https://images.unsplash.com/photo-1771131825943-0b7242814b9c', desc:'Adaçayı yeşili & toprak tonları, sakin ve doğal. Sade zevkli çiftler için.' },
-    { file:'templates/onyx-zarafet.html', name:'Onyx Zarafet', tag:'Standart', gradient:'linear-gradient(135deg,#0a0a0a,#3a3226)', img:'https://images.unsplash.com/photo-1764925354773-62413bcc1d5a', desc:'Siyah & şampanya altını, modern ve lüks. "Gösterişsiz lüks" isteyenler için.' },
-    { file:'templates/seftali-tul.html', name:'Şeftali Tül', tag:'Standart', gradient:'linear-gradient(135deg,#ffd6c2,#ff8fa3)', img:'https://images.unsplash.com/photo-1650116435623-d032922b6e40', desc:'Açık şeftali & pudra, masalsı ve hayalperest. Genç, tatlı, masal temalı ilişkiler için.' },
-    { file:'templates/altin-saat.html', name:'Altın Saat', tag:'Standart', gradient:'linear-gradient(135deg,#0c0906,#c9974a)', img:'https://images.unsplash.com/photo-1783816296724-37a68e31aa23', desc:'Sinematik, sıcak altın tonları. Plak çalar ve "ilk"lerinizin fotoğraflı zaman çizelgesiyle nostaljik bir aşk hikayesi.' },
-    { file:'templates/puzzle-aski.html', name:'Puzzle Aşkı', tag:'İnteraktif', gradient:'linear-gradient(135deg,#33122c,#f4c95d)', img:'https://images.unsplash.com/photo-1466979939565-131c4b39a51b', desc:'Müşterinin fotoğrafından 3x3 sürgülü yapboz — çözünce mektup açılır.' },
-    { file:'templates/kazi-kazan-surprizi.html', name:'Kazı Kazan Sürprizi', tag:'İnteraktif', gradient:'linear-gradient(135deg,#123a30,#ffb26b)', img:'https://images.unsplash.com/photo-1572805121374-0419430b7753', desc:'Kazınabilir kart — fare ya da parmakla kazıyınca altındaki mesaj ortaya çıkar.' },
-    { file:'templates/hafiza-kartlari.html', name:'Hafıza Kartları', tag:'İnteraktif', gradient:'linear-gradient(135deg,#221247,#ffd166)', img:'https://images.unsplash.com/photo-1566240344928-f3dfb44cf89f', desc:'6 çiftlik hafıza/eşleştirme oyunu — tamamlanınca mektup açılır.' },
-    { file:'templates/dogum-gunu-solen.html', name:'Doğum Günü Şöleni', tag:'Doğum Günü', gradient:'linear-gradient(135deg,#301a5c,#ff6b9d)', img:'https://images.unsplash.com/photo-1642443162669-b0ea91a3f09b', desc:'Üflenebilir interaktif pasta, konfeti patlaması ve çok kişili dilek duvarı.' },
-    { file:'templates/arkadasima-ozel.html', name:'Arkadaşıma Özel', tag:'Arkadaşlık', gradient:'linear-gradient(135deg,#123044,#ffb347)', img:'https://images.unsplash.com/photo-1768244016470-271b210a8407', desc:'Romantik değil, samimi ve arkadaşça bir dille — "iyi ki varsın" sayfası.' },
-    { file:'templates/evlilik-teklifi.html', name:'Evlilik Teklifi', tag:'İnteraktif', gradient:'linear-gradient(135deg,#1b1640,#ffe9a8)', img:'https://images.unsplash.com/photo-1541394308149-dc8e8192162c', desc:'Yüzük kutusu açılır, "Hayır" butonu kaçar — sadece "Evet" kalır. İlişki zaman çizelgesiyle.' },
-    { file:'templates/tesekkur-ozur.html', name:'Teşekkür & Özür', tag:'Diğer', gradient:'linear-gradient(135deg,#2b2318,#d9a66c)', img:'https://images.unsplash.com/photo-1701988820863-7f305986876b', desc:'İçten, sade bir dille — özür dilemek ya da teşekkür etmek için (romantik olmak zorunda değil).' },
-    { file:'templates/aile-gunu.html', name:'Aile Günü', tag:'Diğer', gradient:'linear-gradient(135deg,#3a2620,#e8a87c)', img:'https://images.unsplash.com/photo-1770871821382-60ea99b0a941', desc:'Anneler ya da Babalar Günü için — polaroid galeri ve aile üyelerinden mesaj duvarı.' },
-    { file:'templates/mezuniyet.html', name:'Mezuniyet', tag:'Diğer', gradient:'linear-gradient(135deg,#151b3d,#ffd166)', img:'https://images.unsplash.com/photo-1627556704290-2b1f5853ff78', desc:'Diplomayı sürükleyip kutuya bırak — başarı yolculuğu zaman çizelgesi ve tebrik duvarı.' },
-    { file:'templates/bebek-duyurusu.html', name:'Bebek Duyurusu', tag:'Diğer', gradient:'linear-gradient(135deg,#213631,#f6c9d6)', img:'https://images.unsplash.com/photo-1761763159847-6c6f7b7e58d4', desc:'Balonu şişir, patlat, konfeti patlasın — hamilelik duyurusu ya da doğum haberi için.' },
-    { file:'templates/evcil-hayvan-anisi.html', name:'Evcil Hayvan Anısı', tag:'Diğer', gradient:'linear-gradient(135deg,#1c2444,#cfd6ff)', img:'https://images.unsplash.com/photo-1778439799144-41cbc5cdd501', desc:'Sakin, teselli edici bir anı sayfası — kaybedilen bir evcil hayvanı anmak için.' },
-    { file:'templates/yeni-is-terfi.html', name:'Yeni İş / Terfi', tag:'Diğer', gradient:'linear-gradient(135deg,#0d2830,#ffcf6b)', img:'https://images.unsplash.com/photo-1758691737584-a8f17fb34475', desc:'Kariyer merdivenini sırayla tırman, tepeye ulaşınca konfeti — terfi/yeni iş kutlaması.' },
+    { file:'templates/tutkulu-gul.html', name:'Tutkulu Gül', tag:'Standart', gradient:'linear-gradient(135deg,#5c0f1a,#8b1a2b)', desc:'Bordo & altın, iddialı ve romantik. Klasik, "büyük jest" isteyen çiftler için.' },
+    { file:'templates/mavi-ruya.html', name:'Mavi Rüya', tag:'Standart', gradient:'linear-gradient(135deg,#1c2350,#3f47a8)', desc:'Pastel lacivert & lavanta, hayalperest. Uzak mesafe ilişkiler ve "kavuşma" teması.' },
+    { file:'templates/bal-sarisi.html', name:'Bal Sarısı', tag:'Standart', gradient:'linear-gradient(135deg,#432112,#c97a3d)', desc:'Sıcak turuncu & şeftali, samimi. Uzun süreli, ev gibi hissettiren ilişkiler için.' },
+    { file:'templates/zeytin-dali.html', name:'Zeytin Dalı', tag:'Standart', gradient:'linear-gradient(135deg,#28311f,#6b7d4f)', desc:'Adaçayı yeşili & toprak tonları, sakin ve doğal. Sade zevkli çiftler için.' },
+    { file:'templates/onyx-zarafet.html', name:'Onyx Zarafet', tag:'Standart', gradient:'linear-gradient(135deg,#0a0a0a,#3a3226)', desc:'Siyah & şampanya altını, modern ve lüks. "Gösterişsiz lüks" isteyenler için.' },
+    { file:'templates/seftali-tul.html', name:'Şeftali Tül', tag:'Standart', gradient:'linear-gradient(135deg,#ffd6c2,#ff8fa3)', desc:'Açık şeftali & pudra, masalsı ve hayalperest. Genç, tatlı, masal temalı ilişkiler için.' },
+    { file:'templates/altin-saat.html', name:'Altın Saat', tag:'Standart', gradient:'linear-gradient(135deg,#0c0906,#c9974a)', desc:'Sinematik, sıcak altın tonları. Plak çalar ve "ilk"lerinizin fotoğraflı zaman çizelgesiyle nostaljik bir aşk hikayesi.' },
+    { file:'templates/puzzle-aski.html', name:'Puzzle Aşkı', tag:'İnteraktif', gradient:'linear-gradient(135deg,#33122c,#f4c95d)', desc:'Müşterinin fotoğrafından 3x3 sürgülü yapboz — çözünce mektup açılır.' },
+    { file:'templates/kazi-kazan-surprizi.html', name:'Kazı Kazan Sürprizi', tag:'İnteraktif', gradient:'linear-gradient(135deg,#123a30,#ffb26b)', desc:'Kazınabilir kart — fare ya da parmakla kazıyınca altındaki mesaj ortaya çıkar.' },
+    { file:'templates/hafiza-kartlari.html', name:'Hafıza Kartları', tag:'İnteraktif', gradient:'linear-gradient(135deg,#221247,#ffd166)', desc:'6 çiftlik hafıza/eşleştirme oyunu — tamamlanınca mektup açılır.' },
+    { file:'templates/dogum-gunu-solen.html', name:'Doğum Günü Şöleni', tag:'Doğum Günü', gradient:'linear-gradient(135deg,#301a5c,#ff6b9d)', desc:'Üflenebilir interaktif pasta, konfeti patlaması ve çok kişili dilek duvarı.' },
+    { file:'templates/arkadasima-ozel.html', name:'Arkadaşıma Özel', tag:'Arkadaşlık', gradient:'linear-gradient(135deg,#123044,#ffb347)', desc:'Romantik değil, samimi ve arkadaşça bir dille — "iyi ki varsın" sayfası.' },
+    { file:'templates/evlilik-teklifi.html', name:'Evlilik Teklifi', tag:'İnteraktif', gradient:'linear-gradient(135deg,#1b1640,#ffe9a8)', desc:'Yüzük kutusu açılır, "Hayır" butonu kaçar — sadece "Evet" kalır. İlişki zaman çizelgesiyle.' },
+    { file:'templates/tesekkur-ozur.html', name:'Teşekkür & Özür', tag:'Diğer', gradient:'linear-gradient(135deg,#2b2318,#d9a66c)', desc:'İçten, sade bir dille — özür dilemek ya da teşekkür etmek için (romantik olmak zorunda değil).' },
+    { file:'templates/aile-gunu.html', name:'Aile Günü', tag:'Diğer', gradient:'linear-gradient(135deg,#3a2620,#e8a87c)', desc:'Anneler ya da Babalar Günü için — polaroid galeri ve aile üyelerinden mesaj duvarı.' },
+    { file:'templates/mezuniyet.html', name:'Mezuniyet', tag:'Diğer', gradient:'linear-gradient(135deg,#151b3d,#ffd166)', desc:'Diplomayı sürükleyip kutuya bırak — başarı yolculuğu zaman çizelgesi ve tebrik duvarı.' },
+    { file:'templates/bebek-duyurusu.html', name:'Bebek Duyurusu', tag:'Diğer', gradient:'linear-gradient(135deg,#213631,#f6c9d6)', desc:'Balonu şişir, patlat, konfeti patlasın — hamilelik duyurusu ya da doğum haberi için.' },
+    { file:'templates/evcil-hayvan-anisi.html', name:'Evcil Hayvan Anısı', tag:'Diğer', gradient:'linear-gradient(135deg,#1c2444,#cfd6ff)', desc:'Sakin, teselli edici bir anı sayfası — kaybedilen bir evcil hayvanı anmak için.' },
+    { file:'templates/yeni-is-terfi.html', name:'Yeni İş / Terfi', tag:'Diğer', gradient:'linear-gradient(135deg,#0d2830,#ffcf6b)', desc:'Kariyer merdivenini sırayla tırman, tepeye ulaşınca konfeti — terfi/yeni iş kutlaması.' },
   ];
 
   const TAG_CLASS = { 'Standart':'std', 'İnteraktif':'game', 'Doğum Günü':'birthday', 'Arkadaşlık':'friend', 'Diğer':'other' };
@@ -657,10 +654,7 @@
     const card = document.createElement('div');
     card.className = 'tpl-card reveal';
     card.innerHTML = `
-      <div class="tpl-swatch" style="background:${t.gradient}">
-        <img src="${t.img}?w=440&h=224&fit=crop&q=75&auto=format" alt="" loading="lazy">
-        <span>${t.name}</span>
-      </div>
+      <div class="tpl-swatch" style="background:${t.gradient}"><span>${t.name}</span></div>
       <div class="tpl-body">
         <span class="tpl-tag ${TAG_CLASS[t.tag] || ''}">${t.tag}</span>
         <h3>${t.name}</h3>
