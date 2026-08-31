@@ -327,24 +327,38 @@ Bir siparişi müşteriye teslim edilecek gerçek bir linke dönüştürmek art�
   hem evrensel alanlar (partnerName, letter, photos, songName, timeCapsule...)
   hem de şablona özel alanlar (`order.template_extra.fields` üzerinden, bkz.
   `siparis-formu.html`'deki `TEMPLATE_EXTRAS`/`collectTemplateExtrasStructured()`),
-  (6) doldurulmuş tek dosyalık HTML'i Vercel API'siyle **yeni, bağımsız bir
-  proje** olarak deploy eder (her sipariş kendi kısa `vercel.app` linkini
-  alır, ana siteyle karışmaz), (7) `orders.live_url` ve `orders.deployed_at`
-  alanlarını günceller ve linki admin paneline döner.
+  (6) doldurulmuş tek dosyalık HTML'i Vercel API'siyle **mevcut "askina-ozel"
+  projesinin içinde, `target` belirtmeden (= preview) ayrı bir deployment**
+  olarak yükler — Vercel token'ı sadece bu tek projeye deploy izniyle sınırlı
+  olduğu için yeni proje oluşturamıyor; bu yüzden her sipariş kendi rastgele
+  `askina-ozel-xxxxxxx.vercel.app` adresini alır ama hepsi aynı proje altında
+  toplanır. `target: "production"` KESİNLİKLE gönderilmemeli — bu, deployment'ı
+  ana canlı siteye (`askina-ozel.vercel.app`) alias'layıp gerçek tanıtım
+  sitesinin üzerine yazar (bu bir kez yaşandı, hemen fark edilip düzeltildi).
+  (7) `orders.live_url` ve `orders.deployed_at` alanlarını günceller ve linki
+  admin paneline döner.
+  ⚠️ **Vercel projesi "Deployment Protection / SSO" ayarı kapatıldı**
+  (`ssoProtection: null`, proje ayarlarından ya da `PATCH /v9/projects/...`
+  ile) — açık olsaydı bu preview linkleri müşteri tarayıcısında Vercel giriş
+  ekranına yönlendirirdi. Teslim edilen sayfalar zaten "linki bilen görsün"
+  mantığıyla çalıştığı için (rastgele/tahmin edilemez URL) bu kapalı ayar
+  ürünün amacıyla uyumlu; tekrar açılırsa Canlıya Al linkleri çalışmaz olur.
 - **Linki müşteriye gönderme**: Deploy bittikten sonra admin panelinde
   "🔗 Sayfayı Aç" ve "📋 Linki Kopyala" butonları belirir; link
   `buildOrderSummaryText()`'e de otomatik eklenir ("📋 Özeti Kopyala" ile
   WhatsApp'a yapıştırılabilir). Bilgiler değişirse (yeni fotoğraf, düzeltilen
   mektup vb.) aynı buton "🚀 Yeniden Canlıya Al" olarak tekrar çalıştırılabilir
-  — aynı Vercel projesine yeni bir production deploy atar, link değişmez.
+  — yeni bir deployment daha oluşturur, YENİ bir link üretir (aynı linki
+  korumaz — proje bazında değil deployment bazında link verildiği için).
 - **Gerekli Edge Function secret'ları** (`supabase secrets set` ile,
   `supabase/functions/deploy-order` dizininden): `VERCEL_TOKEN` (Vercel
-  personal access token) ve gerekirse `VERCEL_TEAM_ID` (token bir takıma
-  bağlıysa). `SUPABASE_URL`/`SUPABASE_ANON_KEY`/`SUPABASE_SERVICE_ROLE_KEY`
-  Supabase tarafından fonksiyona otomatik enjekte edilir, ayrıca eklenmez.
-  Fonksiyon `--no-verify-jwt` ile deploy edildi (gateway seviyesinde değil,
-  fonksiyon içinde `auth.getUser()` ile daha katı bir admin-oturum kontrolü
-  yapılıyor).
+  personal access token, sadece "askina-ozel" projesine deploy izinli) ve
+  `VERCEL_TEAM_ID` (`team_sH66rM4R1JToQFBTSNpnTIIB`, "ttyedekparca" takımı —
+  token bu takıma bağlı olduğu için zorunlu, yoksa "forbidden" hatası alınır).
+  `SUPABASE_URL`/`SUPABASE_ANON_KEY`/`SUPABASE_SERVICE_ROLE_KEY` Supabase
+  tarafından fonksiyona otomatik enjekte edilir, ayrıca eklenmez. Fonksiyon
+  `--no-verify-jwt` ile deploy edildi (gateway seviyesinde değil, fonksiyon
+  içinde `auth.getUser()` ile daha katı bir admin-oturum kontrolü yapılıyor).
 - **QR kod**: Şablonlardaki QR buton `api.qrserver.com` ile `location.href`'i
   kodluyor — yani sayfa yerelde (`file://`) açıkken anlamsız bir QR üretir,
   sayfa Canlıya Al ile gerçek bir `vercel.app` linkine taşındıktan sonra

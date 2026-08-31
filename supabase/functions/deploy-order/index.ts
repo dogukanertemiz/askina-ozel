@@ -98,10 +98,14 @@ function isoDateTime(dateOnly: string | null | undefined): string {
   return dateOnly.length <= 10 ? `${dateOnly}T00:00:00` : dateOnly;
 }
 
-function slugifyProjectName(order: { id: string; template: string }): string {
-  const shortId = order.id.replace(/-/g, "").slice(0, 10);
-  return `siparis-${order.template}-${shortId}`.toLowerCase().slice(0, 52);
-}
+// Vercel token'ı sadece "askina-ozel" projesine deploy izniyle sınırlı (yeni proje
+// oluşturamıyor) — bu yüzden her sipariş, aynı projenin İÇİNDE, target belirtilmeden
+// (yani "preview") ayrı bir deployment olarak oluşturuluyor. Bu, ana canlı siteyi
+// (askina-ozel.vercel.app, production deploy'a bağlı custom domain) hiç etkilemez;
+// her sipariş kendi rastgele "askina-ozel-xxxxxxx.vercel.app" adresini alır.
+// Not: proje için "Deployment Protection / SSO" kapatıldı (bkz. CLAUDE.md) —
+// aksi halde bu linkler müşteri tarayıcısında Vercel girişi isteyip açılmazdı.
+const VERCEL_PROJECT_NAME = "askina-ozel";
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
@@ -253,8 +257,10 @@ Deno.serve(async (req: Request) => {
 
     html = html.replace(configMatch[0], block);
 
-    // 6) Vercel'e bağımsız, tek dosyalık yeni bir proje olarak deploy et.
-    const projectName = slugifyProjectName(order);
+    // 6) Vercel'e, mevcut "askina-ozel" projesinin İÇİNDE, target belirtmeden
+    //    (= preview) tek dosyalık ayrı bir deployment olarak deploy et.
+    //    target GÖNDERİLMEMELİ: "production" göndermek bu deployment'ı ana
+    //    canlı siteye (askina-ozel.vercel.app) alias'lar ve gerçek siteyi ezer.
     const deployUrl = new URL("https://api.vercel.com/v13/deployments");
     if (vercelTeamId) deployUrl.searchParams.set("teamId", vercelTeamId);
 
@@ -265,8 +271,7 @@ Deno.serve(async (req: Request) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name: projectName,
-        target: "production",
+        name: VERCEL_PROJECT_NAME,
         files: [
           {
             file: "index.html",
