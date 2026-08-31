@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gizlilik Politikası — Kalpte Saklı</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Dancing+Script:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bordo:#2A0D10; --wine:#3A1116; --bordo-deep:#1c070a;
+    --cream:#F8F0EB; --powder:#E8C7C2; --pink:#F4DDD8; --white:#FFFFFF;
+    --ink:#2A0D10; --ink-dim:rgba(42,13,16,.65);
+    --line-light:rgba(42,13,16,.1);
+    --shadow-sm:0 14px 34px rgba(23,6,8,.10);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:'Inter',sans-serif; background:var(--cream); color:var(--ink); -webkit-font-smoothing:antialiased}
+  a{color:var(--bordo)}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 22px}
+
+  .nav{position:sticky; top:0; z-index:40; background:rgba(248,240,235,.92); backdrop-filter:blur(10px); border-bottom:1px solid var(--line-light)}
+  .nav .wrap{display:flex; align-items:center; justify-content:space-between; height:70px}
+  .logo{display:flex; align-items:center; gap:10px; text-decoration:none}
+  .logo-icon{position:relative; width:24px; height:21px; flex-shrink:0; margin-top:2px}
+  .logo-icon::before, .logo-icon::after{content:''; position:absolute; top:0; width:12px; height:19px; background:var(--bordo); border-radius:12px 12px 0 0}
+  .logo-icon::before{left:12px; transform:rotate(-45deg); transform-origin:0 100%}
+  .logo-icon::after{left:0; transform:rotate(45deg); transform-origin:100% 100%}
+  .logo-text{font-family:'Dancing Script',cursive; font-weight:700; font-size:1.7rem; color:var(--bordo)}
+  .btn{display:inline-flex; align-items:center; gap:8px; font-family:'Inter',sans-serif; font-weight:600; font-size:.88rem; padding:11px 22px; border-radius:999px; transition:.2s; cursor:pointer; border:1px solid transparent; text-decoration:none}
+  .btn-dark{background:var(--bordo); color:var(--cream)}
+  .btn-dark:hover{background:var(--bordo-deep)}
+
+  main{padding:56px 0 100px}
+  .doc{max-width:760px; margin:0 auto; background:var(--white); border:1px solid var(--line-light); border-radius:20px; padding:52px 48px; box-shadow:var(--shadow-sm)}
+  .doc h1{font-family:'Playfair Display',serif; font-size:2rem; margin-bottom:8px}
+  .doc .updated{color:var(--ink-dim); font-size:.85rem; margin-bottom:36px}
+  .doc h2{font-family:'Playfair Display',serif; font-size:1.25rem; margin:32px 0 12px}
+  .doc p, .doc li{font-size:.98rem; line-height:1.75; color:var(--ink)}
+  .doc p{margin-bottom:14px}
+  .doc ul{margin:0 0 14px 20px}
+  .doc li{margin-bottom:8px}
+  .doc strong{font-weight:600}
+  .note{background:var(--pink); border-radius:12px; padding:16px 18px; font-size:.88rem; line-height:1.6; color:var(--ink); margin-top:40px}
+
+  footer{padding:36px 0; text-align:center; color:var(--ink-dim); font-size:.85rem}
+  footer a{color:var(--ink-dim); margin:0 8px}
+
+  @media(max-width:640px){ .doc{padding:36px 24px} }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <a href="index.html" class="logo">
+      <span class="logo-icon" aria-hidden="true"></span>
+      <span class="logo-text">Kalpte Saklı</span>
+    </a>
+    <a href="siparis-formu.html" class="btn btn-dark">Sipariş Ver</a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+    <div class="doc">
+      <h1>Gizlilik Politikası</h1>
+      <div class="updated">Son güncelleme: 31 Ağustos 2026</div>
+
+      <p>Bu Gizlilik Politikası, "Kalpte Saklı" (bundan sonra "biz" olarak anılacaktır) markası altında sunulan kişiye özel dijital sürpriz sayfa hizmetini kullanırken bize verdiğin bilgilerin nasıl toplandığını, kullanıldığını ve korunduğunu açıklar.</p>
+
+      <h2>1. Hangi bilgileri topluyoruz?</h2>
+      <p>Sipariş formunu doldurduğunda aşağıdaki bilgileri bizimle paylaşırsın:</p>
+      <ul>
+        <li>Senin ve sürprizi hazırladığın kişinin adı</li>
+        <li>Özel tarih bilgisi (yıldönümü, doğum günü vb.)</li>
+        <li>Yüklediğin fotoğraflar</li>
+        <li>Yazdığın mektup metni ve şarkı bilgisi</li>
+        <li>İletişim bilgilerin (telefon ve/veya e-posta)</li>
+        <li>Seçtiğin şablon, paket ve varsa şablona özel ek bilgiler</li>
+      </ul>
+
+      <h2>2. Bu bilgileri ne için kullanıyoruz?</h2>
+      <p>Topladığımız bilgiler <strong>yalnızca</strong> siparişini hazırlamak ve sana teslim etmek için kullanılır: seçtiğin şablonu bilgilerinle doldurmak, sayfayı yayına almak ve linkini sana iletmek. Bilgilerin pazarlama amacıyla üçüncü taraflarla paylaşılmaz ya da satılmaz.</p>
+
+      <h2>3. Bilgilerin nerede saklanıyor?</h2>
+      <p>Sipariş bilgilerin ve fotoğrafların, Avrupa merkezli (Frankfurt, Almanya) sunucularda barındırılan Supabase altyapısında saklanır. Fotoğrafların tutulduğu depolama alanı özeldir (private) — sadece giriş yapmış yetkili hesap tarafından görüntülenebilir, herkese açık değildir.</p>
+
+      <h2>4. Hangi üçüncü taraf hizmetleri kullanıyoruz?</h2>
+      <p>Hizmeti sunabilmek için aşağıdaki altyapı sağlayıcılarını kullanıyoruz:</p>
+      <ul>
+        <li><strong>Supabase</strong> — sipariş verisi ve fotoğraf depolama</li>
+        <li><strong>Vercel</strong> — web sitesi ve teslim edilen sayfaların barındırılması</li>
+        <li><strong>Google Fonts</strong> — sayfalarda kullanılan yazı tipleri</li>
+        <li><strong>api.qrserver.com</strong> — teslim edilen sayfadaki QR kodun üretilmesi (sadece sayfanın linkini görsele çevirir, herhangi bir kişisel veri göndermez)</li>
+      </ul>
+      <p>Ödeme altyapısı olarak iyzico kullanılması durumunda, ödeme sırasında paylaştığın kart/iletişim bilgileri doğrudan iyzico'nun güvenli altyapısında işlenir, bizim sunucularımızda saklanmaz.</p>
+
+      <h2>5. Bilgilerin ne kadar süre saklanıyor?</h2>
+      <p>Sipariş bilgilerin, olası sonradan revizyon taleplerini karşılayabilmek ve yasal saklama yükümlülüklerimizi yerine getirebilmek için makul bir süre boyunca saklanır. Bilgilerinin silinmesini istersen, aşağıdaki iletişim adresinden bize ulaşman yeterli.</p>
+
+      <h2>6. Haklarım neler?</h2>
+      <p>Bize ilettiğin kişisel verilerle ilgili erişim, düzeltme ve silme talebinde bulunabilirsin. Detaylı bilgi için <a href="kvkk.html">KVKK Aydınlatma Metni</a>'ni inceleyebilirsin.</p>
+
+      <h2>7. İletişim</h2>
+      <p>Bu politikayla ilgili sorularını <a href="mailto:kalptesakli0@gmail.com">kalptesakli0@gmail.com</a> adresinden bize iletebilirsin.</p>
+
+      <div class="note">Bu metin, hizmetimizin işleyişini şeffaf şekilde açıklamak amacıyla hazırlanmış genel bir bilgilendirme metnidir; profesyonel hukuki danışmanlığın yerine geçmez.</div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    © <span id="year"></span> Kalpte Saklı ·
+    <a href="index.html">Ana Sayfa</a> ·
+    <a href="gizlilik-politikasi.html">Gizlilik Politikası</a> ·
+    <a href="kvkk.html">KVKK</a> ·
+    <a href="mesafeli-satis-sozlesmesi.html">Mesafeli Satış Sözleşmesi</a>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
