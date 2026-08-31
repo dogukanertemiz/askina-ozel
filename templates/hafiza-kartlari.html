@@ -125,9 +125,85 @@
   .qr-modal .qr-box img{width:220px; height:220px; display:block; margin:0 auto 14px}
   .qr-modal .qr-box p{color:#333; font-size:.85rem; margin-bottom:14px; line-height:1.5}
   .qr-modal .qr-close{font-size:.82rem; color:#fff; background:var(--accent); border:none; padding:9px 20px; border-radius:20px; cursor:pointer}
+
+/* Erisim Kilidi (opsiyonel) - DEGISTIR: CONFIG.accessType ile acilir/kapanir */
+.access-gate{position:fixed; inset:0; z-index:200; display:none; align-items:center; justify-content:center; padding:24px; background:var(--bg-1); transition:opacity .6s ease, visibility .6s ease}
+.access-gate.show{display:flex}
+.access-gate.hidden{opacity:0; visibility:hidden; pointer-events:none}
+.access-card{max-width:380px; width:100%; background:var(--card); border:1px solid var(--border); border-radius:22px; padding:42px 30px; text-align:center; box-shadow:0 30px 80px rgba(0,0,0,.25)}
+.access-card.shake{animation:accessShake .4s}
+@keyframes accessShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+.access-lock-icon{font-size:2rem; margin-bottom:16px}
+.access-question{margin-bottom:28px; line-height:1.5}
+.access-eyebrow{display:block; font-size:.68rem; letter-spacing:.16em; text-transform:uppercase; color:var(--text-dim); margin-bottom:8px}
+.access-question span:last-child{display:block; font-size:1.05rem; color:var(--text)}
+.access-date-wheels{display:flex; align-items:flex-end; justify-content:center; gap:8px; margin-bottom:24px}
+.access-wheel{display:flex; flex-direction:column; align-items:center; gap:6px}
+.access-wheel-btn{background:none; border:1px solid var(--border); color:var(--accent); width:32px; height:24px; border-radius:8px; cursor:pointer; font-size:.7rem; line-height:1; transition:.15s; font-family:inherit}
+.access-wheel-btn:hover{background:var(--accent); color:var(--bg-1)}
+.access-wheel-value-wrap{width:58px; height:50px; perspective:240px}
+.access-wheel-value{width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:1.3rem; font-weight:700; color:var(--text); background:var(--bg-2); border-radius:10px; border:1px solid var(--border)}
+.access-wheel-value.flip{animation:accessFlip .35s ease}
+@keyframes accessFlip{0%{transform:rotateX(0deg)}45%{transform:rotateX(95deg); opacity:.25}55%{transform:rotateX(95deg); opacity:.25}100%{transform:rotateX(0deg); opacity:1}}
+.access-wheel-sep{font-size:1.2rem; color:var(--text-dim); padding-bottom:16px}
+.access-wheel-label{font-size:.62rem; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim)}
+.access-password-input{width:100%; font-size:1rem; padding:13px 16px; border-radius:12px; border:1px solid var(--border); background:var(--bg-2); color:var(--text); text-align:center; margin-bottom:20px; outline:none; font-family:inherit}
+.access-password-input:focus{border-color:var(--accent)}
+.access-submit{width:100%; padding:13px; border-radius:999px; border:1px solid var(--border); background:transparent; color:var(--accent); font-weight:700; font-size:.9rem; cursor:pointer; letter-spacing:.03em; transition:.25s; font-family:inherit}
+.access-submit:hover{background:var(--accent); color:var(--bg-1); border-color:var(--accent)}
+.access-error{font-size:.8rem; color:#c0392b; margin-top:16px; opacity:0; transition:.2s; min-height:1em}
+.access-error.show{opacity:1}
+@media(max-width:420px){ .access-wheel-value-wrap{width:50px} .access-card{padding:34px 22px} }
+.access-wheel-value-wrap.wide{width:112px}
+.access-wheel-value.month-text{font-size:.98rem; padding:0 4px}
+.access-pin-boxes{display:flex; gap:10px; justify-content:center; margin-bottom:20px}
+.access-pin-box{width:50px; height:58px; text-align:center; font-size:1.5rem; font-weight:700; border-radius:12px; border:1px solid var(--border); background:var(--bg-2); color:var(--text); outline:none; font-family:inherit}
+.access-pin-box:focus{border-color:var(--accent)}
+@media(max-width:420px){ .access-wheel-value-wrap.wide{width:92px} .access-pin-box{width:44px; height:52px; font-size:1.3rem} }
 </style>
 </head>
 <body>
+
+<div class="access-gate" id="accessGate">
+  <div class="access-card">
+    <div class="access-lock-icon" id="accessIcon">🔒</div>
+    <div class="access-question">
+      <span class="access-eyebrow" id="accessEyebrow">İpucu</span>
+      <span id="accessQuestionText">Özel bir seyimizi hatırlıyor musun?</span>
+    </div>
+    <div class="access-date-wheels" id="accessDateWheels">
+      <div class="access-wheel">
+        <button type="button" class="access-wheel-btn" data-field="day" data-dir="up">▲</button>
+        <div class="access-wheel-value-wrap"><div class="access-wheel-value" id="accessWheelDay">01</div></div>
+        <button type="button" class="access-wheel-btn" data-field="day" data-dir="down">▼</button>
+        <div class="access-wheel-label">Gün</div>
+      </div>
+      <div class="access-wheel-sep">.</div>
+      <div class="access-wheel">
+        <button type="button" class="access-wheel-btn" data-field="month" data-dir="up">▲</button>
+        <div class="access-wheel-value-wrap wide"><div class="access-wheel-value month-text" id="accessWheelMonth">Ocak</div></div>
+        <button type="button" class="access-wheel-btn" data-field="month" data-dir="down">▼</button>
+        <div class="access-wheel-label">Ay</div>
+      </div>
+      <div class="access-wheel-sep">.</div>
+      <div class="access-wheel">
+        <button type="button" class="access-wheel-btn" data-field="year" data-dir="up">▲</button>
+        <div class="access-wheel-value-wrap"><div class="access-wheel-value" id="accessWheelYear">2024</div></div>
+        <button type="button" class="access-wheel-btn" data-field="year" data-dir="down">▼</button>
+        <div class="access-wheel-label">Yıl</div>
+      </div>
+    </div>
+    <input type="text" class="access-password-input" id="accessPasswordInput" placeholder="Cevabını yaz..." autocomplete="off" style="display:none">
+    <div class="access-pin-boxes" id="accessPinBoxes" style="display:none">
+      <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="access-pin-box" data-pin-index="0">
+      <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="access-pin-box" data-pin-index="1">
+      <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="access-pin-box" data-pin-index="2">
+      <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="access-pin-box" data-pin-index="3">
+    </div>
+    <button type="button" class="access-submit" id="accessSubmit">Aç</button>
+    <div class="access-error" id="accessError">Doğru değil, bir daha dene 💭</div>
+  </div>
+</div>
 
 <div class="intro-overlay" id="introOverlay">
   <div class="kicker">Kalpte Saklı · Hafıza Kartları</div>
@@ -221,6 +297,12 @@
    (istersen emoji yerine kısa kelimeler de olabilir).
    ============================================================ */
 const CONFIG = {
+  accessType: null,                                 // DEĞİŞTİR (opsiyonel): null | "tarih" | "sifre" | "pin" — sayfa açılmadan önce bir soru/tarih/4 haneli şifre sorulsun mu?
+  accessQuestion: "",                                // DEĞİŞTİR (opsiyonel): ör. "İlk Kahve Tarihimiz" ya da "En Sevdiğim Renk" — soru/ipucu metni, cevap alanının üstünde gösterilir
+  accessDate: "",                                    // DEĞİŞTİR (opsiyonel): accessType "tarih" ise doğru cevap (YYYY-MM-DD)
+  accessPassword: "",                                // DEĞİŞTİR (opsiyonel): accessType "sifre" ise doğru cevap (büyük/küçük harf farketmez)
+  accessPin: "",                                     // DEĞİŞTİR (opsiyonel): accessType "pin" ise doğru cevap (4 haneli rakam, ör. "0321")
+
   partnerName: "Sevgilim",                        // DEĞİŞTİR: partnerin adı
   heroSubtitle: "Birlikte geçirdiğimiz her an, hafızamda sakladığım küçük bir hazine.", // DEĞİŞTİR (opsiyonel)
   senderName: "Seni Seven",                        // DEĞİŞTİR: gönderenin adı
@@ -450,7 +532,116 @@ function initPageTools(){
   }
 }
 
+function initAccessGate(){
+  const gate = document.getElementById('accessGate');
+  if(!gate || !CONFIG.accessType){ if(gate) gate.remove(); return; }
+  try {
+    if(sessionStorage.getItem('kalpteSakli_unlocked_' + location.pathname) === '1'){ gate.remove(); return; }
+  } catch(e){}
+  document.documentElement.style.overflow = 'hidden';
+  gate.classList.add('show');
+
+  const mode = CONFIG.accessType; // "tarih" | "sifre" | "pin"
+  const icon = document.getElementById('accessIcon');
+  const eyebrow = document.getElementById('accessEyebrow');
+  const qText = document.getElementById('accessQuestionText');
+  const dateWrap = document.getElementById('accessDateWheels');
+  const pwInput = document.getElementById('accessPasswordInput');
+  const pinWrap = document.getElementById('accessPinBoxes');
+
+  if(icon) icon.textContent = mode === 'tarih' ? '📅' : (mode === 'pin' ? '🔑' : '💭');
+  if(eyebrow) eyebrow.textContent = mode === 'tarih' ? 'İpucu' : (mode === 'pin' ? '4 Haneli Şifre' : 'Soru');
+  if(qText) qText.textContent = CONFIG.accessQuestion || (mode === 'tarih' ? 'Özel bir tarihimizi hatırlıyor musun?' : (mode === 'pin' ? '4 haneli şifremizi biliyor musun?' : 'Şifreyi hatırlıyor musun?'));
+
+  if(dateWrap) dateWrap.style.display = mode === 'tarih' ? 'flex' : 'none';
+  if(pwInput) pwInput.style.display = mode === 'sifre' ? 'block' : 'none';
+  if(pinWrap) pinWrap.style.display = mode === 'pin' ? 'flex' : 'none';
+
+  function unlock(){
+    try { sessionStorage.setItem('kalpteSakli_unlocked_' + location.pathname, '1'); } catch(e){}
+    document.documentElement.style.overflow = '';
+    gate.classList.add('hidden');
+    setTimeout(() => gate.remove(), 700);
+  }
+  function fail(){
+    const card = gate.querySelector('.access-card');
+    const err = document.getElementById('accessError');
+    card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
+    if(err) err.classList.add('show');
+  }
+
+  const MONTH_NAMES = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+
+  if(mode === 'tarih'){
+    const now = new Date();
+    const vals = { day: 1, month: 1, year: now.getFullYear() };
+    const bounds = { day:[1,31], month:[1,12], year:[1970, now.getFullYear()+1] };
+    const els = { day: document.getElementById('accessWheelDay'), month: document.getElementById('accessWheelMonth'), year: document.getElementById('accessWheelYear') };
+    function render(field){
+      const el = els[field];
+      if(!el) return;
+      if(field === 'month') el.textContent = MONTH_NAMES[vals.month - 1];
+      else if(field === 'year') el.textContent = String(vals.year);
+      else el.textContent = String(vals[field]).padStart(2,'0');
+      el.classList.remove('flip'); void el.offsetWidth; el.classList.add('flip');
+    }
+    Object.keys(vals).forEach(render);
+    gate.querySelectorAll('.access-wheel-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const field = btn.dataset.field;
+        const dir = btn.dataset.dir === 'up' ? 1 : -1;
+        const b = bounds[field];
+        vals[field] += dir;
+        if(vals[field] > b[1]) vals[field] = b[0];
+        if(vals[field] < b[0]) vals[field] = b[1];
+        render(field);
+      });
+    });
+    document.getElementById('accessSubmit').addEventListener('click', () => {
+      if(!CONFIG.accessDate){ unlock(); return; }
+      const target = new Date(CONFIG.accessDate + 'T00:00:00');
+      if(vals.day === target.getDate() && vals.month === (target.getMonth() + 1) && vals.year === target.getFullYear()){
+        unlock();
+      } else {
+        fail();
+      }
+    });
+  } else if(mode === 'pin'){
+    const boxes = Array.from(gate.querySelectorAll('.access-pin-box'));
+    function tryPin(){
+      const guess = boxes.map(b => b.value).join('');
+      if(CONFIG.accessPin && guess === CONFIG.accessPin){
+        unlock();
+      } else {
+        fail();
+        boxes.forEach(b => b.value = '');
+        boxes[0].focus();
+      }
+    }
+    boxes.forEach((box, i) => {
+      box.addEventListener('input', () => {
+        box.value = box.value.replace(/\D/g, '').slice(0, 1);
+        if(box.value && boxes[i + 1]) boxes[i + 1].focus();
+        if(boxes.every(b => b.value)) tryPin();
+      });
+      box.addEventListener('keydown', e => {
+        if(e.key === 'Backspace' && !box.value && boxes[i - 1]) boxes[i - 1].focus();
+      });
+    });
+    document.getElementById('accessSubmit').addEventListener('click', tryPin);
+  } else {
+    function tryPassword(){
+      const answer = (CONFIG.accessPassword || '').trim().toLocaleLowerCase('tr');
+      const guess = (pwInput.value || '').trim().toLocaleLowerCase('tr');
+      if(answer && guess === answer){ unlock(); } else { fail(); }
+    }
+    document.getElementById('accessSubmit').addEventListener('click', tryPassword);
+    pwInput.addEventListener('keydown', e => { if(e.key === 'Enter') tryPassword(); });
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  initAccessGate();
   initTimeCapsule();
   initVisitCounter();
   initPageTools();

@@ -221,6 +221,15 @@ const TEMPLATE_NAMES = {
 };
 function templateName(slug){ return TEMPLATE_NAMES[slug] || slug || '—'; }
 
+function accessTypeLabel(type){
+  return type === 'tarih' ? 'Tarih' : type === 'pin' ? '4 haneli şifre' : type === 'sifre' ? 'Soru-cevap' : '—';
+}
+function accessAnswerText(o){
+  if(o.access_type === 'tarih') return o.access_date ? formatDate(o.access_date) : '—';
+  if(o.access_type === 'pin') return o.access_pin || '—';
+  return o.access_password || '—';
+}
+
 /* ---------- Auth ---------- */
 async function initAuth(){
   const { data: { session } } = await sb.auth.getSession();
@@ -465,6 +474,12 @@ function buildOrderCard(o){
     <div class="detail-section">
       <div class="detail-section-title">Anı Kutusu</div>
       <div class="detail-field"><div class="df-value">${o.capsule_date ? formatDate(o.capsule_date) : 'Tarih yok'} — ${escapeHtml(o.capsule_message || '')}</div></div>
+    </div>` : ''}
+
+    ${o.access_type ? `
+    <div class="detail-section">
+      <div class="detail-section-title">Erişim Kilidi</div>
+      <div class="detail-field"><div class="df-value">${escapeHtml(accessTypeLabel(o.access_type))} — ipucu: "${escapeHtml(o.access_question || '—')}", cevap: "${escapeHtml(accessAnswerText(o))}"</div></div>
     </div>` : ''}
 
     <div class="detail-section">

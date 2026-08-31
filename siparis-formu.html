@@ -321,6 +321,51 @@
             <input type="text" id="capsuleMessage" placeholder="O gün açılacak kısa mesaj">
           </div>
         </div>
+
+        <div class="field" style="margin-top:22px">
+          <label>Erişim kilidi</label>
+          <div class="hint" style="margin-bottom:10px">Sayfa açılmadan önce bir soruyu doğru cevaplamasını isteyebilirsin — sürprizi biraz daha oyunlaştırır.</div>
+          <div class="radio-group">
+            <label class="radio-opt">
+              <input type="radio" name="accessType" value="" checked>
+              <div><div class="opt-title">Yok</div><div class="opt-desc">Sayfa direkt açılır</div></div>
+            </label>
+            <label class="radio-opt">
+              <input type="radio" name="accessType" value="tarih">
+              <div><div class="opt-title">Özel bir tarih</div><div class="opt-desc">Örn. ilk buluşma tarihiniz — çevirmeli gün/ay/yıl seçiciyle girilir</div></div>
+            </label>
+            <label class="radio-opt">
+              <input type="radio" name="accessType" value="sifre">
+              <div><div class="opt-title">Soru - cevap</div><div class="opt-desc">Örn. "En sevdiğim renk" — düz yazıyla cevaplanır</div></div>
+            </label>
+            <label class="radio-opt">
+              <input type="radio" name="accessType" value="pin">
+              <div><div class="opt-title">4 haneli şifre</div><div class="opt-desc">Örn. doğum yılınızın son 4 hanesi</div></div>
+            </label>
+          </div>
+        </div>
+
+        <div id="accessTypeFields" style="display:none; margin-top:16px">
+          <div class="grid2">
+            <div class="field">
+              <label for="accessQuestion">İpucu / soru metni</label>
+              <input type="text" id="accessQuestion" placeholder="Örn. İlk Kahve Tarihimiz / En Sevdiğim Renk">
+              <div class="hint">Sayfada cevap alanının üstünde gösterilir — seçtiğin tipe uygun bir ipucu yaz.</div>
+            </div>
+            <div class="field" id="accessAnswerDateField" style="display:none">
+              <label for="accessAnswerDate">Doğru tarih</label>
+              <input type="date" id="accessAnswerDate">
+            </div>
+            <div class="field" id="accessAnswerPasswordField" style="display:none">
+              <label for="accessAnswerPassword">Doğru cevap</label>
+              <input type="text" id="accessAnswerPassword" placeholder="Örn. mavi">
+            </div>
+            <div class="field" id="accessAnswerPinField" style="display:none">
+              <label for="accessAnswerPin">4 haneli şifre</label>
+              <input type="text" id="accessAnswerPin" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" placeholder="Örn. 0321">
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="card">
@@ -651,6 +696,16 @@ function syncUrgencyToPackage(){
 document.querySelectorAll('input[name=package]').forEach(el => el.addEventListener('change', syncUrgencyToPackage));
 syncUrgencyToPackage();
 
+function syncAccessTypeFields(){
+  const type = document.querySelector('input[name=accessType]:checked')?.value || '';
+  document.getElementById('accessTypeFields').style.display = type ? 'block' : 'none';
+  document.getElementById('accessAnswerDateField').style.display = type === 'tarih' ? 'block' : 'none';
+  document.getElementById('accessAnswerPasswordField').style.display = type === 'sifre' ? 'block' : 'none';
+  document.getElementById('accessAnswerPinField').style.display = type === 'pin' ? 'block' : 'none';
+}
+document.querySelectorAll('input[name=accessType]').forEach(el => el.addEventListener('change', syncAccessTypeFields));
+syncAccessTypeFields();
+
 function formatDate(iso){
   if(!iso) return '';
   const d = new Date(iso + 'T00:00:00');
@@ -714,6 +769,14 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
   const extraTouches = [];
   if(val('capsuleDate') || val('capsuleMessage')){
     extraTouches.push(`Anı kutusu: ${formatDate(val('capsuleDate')) || 'Tarih belirtilmedi'} — "${val('capsuleMessage') || 'Mesaj belirtilmedi'}"`);
+  }
+  const accessTypeVal = document.querySelector('input[name=accessType]:checked')?.value || '';
+  if(accessTypeVal){
+    const accessLabel = accessTypeVal === 'tarih' ? 'Tarih' : (accessTypeVal === 'pin' ? '4 haneli şifre' : 'Soru-cevap');
+    const accessAnswer = accessTypeVal === 'tarih' ? (formatDate(val('accessAnswerDate')) || 'Belirtilmedi')
+      : accessTypeVal === 'pin' ? (val('accessAnswerPin') || 'Belirtilmedi')
+      : (val('accessAnswerPassword') || 'Belirtilmedi');
+    extraTouches.push(`Erişim kilidi: ${accessLabel} — ipucu: "${val('accessQuestion') || 'Belirtilmedi'}", cevap: "${accessAnswer}"`);
   }
   if(extraTouches.length){
     lines.push(``, `Ekstra dokunuşlar:`, extraTouches.join('\n'));
@@ -785,7 +848,12 @@ async function saveOrderToDatabase(data){
         capsule_message: val('capsuleMessage') || null,
         urgency: val('urgency') || document.getElementById('urgency').value,
         contact_phone: val('contactPhone') || null,
-        contact_email: val('contactEmail') || null
+        contact_email: val('contactEmail') || null,
+        access_type: document.querySelector('input[name=accessType]:checked')?.value || null,
+        access_question: val('accessQuestion') || null,
+        access_date: val('accessAnswerDate') || null,
+        access_password: val('accessAnswerPassword') || null,
+        access_pin: val('accessAnswerPin') || null
       }
     });
     if(rpcErr) throw rpcErr;

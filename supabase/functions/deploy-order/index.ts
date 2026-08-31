@@ -51,6 +51,18 @@ function setString(block: string, key: string, value: string | null | undefined)
   return block.replace(re, (_m, pre) => pre + JSON.stringify(value ?? ""));
 }
 
+// accessType gibi varsayılan değeri literal `null` olan (tırnaksız) alanlar için —
+// value verilirse tırnaklı stringe, verilmezse null'a çevirir.
+function setStringOrNull(block: string, key: string, value: string | null | undefined): string {
+  const re = new RegExp(
+    `(\\b${key}\\s*:\\s*)(null|"(?:[^"\\\\]|\\\\.)*"|'(?:[^'\\\\]|\\\\.)*'|\`(?:[^\`\\\\]|\\\\.)*\`)`,
+    "s",
+  );
+  if (!re.test(block)) return block;
+  const encoded = value ? JSON.stringify(value) : "null";
+  return block.replace(re, (_m, pre) => pre + encoded);
+}
+
 function setNumberOrNull(block: string, key: string, value: unknown): string {
   const re = new RegExp(`(\\b${key}\\s*:\\s*)(null|-?\\d+(?:\\.\\d+)?)`);
   if (!re.test(block)) return block;
@@ -229,6 +241,15 @@ Deno.serve(async (req: Request) => {
     if (order.special_date_label) block = setString(block, "specialDateLabel", order.special_date_label);
     if (order.special_date) block = setString(block, "specialDate", isoDateTime(order.special_date));
     if (photoUrls.length) block = setArray(block, "photos", photoUrls);
+
+    // Erişim kilidi (opsiyonel — tarih / soru-cevap / 4 haneli şifre).
+    if (order.access_type) {
+      block = setStringOrNull(block, "accessType", order.access_type);
+      block = setString(block, "accessQuestion", order.access_question || "");
+      if (order.access_date) block = setString(block, "accessDate", order.access_date);
+      if (order.access_password) block = setString(block, "accessPassword", order.access_password);
+      if (order.access_pin) block = setString(block, "accessPin", order.access_pin);
+    }
 
     // Şablona özel alanlar (order.template_extra.fields = siparis-formu.html'in
     // collectTemplateExtrasStructured() çıktısı, {fieldId: value} şeklinde).

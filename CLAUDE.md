@@ -150,6 +150,29 @@ mekaniği yok) ve **Teşekkür & Özür**'ün "özür" modunda bu alanı boş b�
 gecikmeli bir "sürpriz" o bağlamda yersiz kaçar. Diğer şablonlarda
 (özellikle romantik ve kutlama temalı olanlarda) rahatça kullanılabilir.
 
+### Erişim kilidi (opsiyonel — tüm şablonlarda ortak)
+
+| Alan | Tip | Açıklama |
+|---|---|---|
+| `accessType` | enum (opsiyonel) | `null` \| `"tarih"` \| `"sifre"` \| `"pin"` — doluysa sayfa açılmadan önce tam ekran bir "erişim kilidi" gösterilir |
+| `accessQuestion` | string (opsiyonel) | Kilit ekranında cevap alanının üstünde gösterilen ipucu/soru metni (ör. "İlk Kahve Tarihimiz", "En Sevdiğim Renk", "Doğum Yılım") — hangi tip seçildiyse ona uygun bir ipucu yazılmalı |
+| `accessDate` | string (opsiyonel) | `accessType` "tarih" ise doğru cevap (`YYYY-MM-DD`) — çevirmeli gün / ay (yazıyla, ör. "Mayıs") / yıl seçiciyle karşılaştırılır |
+| `accessPassword` | string (opsiyonel) | `accessType` "sifre" ise doğru cevap — düz metin, büyük/küçük harf farketmez |
+| `accessPin` | string (opsiyonel) | `accessType` "pin" ise doğru cevap — 4 haneli rakam, ayrı kutulu bir PIN girişiyle karşılaştırılır |
+
+Sayfa yüklenir yüklenmez (envelope/oyun mekaniğinden bile önce) tam ekran bir
+kilit ekranı çıkar; doğru cevap girilene kadar arkadaki içerik görülemez/scroll
+edilemez (`document.documentElement.style.overflow` kilitlenir). Doğru cevap
+girilince kilit `sessionStorage`'a yazılır — aynı tarayıcı sekmesinde tekrar
+sorulmaz, ama yeni bir ziyarette (yeni sekme/tarayıcı) tekrar sorulur. `accessType`
+boş/`null` bırakılırsa (varsayılan) kilit ekranı hiç render edilmez, sayfa eskisi
+gibi direkt açılır — geriye dönük tamamen uyumlu. Sipariş formunda "Erişim
+kilidi" bölümünde toplanır (adım 7, Ekstra Dokunuşlar), `orders` tablosunda
+`access_type` / `access_question` / `access_date` / `access_password` /
+`access_pin` kolonlarına, admin panelinde sipariş detayının "Erişim Kilidi"
+satırına yazılır (cevap **sadece admin panelinde**, WhatsApp özet metnine
+bilerek eklenmez — sırrı kazara müşteriye iletmemek için).
+
 İnteraktif şablonlarda ek alanlar:
 
 | Şablon | Ek alan | Açıklama |
