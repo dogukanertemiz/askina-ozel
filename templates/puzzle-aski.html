@@ -37,6 +37,7 @@
   }
   .intro-overlay.hidden{opacity:0; visibility:hidden; pointer-events:none}
   .kicker{letter-spacing:.4em; text-transform:uppercase; font-size:.72rem; color:var(--accent-soft)}
+  #playScreen{display:flex; flex-direction:column; align-items:center}
   .puzzle-title{font-size:clamp(1.6rem,4.5vw,2.4rem); text-align:center; max-width:520px}
   .puzzle-hint{color:var(--text-dim); text-align:center; max-width:440px; font-size:1.05rem}
 
@@ -433,10 +434,14 @@ function solvedTiles(){ return Array.from({length:SIZE*SIZE}, (_,i) => i); }
 function shuffleTiles(){
   tiles = solvedTiles();
   let blank = BLANK;
-  for(let i = 0; i < 180; i++){
-    const neighbors = getNeighbors(blank);
+  let lastBlank = -1;
+  for(let i = 0; i < 24; i++){
+    // Bir önceki hamleyi geri almaktan kaçın, aksi halde az sayıda hamle
+    // neredeyse çözülmüş bir tahtayla sonuçlanabilir.
+    const neighbors = getNeighbors(blank).filter(n => n !== lastBlank);
     const swapWith = neighbors[Math.floor(Math.random()*neighbors.length)];
     [tiles[blank], tiles[swapWith]] = [tiles[swapWith], tiles[blank]];
+    lastBlank = blank;
     blank = swapWith;
   }
   moves = 0;
