@@ -54,7 +54,7 @@
   .puzzle-controls{display:flex; gap:14px; flex-wrap:wrap; justify-content:center}
   .puzzle-btn{font-family:'Cormorant Garamond',serif; font-size:1rem; letter-spacing:.08em; background:transparent; border:1px solid var(--border); color:var(--accent-soft); padding:10px 22px; border-radius:30px; cursor:pointer; transition:.3s}
   .puzzle-btn:hover{background:var(--accent); color:var(--bg-1)}
-  .puzzle-preview{width:110px; border-radius:10px; border:2px solid var(--border); display:none}
+  .puzzle-preview{width:150px; border-radius:10px; border:2px solid var(--accent); display:none; box-shadow:0 10px 30px rgba(0,0,0,.35)}
   .puzzle-preview.show{display:block}
   .puzzle-moves{color:var(--text-dim); font-size:.9rem; letter-spacing:.05em}
 
@@ -211,17 +211,16 @@
   <div class="kicker">Kalpte Saklı · Puzzle Aşkı</div>
   <div id="playScreen">
     <div class="puzzle-title">Bu yapbozu çöz, mektubun açılsın 💌</div>
-    <p class="puzzle-hint">Boşluğun kenarındaki bir parçaya tıkla, kaydırarak resmi tamamla.</p>
-    <div style="height:20px"></div>
+    <p class="puzzle-hint">Aşağıdaki resme bakarak, boşluğun kenarındaki bir parçaya tıkla ve kaydır.</p>
+    <img class="puzzle-preview show" id="puzzlePreview" src="" alt="Tamamlanacak resim">
+    <div style="height:16px"></div>
     <div class="puzzle-board" id="puzzleBoard"></div>
     <div style="height:18px"></div>
     <div class="puzzle-controls">
-      <button class="puzzle-btn" id="hintBtn">İpucu 👁</button>
       <button class="puzzle-btn" id="shuffleBtn">Yeniden Karıştır 🔀</button>
     </div>
     <div style="height:14px"></div>
     <div class="puzzle-moves" id="moveCounter">Hamle: 0</div>
-    <img class="puzzle-preview" id="puzzlePreview" src="" alt="İpucu">
   </div>
   <div class="win-panel" id="winPanel">
     <h2>Harika, çözdün! 🎉</h2>
@@ -435,7 +434,7 @@ function shuffleTiles(){
   tiles = solvedTiles();
   let blank = BLANK;
   let lastBlank = -1;
-  for(let i = 0; i < 24; i++){
+  for(let i = 0; i < 10; i++){
     // Bir önceki hamleyi geri almaktan kaçın, aksi halde az sayıda hamle
     // neredeyse çözülmüş bir tahtayla sonuçlanabilir.
     const neighbors = getNeighbors(blank).filter(n => n !== lastBlank);
@@ -502,9 +501,6 @@ function initPuzzle(){
   shuffleTiles();
   renderPuzzle();
   document.getElementById('shuffleBtn').addEventListener('click', () => { shuffleTiles(); renderPuzzle(); });
-  document.getElementById('hintBtn').addEventListener('click', () => {
-    document.getElementById('puzzlePreview').classList.toggle('show');
-  });
   document.getElementById('continueBtn').addEventListener('click', () => {
     document.getElementById('introOverlay').classList.add('hidden');
   });
