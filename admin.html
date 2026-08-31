@@ -109,6 +109,12 @@
   .photo-row img{width:76px; height:76px; object-fit:cover; border-radius:10px; border:1px solid var(--line-light); cursor:pointer}
   .admin-note-row{display:flex; gap:8px; margin-top:8px}
   .admin-note-row input{flex:1; font-family:'Inter',sans-serif; font-size:.88rem; padding:9px 12px; border:1px solid var(--line-light); border-radius:10px; background:var(--cream)}
+  .letter-textarea{width:100%; font-family:'Inter',sans-serif; font-size:.92rem; line-height:1.6; padding:14px 16px; border:1px solid var(--line-light); border-radius:12px; background:var(--cream); resize:vertical; color:var(--ink)}
+  .letter-textarea:focus{border-color:var(--bordo); outline:none}
+  .letter-actions{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px}
+  .letter-status{font-size:.82rem; color:var(--ink-dim)}
+  .letter-status.ok{color:var(--ok)}
+  .letter-status.err{color:var(--danger)}
   .detail-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:24px; padding-top:20px; border-top:1px solid var(--line-light)}
   .btn-danger{background:transparent; color:var(--danger); border-color:var(--danger)}
   .btn-danger:hover{background:var(--danger); color:#fff}
@@ -450,7 +456,12 @@ function buildOrderCard(o){
 
     <div class="detail-section">
       <div class="detail-section-title">Mektup</div>
-      <div class="detail-field"><div class="df-value">${escapeHtml(o.letter || '—')}</div></div>
+      <textarea class="letter-textarea" data-id="${o.id}" rows="8">${escapeHtml(o.letter || '')}</textarea>
+      <div class="letter-actions">
+        <button type="button" class="btn btn-outline btn-sm ai-write-btn">✨ Yapay Zeka ile Yaz</button>
+        <button type="button" class="btn btn-dark btn-sm save-letter-btn">Kaydet</button>
+        <span class="letter-status"></span>
+      </div>
     </div>
 
     <div class="detail-section">
@@ -515,6 +526,49 @@ function buildOrderCard(o){
 
   const deleteBtn = detail.querySelector('.delete-order-btn');
   deleteBtn.addEventListener('click', () => deleteOrder(o, card));
+
+  const letterTextarea = detail.querySelector('.letter-textarea');
+  const letterStatus = detail.querySelector('.letter-status');
+  const saveLetterBtn = detail.querySelector('.save-letter-btn');
+  const aiWriteBtn = detail.querySelector('.ai-write-btn');
+
+  saveLetterBtn.addEventListener('click', async () => {
+    saveLetterBtn.disabled = true;
+    const { error } = await sb.from('orders').update({ letter: letterTextarea.value }).eq('id', o.id);
+    saveLetterBtn.disabled = false;
+    if(error){
+      letterStatus.className = 'letter-status err';
+      letterStatus.textContent = 'Kaydedilemedi: ' + error.message;
+      return;
+    }
+    o.letter = letterTextarea.value;
+    letterStatus.className = 'letter-status ok';
+    letterStatus.textContent = 'Kaydedildi ✓';
+    setTimeout(() => { letterStatus.textContent = ''; letterStatus.className = 'letter-status'; }, 2000);
+  });
+
+  aiWriteBtn.addEventListener('click', async () => {
+    const original = aiWriteBtn.textContent;
+    aiWriteBtn.disabled = true;
+    aiWriteBtn.textContent = 'Yazılıyor...';
+    letterStatus.className = 'letter-status';
+    letterStatus.textContent = '';
+    try {
+      const { data, error } = await sb.functions.invoke('generate-letter', { body: { order_id: o.id } });
+      if(error) throw error;
+      if(data && data.error) throw new Error(data.error);
+      if(!data || !data.letter) throw new Error('Beklenmeyen yanıt döndü.');
+      letterTextarea.value = data.letter;
+      letterStatus.className = 'letter-status ok';
+      letterStatus.textContent = 'Taslak hazır — gözden geçirip Kaydet\'e bas.';
+    } catch(err){
+      letterStatus.className = 'letter-status err';
+      letterStatus.textContent = 'Hata: ' + (err.message || 'bilinmeyen hata');
+    } finally {
+      aiWriteBtn.disabled = false;
+      aiWriteBtn.textContent = original;
+    }
+  });
 
   renderDeployBox(o, detail.querySelector('.deploy-box'));
 

@@ -399,6 +399,34 @@ Bir siparişi müşteriye teslim edilecek gerçek bir linke dönüştürmek art�
   QR de otomatik olarak o linki gösterip çalışır hale gelir (ayrı bir aktivasyon
   gerekmez).
 
+### Yapay Zeka ile Mektup Yazma ("✨ Yapay Zeka ile Yaz" butonu)
+
+Sipariş formunda müşteri mektup için iki mod seçebilir: "Kendim yazacağım"
+(tam metin) ya da "Siz yazın, ben anlatayım" (sadece 3-4 soruya kısa cevap:
+nasıl tanıştınız, en sevdiği özelliği, ne hissettiriyor, ek not). İkinci
+modda `orders.letter` alanına ham maddeler + `"(Bu maddelerden akıcı bir
+mektup yazılacak)"` notu kaydedilir — bu, canlıya alınmadan önce birinin
+gerçek bir mektuba çevirmesi gerektiğinin işaretidir.
+
+- **Nasıl çalışır**: Admin panelinde bir siparişin "Mektup" bölümü artık
+  düzenlenebilir bir textarea. **"✨ Yapay Zeka ile Yaz"** butonuna basınca
+  `sb.functions.invoke('generate-letter', {body:{order_id}})` çağrılır — bu,
+  `supabase/functions/generate-letter/index.ts` Edge Function'ını tetikler.
+  Fonksiyon: (1) admin doğrulaması yapar (deploy-order ile aynı desen), (2)
+  siparişi okur, (3) şablona göre bir ton rehberi seçer (`TEMPLATE_TONE` —
+  ör. `evcil-hayvan-anisi` için "sakin ve teselli edici, şakacı olmaz",
+  `arkadasima-ozel` için "romantik değil, 'dostum' gibi ifadeler"), (4) bu
+  bağlamla **Google Gemini API**'ye (`gemini-3.6-flash`) bir prompt gönderir,
+  (5) üretilen metni **kaydetmeden** admin paneline döner.
+- **Admin gözden geçirir**: Üretilen taslak textarea'ya dolar, admin
+  isterse düzenler, sonra **"Kaydet"** butonuyla `orders.letter` alanına
+  yazar. Bu adım bilinçli olarak otomatik değil — yapay zeka çıktısının
+  müşteriye gitmeden önce mutlaka bir kez okunması için.
+- **Gerekli secret** (`supabase secrets set` ile): `GEMINI_API_KEY` —
+  [aistudio.google.com/apikey](https://aistudio.google.com/apikey)'dan
+  alınan, ücretsiz katmanlı bir Google Gemini API anahtarı (kredi kartı
+  gerektirmez). Fonksiyon `--no-verify-jwt` ile deploy edildi.
+
 ## Tasarım Notları
 
 - Tüm sayfalar tek dosyalık, bağımsız HTML'dir (inline CSS/JS). Harici
