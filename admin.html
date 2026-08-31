@@ -508,7 +508,7 @@ function buildOrderCard(o){
   return card;
 }
 
-/* ---------- Canlıya Al ---------- */
+/* ---------- Canlıya Al / Canlıdan Kaldır ---------- */
 function renderDeployBox(o, box){
   if(!box) return;
   if(o.live_url){
@@ -517,6 +517,7 @@ function renderDeployBox(o, box){
         <a href="${escapeHtml(o.live_url)}" target="_blank" rel="noopener">🔗 Sayfayı Aç</a>
         <button type="button" class="btn btn-outline btn-sm copy-link-btn">📋 Linki Kopyala</button>
         <button type="button" class="btn btn-outline btn-sm deploy-btn">🚀 Yeniden Canlıya Al</button>
+        <button type="button" class="btn btn-danger btn-sm takedown-btn">🗑 Canlıdan Kaldır</button>
       </div>
       <div class="df-value deploy-status" style="margin-top:8px; font-size:.8rem; color:var(--ink-dim)">Son yayına alınma: ${formatDateTime(o.deployed_at)} — bilgiler değiştiyse "Yeniden Canlıya Al" ile güncelleyebilirsin.</div>
     `;
@@ -535,6 +536,10 @@ function renderDeployBox(o, box){
       setTimeout(() => copyBtn.textContent = '📋 Linki Kopyala', 1500);
     });
   }
+  const takedownBtn = box.querySelector('.takedown-btn');
+  if(takedownBtn){
+    takedownBtn.addEventListener('click', () => takedownOrder(o, box));
+  }
 }
 
 async function deployOrder(o, box){
@@ -548,7 +553,7 @@ async function deployOrder(o, box){
     statusEl.style.color = 'var(--ink-dim)';
   }
   try {
-    const { data, error } = await sb.functions.invoke('deploy-order', { body: { order_id: o.id } });
+    const { data, error } = await sb.functions.invoke('deploy-order', { body: { order_id: o.id, action: 'deploy' } });
     if(error) throw error;
     if(data && data.error) throw new Error(data.error);
     if(!data || !data.live_url) throw new Error('Beklenmeyen yanıt döndü.');
@@ -563,6 +568,34 @@ async function deployOrder(o, box){
       statusEl.style.color = 'var(--danger)';
     } else {
       alert('Canlıya alma başarısız: ' + (err.message || 'bilinmeyen hata'));
+    }
+  }
+}
+
+async function takedownOrder(o, box){
+  const ok = confirm(`"${o.partner_name || 'İsimsiz'}" adına yayınlanan sayfayı canlıdan kaldırmak istediğine emin misin? Link artık açılmayacak.`);
+  if(!ok) return;
+  const btn = box.querySelector('.takedown-btn');
+  const statusEl = box.querySelector('.deploy-status');
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Kaldırılıyor...';
+  try {
+    const { data, error } = await sb.functions.invoke('deploy-order', { body: { order_id: o.id, action: 'takedown' } });
+    if(error) throw error;
+    if(data && data.error) throw new Error(data.error);
+    o.live_url = null;
+    o.deployment_id = null;
+    o.deployed_at = null;
+    renderDeployBox(o, box);
+  } catch(err){
+    btn.disabled = false;
+    btn.textContent = original;
+    if(statusEl){
+      statusEl.textContent = 'Hata: ' + (err.message || 'bilinmeyen hata');
+      statusEl.style.color = 'var(--danger)';
+    } else {
+      alert('Canlıdan kaldırma başarısız: ' + (err.message || 'bilinmeyen hata'));
     }
   }
 }

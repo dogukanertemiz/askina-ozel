@@ -1,15 +1,25 @@
 // deploy-order — Supabase Edge Function
 //
-// Admin panelinden "Canlıya Al" butonuna basıldığında çalışır:
+// İki aksiyonu destekler, body içindeki `action` alanıyla seçilir (varsayılan "deploy"):
+//
+// action: "deploy" — Admin panelinden "Canlıya Al" / "Yeniden Canlıya Al" butonuna basıldığında:
 // 1) Çağıranın gerçekten giriş yapmış bir admin olduğunu doğrular (anon key ile değil).
 // 2) Siparişi (orders tablosu) service_role ile okur (RLS'i bypass eder).
 // 3) İlgili şablonun ham HTML'ini canlı siteden (askina-ozel.vercel.app/templates/..) çeker.
 // 4) Fotoğraflar için uzun ömürlü imzalı Storage URL'leri üretir.
 // 5) Şablonun <script> içindeki CONFIG nesnesini, siparişteki verilerle regex tabanlı
 //    olarak doldurur (evrensel alanlar + şablona özel alanlar).
-// 6) Doldurulmuş tek dosyalık HTML'i Vercel'e YENİ, bağımsız bir proje/deployment olarak
-//    yükler (her sipariş kendi küçük vercel.app linkini alır).
-// 7) orders.live_url ve orders.deployed_at alanlarını günceller, linki döner.
+// 6) Doldurulmuş tek dosyalık HTML'i Vercel'e, mevcut "askina-ozel" projesinin
+//    içinde ayrı bir (preview) deployment olarak yükler.
+// 7) orders.live_url / orders.deployment_id / orders.deployed_at alanlarını
+//    günceller, linki döner.
+//
+// action: "takedown" — Admin panelinden "🗑 Canlıdan Kaldır" butonuna basıldığında:
+// 1) Aynı admin doğrulaması yapılır.
+// 2) Siparişin kayıtlı orders.deployment_id'si Vercel API'siyle DELETE edilir
+//    (deployment silinince o linke giden herkese 404 döner).
+// 3) orders.live_url / orders.deployment_id / orders.deployed_at NULL'a çekilir
+//    — admin panelinde tekrar "🚀 Canlıya Al" butonu görünür.
 //
 // Gerekli secret'lar (supabase secrets set ile):
 //   VERCEL_TOKEN     -> Vercel personal access token
@@ -142,7 +152,7 @@ Deno.serve(async (req: Request) => {
       return json({ error: "Yetkisiz: geçerli bir admin oturumu gerekiyor." }, 401);
     }
 
-    const { order_id } = await req.json().catch(() => ({}));
+    const { order_id, action } = await req.json().catch(() => ({}));
     if (!order_id) return json({ error: "order_id zorunlu." }, 400);
 
     // 2) Siparişi service_role ile oku (RLS bypass).
@@ -153,6 +163,33 @@ Deno.serve(async (req: Request) => {
       .eq("id", order_id)
       .single();
     if (orderErr || !order) return json({ error: "Sipariş bulunamadı." }, 404);
+
+    // --- action: takedown — sayfayı canlıdan kaldır ---
+    if (action === "takedown") {
+      if (!order.deployment_id) {
+        return json({ error: "Bu sipariş için kayıtlı bir canlı deployment yok." }, 400);
+      }
+      const delUrl = new URL(`https://api.vercel.com/v13/deployments/${order.deployment_id}`);
+      if (vercelTeamId) delUrl.searchParams.set("teamId", vercelTeamId);
+      const delRes = await fetch(delUrl.toString(), {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${vercelToken}` },
+      });
+      // Vercel deployment zaten silinmişse/bulunamıyorsa da (404) kaydı temizlemeye devam et.
+      if (!delRes.ok && delRes.status !== 404) {
+        const delJson = await delRes.json().catch(() => ({}));
+        return json({ error: `Vercel'den kaldırma hatası: ${delJson?.error?.message || delRes.statusText}` }, 500);
+      }
+      const { error: clearErr } = await admin
+        .from("orders")
+        .update({ live_url: null, deployment_id: null, deployed_at: null })
+        .eq("id", order_id);
+      if (clearErr) {
+        return json({ error: `Vercel'den kaldırıldı ama kayıt güncellenemedi: ${clearErr.message}` }, 500);
+      }
+      return json({ removed: true });
+    }
+
     if (!order.template) return json({ error: "Siparişte şablon bilgisi yok." }, 400);
 
     // 3) Şablon HTML'ini çek.
@@ -291,11 +328,23 @@ Deno.serve(async (req: Request) => {
     const liveUrl = deployJson.alias?.[0]
       ? `https://${deployJson.alias[0]}`
       : `https://${deployJson.url}`;
+    const deploymentId: string | undefined = deployJson.id;
+
+    // "Yeniden Canlıya Al" durumunda eski deployment'ı arkada bırakmamak için sil
+    // (best-effort — başarısız olursa deploy'u yine de tamamlanmış say).
+    if (order.deployment_id && order.deployment_id !== deploymentId) {
+      const oldUrl = new URL(`https://api.vercel.com/v13/deployments/${order.deployment_id}`);
+      if (vercelTeamId) oldUrl.searchParams.set("teamId", vercelTeamId);
+      await fetch(oldUrl.toString(), {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${vercelToken}` },
+      }).catch(() => {});
+    }
 
     // 7) Sipariş kaydını güncelle.
     const { error: updateErr } = await admin
       .from("orders")
-      .update({ live_url: liveUrl, deployed_at: new Date().toISOString() })
+      .update({ live_url: liveUrl, deployment_id: deploymentId, deployed_at: new Date().toISOString() })
       .eq("id", order_id);
     if (updateErr) {
       return json({ error: `Deploy başarılı ama kayıt güncellenemedi: ${updateErr.message}`, live_url: liveUrl }, 500);

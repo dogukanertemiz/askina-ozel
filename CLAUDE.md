@@ -335,8 +335,11 @@ Bir siparişi müşteriye teslim edilecek gerçek bir linke dönüştürmek art�
   toplanır. `target: "production"` KESİNLİKLE gönderilmemeli — bu, deployment'ı
   ana canlı siteye (`askina-ozel.vercel.app`) alias'layıp gerçek tanıtım
   sitesinin üzerine yazar (bu bir kez yaşandı, hemen fark edilip düzeltildi).
-  (7) `orders.live_url` ve `orders.deployed_at` alanlarını günceller ve linki
-  admin paneline döner.
+  (7) `orders.live_url`, `orders.deployment_id` ve `orders.deployed_at`
+  alanlarını günceller ve linki admin paneline döner. Eğer sipariş daha önce
+  deploy edilmişse ("Yeniden Canlıya Al"), yeni deployment başarıyla oluşur
+  oluşmaz eski deployment Vercel'den silinir (arkada öksüz/eski içerikli
+  linkler birikmesin diye).
   ⚠️ **Vercel projesi "Deployment Protection / SSO" ayarı kapatıldı**
   (`ssoProtection: null`, proje ayarlarından ya da `PATCH /v9/projects/...`
   ile) — açık olsaydı bu preview linkleri müşteri tarayıcısında Vercel giriş
@@ -350,6 +353,14 @@ Bir siparişi müşteriye teslim edilecek gerçek bir linke dönüştürmek art�
   mektup vb.) aynı buton "🚀 Yeniden Canlıya Al" olarak tekrar çalıştırılabilir
   — yeni bir deployment daha oluşturur, YENİ bir link üretir (aynı linki
   korumaz — proje bazında değil deployment bazında link verildiği için).
+- **Canlıdan kaldırma ("🗑 Canlıdan Kaldır")**: Aynı Edge Function'ı
+  `{order_id, action:'takedown'}` ile çağırır — kayıtlı `deployment_id`'yi
+  Vercel'den siler (link 404 döner hale gelir), `orders.live_url` /
+  `deployment_id` / `deployed_at` alanlarını `null`'a çeker. Admin panelinde
+  buton tekrar "🚀 Canlıya Al" haline döner. Süresi dolan/iptal edilen bir
+  siparişi ya da hatalı doldurulmuş bir sayfayı hemen erişilemez kılmak için
+  kullanılır; şablon dosyası ya da sipariş kaydı silinmez, sadece canlı
+  deployment kaldırılır — istenirse aynı veriyle tekrar "Canlıya Al" yapılabilir.
 - **Gerekli Edge Function secret'ları** (`supabase secrets set` ile,
   `supabase/functions/deploy-order` dizininden): `VERCEL_TOKEN` (Vercel
   personal access token, sadece "askina-ozel" projesine deploy izinli) ve
