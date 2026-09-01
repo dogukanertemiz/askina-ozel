@@ -149,7 +149,7 @@
     <div class="form-head">
       <div class="kicker">Sipariş Formu</div>
       <h1>Bilgilerini Bize Anlat</h1>
-      <p>Formu doldur; en altta, bize göndermen için hazır bir özet ve WhatsApp / e-posta
+      <p>Formu doldur; en altta, bize göndermen için hazır bir özet ve e-posta
       bağlantısı oluşturacağız.</p>
     </div>
 
@@ -411,13 +411,12 @@
 
     <div class="card" id="resultCard">
       <h2>Sipariş Özetin Hazır 🎉</h2>
-      <div class="step-note" style="margin-left:0">Aşağıdaki metni kopyala ya da doğrudan WhatsApp/e-posta ile gönder.
+      <div class="step-note" style="margin-left:0">Aşağıdaki metni kopyala ya da doğrudan e-posta ile gönder.
       Bu format, siparişini hızlıca hazırlamamız için tam ihtiyacımız olan bilgiyi içeriyor.</div>
       <textarea id="summaryOutput" readonly></textarea>
       <div class="copy-note" id="copyNote">Panoya kopyalandı ✓</div>
       <div class="result-actions">
         <button type="button" class="btn btn-dark" id="copyBtn">Metni Kopyala</button>
-        <a class="btn btn-outline" id="whatsappLink" href="#" target="_blank" rel="noopener">WhatsApp ile Gönder</a>
         <a class="btn btn-outline" id="emailLink" href="#">E-posta ile Gönder</a>
       </div>
     </div>
@@ -426,11 +425,12 @@
 
 <script>
 /* ============================================================
-   DEĞİŞTİR: işletmenin gerçek WhatsApp numarası ve e-posta adresi.
-   WhatsApp numarası ülke koduyla, boşluksuz yazılmalı (örn. 905551234567).
+   DEĞİŞTİR: işletmenin gerçek e-posta adresi.
+   WhatsApp linki şimdilik kaldırıldı — gerçek işletme numarası
+   belirlendiğinde BUSINESS.whatsapp eklenip whatsappLink butonu
+   (bkz. resultCard) geri konabilir.
    ============================================================ */
 const BUSINESS = {
-  whatsapp: "905000000000",           // DEĞİŞTİR
   email: "kalptesakli0@gmail.com"
 };
 
@@ -816,7 +816,6 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
   const summary = lines.join('\n');
   document.getElementById('summaryOutput').value = summary;
 
-  document.getElementById('whatsappLink').href = `https://wa.me/${BUSINESS.whatsapp}?text=${encodeURIComponent(summary)}`;
   document.getElementById('emailLink').href = `mailto:${BUSINESS.email}?subject=${encodeURIComponent('Yeni Sipariş - ' + partnerName)}&body=${encodeURIComponent(summary)}`;
 
   document.getElementById('resultCard').classList.add('show');
@@ -884,7 +883,7 @@ async function saveOrderToDatabase(data){
   } catch(err){
     console.error('Sipariş kaydı hatası:', err);
     statusEl.classList.add('err');
-    statusEl.textContent = 'Not: Bilgiler admin paneline kaydedilemedi, ama özet metni ve WhatsApp/e-posta linkin hazır — yine de gönderebilirsin.';
+    statusEl.textContent = 'Not: Bilgiler admin paneline kaydedilemedi, ama özet metni ve e-posta linkin hazır — yine de gönderebilirsin.';
   } finally {
     submitBtn.disabled = false;
   }
