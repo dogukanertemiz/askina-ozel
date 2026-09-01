@@ -279,12 +279,17 @@ Müşteriden şunları iste (form ya da DM üzerinden):
   `<script>` içinde) üzerinden otomatik render edilir. **Yeni bir şablon
   eklediğinde hem bu diziye hem de yukarıdaki Şablon Kataloğu tablolarına
   ekleme yapmayı unutma.**
-- `siparis-formu.html`: Müşteri formu doldurunca, JS bir özet metni üretir
-  (yukarıdaki checklist ile birebir uyumlu format) ve WhatsApp/e-posta
-  linkleriyle gönderilmesini sağlar — bu akış hâlâ çalışıyor. `BUSINESS.whatsapp`
-  ve `BUSINESS.email` değerlerini gerçek bilgilerle güncelle
-  (`siparis-formu.html` dosyasının sonundaki `<script>` bloğunda,
-  `DEĞİŞTİR:` yorumuyla işaretli).
+- `siparis-formu.html`: Müşteri formu doldurup **"Özeti Oluştur"**a basınca,
+  JS bir özet metni üretir ve `resultCard`'ı gösterir — ama sipariş bu
+  aşamada **henüz veritabanına kaydedilmez**. Müşteri özeti gözden geçirip
+  **"✓ Siparişi Onayla"** butonuna basınca `saveOrderToDatabase()` çağrılır
+  ve sipariş gerçekten oluşur (admin panelinde ancak o zaman görünür). Bu
+  bilinçli bir onay adımı — yanlışlıkla ya da bilgi kontrol edilmeden
+  sipariş oluşmasın diye. Onaylandıktan sonra "Metni Kopyala" / "WhatsApp
+  ile Gönder" / "E-posta ile Gönder" butonları da açılır (müşteri isterse
+  ayrıca doğrudan da ulaşabilsin diye). `BUSINESS.whatsapp` ve
+  `BUSINESS.email` değerlerini gerçek bilgilerle güncelle (`siparis-formu.html`
+  dosyasının sonundaki `<script>` bloğunda, `DEĞİŞTİR:` yorumuyla işaretli).
 - `index.html` footer'ındaki iletişim linkleri de aynı şekilde
   `DEĞİŞTİR:` yorumuyla işaretli placeholder'lardır.
 

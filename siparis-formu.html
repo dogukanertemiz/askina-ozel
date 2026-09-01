@@ -405,18 +405,22 @@
       <div class="submit-row">
         <button type="submit" class="btn btn-dark" id="submitBtn">Özeti Oluştur ♡</button>
         <div class="error-msg" id="errorMsg">Lütfen yıldızlı (*) alanları doldur.</div>
-        <div class="save-status" id="saveStatus"></div>
       </div>
     </form>
 
     <div class="card" id="resultCard">
       <h2>Sipariş Özetin Hazır 🎉</h2>
-      <div class="step-note" style="margin-left:0">Aşağıdaki metni kopyala ya da doğrudan e-posta ile gönder.
-      Bu format, siparişini hızlıca hazırlamamız için tam ihtiyacımız olan bilgiyi içeriyor.</div>
+      <div class="step-note" style="margin-left:0">Bilgilerini son bir kez gözden geçir, doğruysa aşağıdaki
+      <strong>"Siparişi Onayla"</strong> butonuna bas — bu sipariş, sen onaylamadan bize iletilmez.</div>
       <textarea id="summaryOutput" readonly></textarea>
       <div class="copy-note" id="copyNote">Panoya kopyalandı ✓</div>
       <div class="result-actions">
-        <button type="button" class="btn btn-dark" id="copyBtn">Metni Kopyala</button>
+        <button type="button" class="btn btn-dark" id="confirmOrderBtn">✓ Siparişi Onayla</button>
+      </div>
+      <div class="save-status" id="saveStatus"></div>
+      <div class="result-actions" id="postConfirmActions" style="display:none; margin-top:14px">
+        <button type="button" class="btn btn-outline" id="copyBtn">Metni Kopyala</button>
+        <a class="btn btn-outline" id="whatsappLink" href="#" target="_blank" rel="noopener">WhatsApp ile Gönder</a>
         <a class="btn btn-outline" id="emailLink" href="#">E-posta ile Gönder</a>
       </div>
     </div>
@@ -425,12 +429,11 @@
 
 <script>
 /* ============================================================
-   DEĞİŞTİR: işletmenin gerçek e-posta adresi.
-   WhatsApp linki şimdilik kaldırıldı — gerçek işletme numarası
-   belirlendiğinde BUSINESS.whatsapp eklenip whatsappLink butonu
-   (bkz. resultCard) geri konabilir.
+   DEĞİŞTİR: işletmenin gerçek WhatsApp numarası ve e-posta adresi.
+   WhatsApp numarası ülke koduyla, boşluksuz yazılmalı (örn. 905313844140).
    ============================================================ */
 const BUSINESS = {
+  whatsapp: "905313844140",
   email: "kalptesakli0@gmail.com"
 };
 
@@ -817,25 +820,42 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
   document.getElementById('summaryOutput').value = summary;
 
   document.getElementById('emailLink').href = `mailto:${BUSINESS.email}?subject=${encodeURIComponent('Yeni Sipariş - ' + partnerName)}&body=${encodeURIComponent(summary)}`;
+  document.getElementById('whatsappLink').href = `https://wa.me/${BUSINESS.whatsapp}?text=${encodeURIComponent(summary)}`;
+
+  // Sipariş henüz KAYDEDİLMEDİ — sadece özet gösteriliyor. Kayıt, müşteri
+  // "Siparişi Onayla" butonuna basınca gerçekleşir (bkz. confirmOrderBtn).
+  const packagePrice = packageEl ? Number(packageEl.dataset.price || 0) : null;
+  const templateExtrasStructured = collectTemplateExtrasStructured();
+  pendingOrderData = {
+    templateSlug, template, packageVal, packagePrice, partnerName, senderName,
+    letterBlock, songLine, spotify, templateExtrasRaw, templateExtrasStructured
+  };
+
+  document.getElementById('postConfirmActions').style.display = 'none';
+  document.getElementById('saveStatus').className = 'save-status';
+  document.getElementById('saveStatus').textContent = '';
+  const confirmBtn = document.getElementById('confirmOrderBtn');
+  confirmBtn.disabled = false;
+  confirmBtn.textContent = '✓ Siparişi Onayla';
 
   document.getElementById('resultCard').classList.add('show');
   document.getElementById('resultCard').scrollIntoView({behavior:'smooth', block:'start'});
+});
 
-  const packagePrice = packageEl ? Number(packageEl.dataset.price || 0) : null;
-  const templateExtrasStructured = collectTemplateExtrasStructured();
-  await saveOrderToDatabase({
-    templateSlug, template, packageVal, packagePrice, partnerName, senderName,
-    letterBlock, songLine, spotify, templateExtrasRaw, templateExtrasStructured
-  });
+let pendingOrderData = null;
+
+document.getElementById('confirmOrderBtn').addEventListener('click', async () => {
+  if(!pendingOrderData) return;
+  await saveOrderToDatabase(pendingOrderData);
 });
 
 async function saveOrderToDatabase(data){
   const statusEl = document.getElementById('saveStatus');
-  const submitBtn = document.getElementById('submitBtn');
+  const confirmBtn = document.getElementById('confirmOrderBtn');
   statusEl.className = 'save-status';
   statusEl.style.display = 'block';
   statusEl.textContent = 'Kaydediliyor...';
-  submitBtn.disabled = true;
+  confirmBtn.disabled = true;
 
   try {
     const orderId = makeId();
@@ -879,13 +899,15 @@ async function saveOrderToDatabase(data){
     if(rpcErr) throw rpcErr;
 
     statusEl.classList.add('ok');
-    statusEl.textContent = 'Sipariş kaydedildi ✓ (admin panelinde görünecek)';
+    statusEl.textContent = 'Sipariş onaylandı ✓ Ekibimiz en kısa sürede seninle iletişime geçecek.';
+    confirmBtn.textContent = '✓ Sipariş Onaylandı';
+    document.getElementById('postConfirmActions').style.display = 'flex';
   } catch(err){
     console.error('Sipariş kaydı hatası:', err);
     statusEl.classList.add('err');
-    statusEl.textContent = 'Not: Bilgiler admin paneline kaydedilemedi, ama özet metni ve e-posta linkin hazır — yine de gönderebilirsin.';
-  } finally {
-    submitBtn.disabled = false;
+    statusEl.textContent = 'Not: Bilgiler admin paneline kaydedilemedi, ama özet metni ve e-posta/WhatsApp linkin hazır — yine de gönderebilirsin.';
+    confirmBtn.disabled = false;
+    document.getElementById('postConfirmActions').style.display = 'flex';
   }
 }
 
