@@ -285,9 +285,12 @@ Müşteriden şunları iste (form ya da DM üzerinden):
   **"✓ Siparişi Onayla"** butonuna basınca `saveOrderToDatabase()` çağrılır
   ve sipariş gerçekten oluşur (admin panelinde ancak o zaman görünür). Bu
   bilinçli bir onay adımı — yanlışlıkla ya da bilgi kontrol edilmeden
-  sipariş oluşmasın diye. Onaylandıktan sonra "Metni Kopyala" / "WhatsApp
-  ile Gönder" / "E-posta ile Gönder" butonları da açılır (müşteri isterse
-  ayrıca doğrudan da ulaşabilsin diye). `BUSINESS.whatsapp` ve
+  sipariş oluşmasın diye. Onaylandıktan (ya da kayıt hata verdiğinde) sonra
+  "Metni Kopyala" / "E-posta ile Gönder" butonları ve altında bir "bir bilgini
+  yanlış girdiysen bize ulaş" iletişim notu (WhatsApp + e-posta linki) açılır
+  — bilinçli olarak "WhatsApp ile Gönder" diye ayrı bir aksiyon butonu YOK,
+  WhatsApp sadece düzeltme/iletişim kanalı olarak sunuluyor (sipariş zaten
+  onaylayınca otomatik kaydediliyor). `BUSINESS.whatsapp` ve
   `BUSINESS.email` değerlerini gerçek bilgilerle güncelle (`siparis-formu.html`
   dosyasının sonundaki `<script>` bloğunda, `DEĞİŞTİR:` yorumuyla işaretli).
 - `index.html` footer'ındaki iletişim linkleri de aynı şekilde

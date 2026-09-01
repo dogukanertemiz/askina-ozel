@@ -89,6 +89,8 @@
   .save-status{font-size:.85rem; color:var(--ink-dim); margin-top:10px; display:none}
   .save-status.ok{color:#2f6b3a}
   .save-status.err{color:var(--danger)}
+  .contact-note{font-size:.85rem; color:var(--ink-dim); margin-top:16px; padding-top:16px; border-top:1px solid var(--line-light)}
+  .contact-note a{color:var(--bordo); font-weight:600}
 
   .grid2{display:grid; grid-template-columns:1fr 1fr; gap:18px}
   .radio-group{display:flex; flex-direction:column; gap:10px}
@@ -420,8 +422,12 @@
       <div class="save-status" id="saveStatus"></div>
       <div class="result-actions" id="postConfirmActions" style="display:none; margin-top:14px">
         <button type="button" class="btn btn-outline" id="copyBtn">Metni Kopyala</button>
-        <a class="btn btn-outline" id="whatsappLink" href="#" target="_blank" rel="noopener">WhatsApp ile Gönder</a>
         <a class="btn btn-outline" id="emailLink" href="#">E-posta ile Gönder</a>
+      </div>
+      <div class="contact-note" id="contactNote" style="display:none">
+        Bir bilgini yanlış girdiysen ya da düzeltmek istersen bize ulaş:
+        <a id="contactWhatsapp" href="#" target="_blank" rel="noopener">WhatsApp</a> ·
+        <a id="contactEmail" href="#">kalptesakli0@gmail.com</a>
       </div>
     </div>
   </div>
@@ -436,6 +442,8 @@ const BUSINESS = {
   whatsapp: "905313844140",
   email: "kalptesakli0@gmail.com"
 };
+document.getElementById('contactWhatsapp').href = `https://wa.me/${BUSINESS.whatsapp}`;
+document.getElementById('contactEmail').href = `mailto:${BUSINESS.email}`;
 
 /* ============================================================
    Supabase — sipariş kaydı ve fotoğraf yükleme.
@@ -820,7 +828,6 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
   document.getElementById('summaryOutput').value = summary;
 
   document.getElementById('emailLink').href = `mailto:${BUSINESS.email}?subject=${encodeURIComponent('Yeni Sipariş - ' + partnerName)}&body=${encodeURIComponent(summary)}`;
-  document.getElementById('whatsappLink').href = `https://wa.me/${BUSINESS.whatsapp}?text=${encodeURIComponent(summary)}`;
 
   // Sipariş henüz KAYDEDİLMEDİ — sadece özet gösteriliyor. Kayıt, müşteri
   // "Siparişi Onayla" butonuna basınca gerçekleşir (bkz. confirmOrderBtn).
@@ -832,6 +839,7 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
   };
 
   document.getElementById('postConfirmActions').style.display = 'none';
+  document.getElementById('contactNote').style.display = 'none';
   document.getElementById('saveStatus').className = 'save-status';
   document.getElementById('saveStatus').textContent = '';
   const confirmBtn = document.getElementById('confirmOrderBtn');
@@ -902,12 +910,14 @@ async function saveOrderToDatabase(data){
     statusEl.textContent = 'Sipariş onaylandı ✓ Ekibimiz en kısa sürede seninle iletişime geçecek.';
     confirmBtn.textContent = '✓ Sipariş Onaylandı';
     document.getElementById('postConfirmActions').style.display = 'flex';
+    document.getElementById('contactNote').style.display = 'block';
   } catch(err){
     console.error('Sipariş kaydı hatası:', err);
     statusEl.classList.add('err');
-    statusEl.textContent = 'Not: Bilgiler admin paneline kaydedilemedi, ama özet metni ve e-posta/WhatsApp linkin hazır — yine de gönderebilirsin.';
+    statusEl.textContent = 'Not: Bilgiler admin paneline kaydedilemedi, ama özet metni ve e-posta linkin hazır — yine de gönderebilirsin.';
     confirmBtn.disabled = false;
     document.getElementById('postConfirmActions').style.display = 'flex';
+    document.getElementById('contactNote').style.display = 'block';
   }
 }
 
