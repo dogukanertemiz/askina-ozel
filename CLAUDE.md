@@ -285,6 +285,28 @@ Müşteriden şunları iste (form ya da DM üzerinden):
 - `index.html` footer'ındaki iletişim linkleri de aynı şekilde
   `DEĞİŞTİR:` yorumuyla işaretli placeholder'lardır.
 
+## Alan Adı (Domain)
+
+Site artık kendi alan adında yayında: **`kalptesakli.com.tr`** (Natro'dan
+alındı, düz Latin harfleriyle — Türkçe "ı" içeren `kalptesaklı.com.tr`
+varyasyonu Punycode kodlamasına (`xn--kalptesakl-6ub.com.tr`) çevrildiği
+için farklı bir domain sayılıyor ve karışıklığa yol açtığından
+kullanılmıyor). DNS yönetimi Natro üzerinde değil (Natro'da hosting
+hizmeti olmadan DNS Zone Editor'e erişilemiyor), **ücretsiz Cloudflare**
+hesabı üzerinden yapılıyor:
+
+- Natro'daki "DNS Değiştir" ekranından nameserver'lar Cloudflare'e
+  (`donna.ns.cloudflare.com` / `rocky.ns.cloudflare.com`) yönlendirildi.
+- Cloudflare DNS kayıtları: `@` → A → `76.76.21.21` (Vercel), `www` → CNAME
+  → `cname.vercel-dns.com` — ikisi de **Proxied** (turuncu bulut, Cloudflare
+  CDN/SSL katmanı aktif).
+- Domain, Vercel'deki `askina-ozel` projesine custom domain olarak eklendi
+  (`kalptesakli.com.tr` + `www.kalptesakli.com.tr`, www → apex redirect).
+- **`askina-ozel.vercel.app` hâlâ çalışıyor ve dahili olarak kullanılıyor**
+  — `deploy-order` Edge Function'ı şablonları oradan çekiyor (bkz. aşağıdaki
+  `TEMPLATE_SITE_BASE`), müşteriye giden ana site linki artık
+  `kalptesakli.com.tr` olmalı.
+
 ## Backend & Admin Paneli (Supabase)
 
 Proje artık tamamen statik değil — gerçek dosya yükleme ve kalıcı sipariş
