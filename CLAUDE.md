@@ -339,7 +339,13 @@ kaydı için **Supabase** (Postgres + Storage + Auth) kullanılıyor. Bu,
   RPC fonksiyonu** üzerinden yapılıyor — client `sb.rpc('create_order', ...)`
   çağırıyor, tabloya doğrudan `insert()` çağırmıyor. Yeni bir alan eklersen
   hem `orders` tablosuna hem bu RPC fonksiyonuna eklemen gerekir.
-- **Admin girişi**: E-posta + şifre (`admin.html`). Sadece önceden Supabase
+- **Admin girişi**: E-posta + şifre (`admin.html`). Giriş ekranında alan
+  "Kullanıcı adı" olarak gösteriliyor — `admin` yazılırsa `resolveLoginEmail()`
+  bunu arka planda gerçek e-postaya (`kalptesakli0@gmail.com`) çeviriyor,
+  Supabase Auth'a hep gerçek e-posta gidiyor (Supabase e-posta olmayan bir
+  "kullanıcı adı" ile kullanıcı oluşturmaya izin vermiyor, bu yüzden gerçek
+  e-posta backend'de aynı kalıp sadece arayüzde basitleştirildi). Gerçek
+  e-postayı doğrudan yazmak da hâlâ çalışır. Sadece önceden Supabase
   Auth'ta oluşturulmuş tek bir kullanıcı (`kalptesakli0@gmail.com`) giriş
   yapabilir; proje genelinde yeni kullanıcı kaydı kapalı
   (`disable_signup: true`) — başka biri kayıt olmaya çalışsa bile hesap

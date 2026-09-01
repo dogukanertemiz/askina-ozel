@@ -149,7 +149,7 @@
       <div class="login-card">
         <h1>Admin Girişi</h1>
         <p>Sadece önceden yetkilendirilmiş hesap giriş yapabilir.</p>
-        <input type="email" id="loginEmail" placeholder="ornek@mail.com" autocomplete="email">
+        <input type="text" id="loginEmail" placeholder="Kullanıcı adı" autocomplete="username">
         <input type="password" id="loginPassword" placeholder="Şifre" autocomplete="current-password">
         <button class="btn btn-dark" id="loginBtn" style="width:100%; justify-content:center">Giriş Yap</button>
         <div class="login-msg" id="loginMsg"></div>
@@ -259,11 +259,19 @@ function showDashboard(){
   loadOrders();
 }
 
+/* Giriş ekranında "kullanıcı adı" olarak gösteriliyor ama Supabase Auth
+   hâlâ e-posta ile çalışıyor — "admin" yazılınca gerçek e-postaya çevrilir.
+   Gerçek e-postayı doğrudan yazan biri için de (ör. şifre sıfırlama sonrası) çalışmaya devam eder. */
+const ADMIN_EMAIL = 'kalptesakli0@gmail.com';
+function resolveLoginEmail(input){
+  return input.trim().toLowerCase() === 'admin' ? ADMIN_EMAIL : input.trim();
+}
+
 document.getElementById('loginBtn').addEventListener('click', async () => {
-  const email = document.getElementById('loginEmail').value.trim();
+  const email = resolveLoginEmail(document.getElementById('loginEmail').value);
   const password = document.getElementById('loginPassword').value;
   const msg = document.getElementById('loginMsg');
-  if(!email || !password){ msg.className = 'login-msg err'; msg.textContent = 'Lütfen e-posta ve şifreni gir.'; return; }
+  if(!email || !password){ msg.className = 'login-msg err'; msg.textContent = 'Lütfen kullanıcı adı ve şifreni gir.'; return; }
   msg.className = 'login-msg'; msg.style.display = 'none';
   document.getElementById('loginBtn').disabled = true;
   try {
@@ -272,7 +280,7 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
     // showDashboard() onAuthStateChange üzerinden otomatik tetiklenir
   } catch(err){
     msg.className = 'login-msg err';
-    msg.textContent = 'Giriş başarısız: e-posta ya da şifre hatalı.';
+    msg.textContent = 'Giriş başarısız: kullanıcı adı ya da şifre hatalı.';
   } finally {
     document.getElementById('loginBtn').disabled = false;
   }
@@ -280,9 +288,9 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
 
 document.getElementById('forgotLink').addEventListener('click', async (e) => {
   e.preventDefault();
-  const email = document.getElementById('loginEmail').value.trim();
+  const email = resolveLoginEmail(document.getElementById('loginEmail').value);
   const msg = document.getElementById('loginMsg');
-  if(!email){ msg.className = 'login-msg err'; msg.textContent = 'Şifre sıfırlama linki için önce e-posta adresini gir.'; return; }
+  if(!email){ msg.className = 'login-msg err'; msg.textContent = 'Şifre sıfırlama linki için önce kullanıcı adını gir.'; return; }
   try {
     const { error } = await sb.auth.resetPasswordForEmail(email, {
       redirectTo: window.location.href.split('#')[0].split('?')[0]
