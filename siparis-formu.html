@@ -196,7 +196,7 @@
         <div class="field">
           <div class="radio-group">
             <label class="radio-opt">
-              <input type="radio" name="package" value="Başlangıç (200 TL)" data-price="200">
+              <input type="radio" name="package" value="Başlangıç (200 TL)" data-price="200" id="startPackageOption">
               <div><div class="opt-title">Başlangıç <span class="opt-price">— 200 TL</span></div><div class="opt-desc">Hazır şablon, 1 galeri, geri sayım, 1 şarkı</div></div>
             </label>
             <label class="radio-opt">
@@ -208,6 +208,7 @@
               <div><div class="opt-title">Özel Tasarım <span class="opt-price">— 500 TL</span></div><div class="opt-desc">Sınırsız revizyon, öncelikli teslim</div></div>
             </label>
           </div>
+          <div class="hint" id="packageHint"></div>
         </div>
       </div>
 
@@ -695,6 +696,26 @@ function syncUrgencyToPackage(){
 }
 document.querySelectorAll('input[name=package]').forEach(el => el.addEventListener('change', syncUrgencyToPackage));
 syncUrgencyToPackage();
+
+const INTERACTIVE_TEMPLATES = ['puzzle-aski', 'kazi-kazan-surprizi', 'hafiza-kartlari'];
+function syncPackageToTemplate(){
+  const template = document.getElementById('template').value;
+  const isInteractive = INTERACTIVE_TEMPLATES.includes(template);
+  const startOption = document.getElementById('startPackageOption');
+  const hint = document.getElementById('packageHint');
+  startOption.disabled = isInteractive;
+  if(isInteractive && startOption.checked){
+    startOption.checked = false;
+    const interactiveOption = document.querySelector('input[name=package][value^="İnteraktif"]');
+    if(interactiveOption) interactiveOption.checked = true;
+  }
+  hint.textContent = isInteractive
+    ? 'Bu şablon gerçek bir oyun mekaniği içeriyor — Başlangıç paketinde seçilemez, en az İnteraktif paket (300 TL) gerekir.'
+    : '';
+  syncUrgencyToPackage();
+}
+document.getElementById('template').addEventListener('change', syncPackageToTemplate);
+syncPackageToTemplate();
 
 function syncAccessTypeFields(){
   const type = document.querySelector('input[name=accessType]:checked')?.value || '';

@@ -259,7 +259,10 @@ Müşteriden şunları iste (form ya da DM üzerinden):
 - **İnteraktif: 300 TL** — Puzzle Aşkı / Kazı Kazan Sürprizi / Hafıza Kartları
   arasından biri; gerçek bir mekanik içerdiği ve kolayca kopyalanamadığı için
   Başlangıç'tan daha yüksek fiyatlandırılır; içerik pazarlamasında "bu sadece
-  bir görsel değil, gerçek bir oyun" vurgusu öne çıkarılmalı
+  bir görsel değil, gerçek bir oyun" vurgusu öne çıkarılmalı. Sipariş formunda
+  1. adımda bu 3 şablondan biri seçilirse, 2. adımda "Başlangıç (200 TL)"
+  seçeneği otomatik devre dışı kalır (`syncPackageToTemplate()`) — aksi halde
+  müşteri interaktif bir şablonu Başlangıç fiyatına alabilirdi.
 - Özel Tasarım: 500 TL — sınırsız revizyon, öncelikli/aynı gün teslim. Sipariş
   formunda "Aynı gün / acil" teslim seçeneği, 2. adımda Özel Tasarım paketi
   seçilmediği sürece devre dışıdır (`syncUrgencyToPackage()`) — aksi halde
