@@ -128,7 +128,7 @@ uyumludur:
 | `letter` | string | Mektup metni (paragraflar boş satırla ayrılır) |
 | `songName` | string | Şarkı adı |
 | `songArtist` | string | Sanatçı adı |
-| `spotifyEmbedUrl` | string (opsiyonel) | `open.spotify.com/embed/track/...` linki |
+| `spotifyEmbedUrl` | string (opsiyonel) | `open.spotify.com/embed/track/...` linki — **ya da düz bir YouTube linki** (`youtube.com/watch?v=...`, `youtu.be/...`). Her şablonun `buildSongEmbedHtml()` fonksiyonu YouTube linkini otomatik algılayıp gömülebilir `youtube.com/embed/VIDEO_ID` formatına çevirir ve 16:9 video oranında gösterir (Spotify linkinde değişiklik yapmaz, sabit 152px'lik ses çalar kutusunu kullanır) — çünkü YouTube, `/watch` sayfasının doğrudan iframe içine alınmasını reddeder |
 | `timeCapsuleDate` | ISO datetime (opsiyonel) | Bu tarih gelince `timeCapsuleMessage` otomatik açılır ("anı kutusu") |
 | `timeCapsuleMessage` | string (opsiyonel) | `timeCapsuleDate` ile birlikte kullanılan, o tarihte ortaya çıkan gizli mesaj |
 
@@ -388,7 +388,15 @@ Bir siparişi müşteriye teslim edilecek gerçek bir linke dönüştürmek art�
   `CONFIG` nesnesini regex tabanlı olarak siparişteki verilerle doldurur —
   hem evrensel alanlar (partnerName, letter, photos, songName, timeCapsule...)
   hem de şablona özel alanlar (`order.template_extra.fields` üzerinden, bkz.
-  `siparis-formu.html`'deki `TEMPLATE_EXTRAS`/`collectTemplateExtrasStructured()`),
+  `siparis-formu.html`'deki `TEMPLATE_EXTRAS`/`collectTemplateExtrasStructured()`).
+  Şablona özel bazı alanlar (`extraPuzzlePhoto`, `extraScratchPhoto`,
+  `extraMemoriesPhoto`) artık serbest metin notu değil, **gerçek dosya
+  yükleme** — müşteri sipariş formunda bu fotoğrafları doğrudan yüklüyor,
+  `template_extra.fields`'e ham Storage yolu (ya da `extraMemoriesPhoto`
+  için yol dizisi) olarak kaydediliyor; `deploy-order` bunları ayrıca
+  imzalayıp (bkz. `signStoragePaths()`) PUZZLE_IMAGE/scratchImage/memories
+  alanlarına yerleştiriyor — genel galeri fotoğraflarına (`photoUrls[0]`)
+  geri düşme sadece bu alan boş bırakılırsa devreye giriyor.
   (6) doldurulmuş tek dosyalık HTML'i Vercel API'siyle **mevcut "askina-ozel"
   projesinin içinde, `target` belirtmeden (= preview) ayrı bir deployment**
   olarak yükler — Vercel token'ı sadece bu tek projeye deploy izniyle sınırlı

@@ -520,6 +520,75 @@ document.querySelectorAll('.mode-btn').forEach(btn => {
 
 function val(id){ const el = document.getElementById(id); return el ? el.value.trim() : ''; }
 
+/* Şablona özel dosya yükleme alanları (ör. yapboz fotoğrafı, kazı kazan
+   görseli, "ilk"ler fotoğrafları) — ana galeriyle aynı mantık, ama field id'sine
+   göre ayrı ayrı takip ediliyor. fieldId -> File (tekli) ya da File[] (çoklu). */
+let templateExtraFiles = {};
+
+function buildFileUploadZone(container, field){
+  const isMulti = field.type === 'files';
+  const max = field.max || 5;
+  const zone = document.createElement('div');
+  zone.className = 'upload-zone';
+  zone.innerHTML = `
+    <input type="file" accept="image/*" ${isMulti ? 'multiple' : ''} hidden>
+    <div class="upload-icon">📷</div>
+    <div class="upload-text">${isMulti ? 'Fotoğrafları' : 'Fotoğrafı'} buraya sürükle-bırak ya da <span class="upload-link">dosya seç</span></div>`;
+  const previews = document.createElement('div');
+  previews.className = 'upload-previews';
+  const input = zone.querySelector('input');
+
+  if(!isMulti) templateExtraFiles[field.id] = null;
+  else if(!templateExtraFiles[field.id]) templateExtraFiles[field.id] = [];
+
+  function renderExtraPreviews(){
+    previews.innerHTML = '';
+    const files = isMulti ? templateExtraFiles[field.id] : (templateExtraFiles[field.id] ? [templateExtraFiles[field.id]] : []);
+    files.forEach((file, i) => {
+      const div = document.createElement('div');
+      div.className = 'upload-thumb';
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      img.alt = field.label + ' ' + (i + 1);
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'remove-btn';
+      removeBtn.setAttribute('aria-label', 'Kaldır');
+      removeBtn.textContent = '×';
+      removeBtn.addEventListener('click', () => {
+        if(isMulti){ templateExtraFiles[field.id].splice(i, 1); }
+        else { templateExtraFiles[field.id] = null; }
+        renderExtraPreviews();
+      });
+      div.appendChild(img);
+      div.appendChild(removeBtn);
+      previews.appendChild(div);
+    });
+  }
+
+  function addExtraFiles(fileList){
+    Array.from(fileList).forEach(file => {
+      if(!file.type.startsWith('image/')) return;
+      if(isMulti){
+        if(templateExtraFiles[field.id].length >= max) return;
+        templateExtraFiles[field.id].push(file);
+      } else {
+        templateExtraFiles[field.id] = file;
+      }
+    });
+    renderExtraPreviews();
+  }
+
+  zone.addEventListener('click', () => input.click());
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('dragover'); addExtraFiles(e.dataTransfer.files); });
+  input.addEventListener('change', () => { addExtraFiles(input.files); input.value = ''; });
+
+  container.appendChild(zone);
+  container.appendChild(previews);
+}
+
 /* ============================================================
    Şablona özel form alanları — 1. adımda seçilen şablona göre
    "Şablona Özel Bilgiler" kartı otomatik değişir. Yeni bir şablon
@@ -530,14 +599,14 @@ const TEMPLATE_EXTRAS = {
   'puzzle-aski': {
     note: 'Bu şablon, fotoğrafını 3x3 parçaya bölüp yapboz haline getiriyor — çözünce mektup açılır.',
     fields: [
-      { id:'extraPuzzlePhoto', label:'Yapbozda kullanılacak fotoğraf notu', type:'text', placeholder:'KARE (1:1) oranlı bir fotoğraf olmalı — hangisini istediğini yaz, dosyayı ayrıca WhatsApp/e-posta ile gönder' }
+      { id:'extraPuzzlePhoto', label:'Yapbozda kullanılacak fotoğraf', type:'file', hint:'KARE (1:1) oranlı bir fotoğraf en iyi sonucu verir.' }
     ]
   },
   'kazi-kazan-surprizi': {
     note: 'Kazınınca kartın altından bir görsel ve kısa bir mesaj çıkacak.',
     fields: [
       { id:'extraScratchMessage', label:'Kazınınca çıkacak kısa mesaj', type:'text', placeholder:'Örn. Seni Seviyorum! ♡' },
-      { id:'extraScratchPhoto', label:'Kazınınca çıkacak görsel notu', type:'text', placeholder:'Hangi fotoğraf/görsel olsun? Dosyayı ayrıca WhatsApp/e-posta ile gönder' }
+      { id:'extraScratchPhoto', label:'Kazınınca çıkacak görsel', type:'file' }
     ]
   },
   'hafiza-kartlari': {
@@ -554,7 +623,7 @@ const TEMPLATE_EXTRAS = {
   'altin-saat': {
     fields: [
       { id:'extraMemories', label:'"İlk"leriniz (her satıra "Tarih | Başlık", 3-5 tane)', type:'textarea', placeholder:'14 Şubat 2024 | İlk Tanıştığımız Gün\n2 Mart 2024 | İlk Kahvemiz' },
-      { id:'extraMemoriesPhoto', label:'Bu anılara ait fotoğraflar notu', type:'text', placeholder:'Fotoğrafları ayrıca WhatsApp/e-posta ile gönder' }
+      { id:'extraMemoriesPhoto', label:'Bu anılara ait fotoğraflar', type:'files', max:5, hint:'Yüklediğin sıraya göre yukarıdaki satırlarla eşleşir (1. fotoğraf → 1. satır, 2. fotoğraf → 2. satır...).' }
     ]
   },
   'dogum-gunu-solen': {
@@ -611,6 +680,7 @@ function renderTemplateExtras(){
   const wrap = document.getElementById('templateExtraFields');
   const config = TEMPLATE_EXTRAS[slug];
   wrap.innerHTML = '';
+  templateExtraFiles = {};
 
   if(!slug){
     wrap.innerHTML = '<div class="hint">Önce yukarıdan bir şablon seç — o şablona özel sorular burada görünecek.</div>';
@@ -639,6 +709,11 @@ function renderTemplateExtras(){
       fieldWrap.innerHTML = `<label>${f.label}</label><div class="radio-group">${opts}</div>`;
     } else if(f.type === 'textarea'){
       fieldWrap.innerHTML = `<label for="${f.id}">${f.label}</label><textarea id="${f.id}" placeholder="${f.placeholder||''}"></textarea>`;
+    } else if(f.type === 'file' || f.type === 'files'){
+      fieldWrap.innerHTML = `<label>${f.label}</label>${f.hint ? `<div class="hint" style="margin-bottom:8px">${f.hint}</div>` : ''}`;
+      wrap.appendChild(fieldWrap);
+      buildFileUploadZone(fieldWrap, f);
+      return;
     } else {
       fieldWrap.innerHTML = `<label for="${f.id}">${f.label}</label><input type="text" id="${f.id}" placeholder="${f.placeholder||''}">`;
     }
@@ -658,6 +733,11 @@ function collectTemplateExtras(){
         const opt = f.options.find(o => o.value === checked.value);
         lines.push(`${f.label}: ${opt ? opt.label : checked.value}`);
       }
+    } else if(f.type === 'file'){
+      if(templateExtraFiles[f.id]) lines.push(`${f.label}: yüklendi (1 fotoğraf)`);
+    } else if(f.type === 'files'){
+      const n = (templateExtraFiles[f.id] || []).length;
+      if(n) lines.push(`${f.label}: yüklendi (${n} fotoğraf)`);
     } else {
       const v = val(f.id);
       if(v) lines.push(`${f.label}: ${v}`);
@@ -678,6 +758,9 @@ function collectTemplateExtrasStructured(){
     if(f.type === 'radio'){
       const checked = document.querySelector(`input[name="${f.name}"]:checked`);
       if(checked) out[f.id] = checked.value;
+    } else if(f.type === 'file' || f.type === 'files'){
+      // Dosyalar burada değil, saveOrderToDatabase() içinde yüklenip
+      // depolama yollarıyla bu objeye sonradan eklenir (bkz. templateExtraFiles).
     } else {
       const v = val(f.id);
       if(v) out[f.id] = v;
@@ -874,6 +957,33 @@ async function saveOrderToDatabase(data){
       const { error: upErr } = await sb.storage.from('order-photos').upload(path, file);
       if(upErr) throw upErr;
       photoPaths.push(path);
+    }
+
+    // Şablona özel dosyalar (ör. yapboz fotoğrafı, kazı kazan görseli, "ilk"ler
+    // fotoğrafları) — aynı bucket'a yükleniyor, sonucu template_extra.fields'e
+    // depolama yolu (path) olarak ekleniyor. deploy-order Edge Function'ı
+    // canlıya alırken bu yolları imzalı URL'ye çevirip CONFIG'e yerleştiriyor.
+    for(const [fieldId, fileOrFiles] of Object.entries(templateExtraFiles)){
+      if(!fileOrFiles) continue;
+      if(Array.isArray(fileOrFiles)){
+        if(!fileOrFiles.length) continue;
+        const paths = [];
+        for(const file of fileOrFiles){
+          const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+          const path = `${orderId}/${Date.now()}-${safeName}`;
+          const { error: upErr } = await sb.storage.from('order-photos').upload(path, file);
+          if(upErr) throw upErr;
+          paths.push(path);
+        }
+        data.templateExtrasStructured[fieldId] = paths;
+      } else {
+        const file = fileOrFiles;
+        const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+        const path = `${orderId}/${Date.now()}-${safeName}`;
+        const { error: upErr } = await sb.storage.from('order-photos').upload(path, file);
+        if(upErr) throw upErr;
+        data.templateExtrasStructured[fieldId] = path;
+      }
     }
 
     const { error: rpcErr } = await sb.rpc('create_order', {

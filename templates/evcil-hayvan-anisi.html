@@ -311,9 +311,21 @@ function populateContent(){
   if(CONFIG.songName){
     document.getElementById('songName').textContent = CONFIG.songName;
     document.getElementById('songArtist').textContent = CONFIG.songArtist;
-    if(CONFIG.spotifyEmbedUrl){
+    function buildSongEmbedHtml(url, maxWidth){
+  // Spotify embed linki değilse (ör. YouTube linki yapıştırılmışsa) otomatik
+  // olarak gömülebilir bir YouTube embed URL'sine çevir - aksi halde YouTube
+  // /watch sayfasını iframe içine almayı reddediyor.
+  const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  if(ytMatch){
+    const height = Math.round(maxWidth * 9 / 16);
+    return `<iframe src="https://www.youtube.com/embed/${ytMatch[1]}" width="100%" height="${height}" style="max-width:${maxWidth}px" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe>`;
+  }
+  return `<iframe src="${url}" width="100%" height="152" style="max-width:${maxWidth}px" frameborder="0" allow="autoplay; encrypted-media" loading="lazy"></iframe>`;
+}
+
+if(CONFIG.spotifyEmbedUrl){
       const wrap = document.getElementById('songEmbedWrap');
-      wrap.innerHTML = `<iframe src="${CONFIG.spotifyEmbedUrl}" width="100%" height="152" style="max-width:420px" frameborder="0" allow="autoplay; encrypted-media" loading="lazy"></iframe>`;
+      wrap.innerHTML = buildSongEmbedHtml(CONFIG.spotifyEmbedUrl, 420);
     }
   } else {
     document.getElementById('songSection').classList.add('hide');

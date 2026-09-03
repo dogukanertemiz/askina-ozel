@@ -212,14 +212,18 @@ Deno.serve(async (req: Request) => {
     let html = await templateRes.text();
 
     // 4) Fotoğraflar için uzun ömürlü imzalı URL üret.
-    let photoUrls: string[] = [];
-    if (Array.isArray(order.photo_urls) && order.photo_urls.length) {
+    async function signStoragePaths(paths: string[]): Promise<string[]> {
+      if (!paths.length) return [];
       const { data: signed, error: signErr } = await admin.storage
         .from("order-photos")
-        .createSignedUrls(order.photo_urls, PHOTO_SIGN_SECONDS);
-      if (!signErr && signed) {
-        photoUrls = signed.map((s) => s.signedUrl).filter(Boolean) as string[];
-      }
+        .createSignedUrls(paths, PHOTO_SIGN_SECONDS);
+      if (signErr || !signed) return [];
+      return signed.map((s) => s.signedUrl).filter(Boolean) as string[];
+    }
+
+    let photoUrls: string[] = [];
+    if (Array.isArray(order.photo_urls) && order.photo_urls.length) {
+      photoUrls = await signStoragePaths(order.photo_urls);
     }
 
     // 5) CONFIG bloğunu bul ve doldur.
@@ -252,65 +256,113 @@ Deno.serve(async (req: Request) => {
     }
 
     // Şablona özel alanlar (order.template_extra.fields = siparis-formu.html'in
-    // collectTemplateExtrasStructured() çıktısı, {fieldId: value} şeklinde).
-    const extra: Record<string, string> = order.template_extra?.fields || {};
+    // collectTemplateExtrasStructured() çıktısı, {fieldId: value} şeklinde —
+    // dosya alanları (extraPuzzlePhoto, extraScratchPhoto, extraMemoriesPhoto)
+    // burada henüz imzalı URL değil, ham depolama yolu/yolları olarak durur).
+    const extra: Record<string, string | string[]> = order.template_extra?.fields || {};
+    const extraStr = (key: string): string | undefined =>
+      typeof extra[key] === "string" ? (extra[key] as string) : undefined;
+    const extraPaths = (key: string): string[] =>
+      Array.isArray(extra[key]) ? (extra[key] as string[]) : [];
 
     switch (order.template) {
-      case "puzzle-aski":
-        if (photoUrls.length) block = setString(block, "PUZZLE_IMAGE", photoUrls[0]);
+      case "puzzle-aski": {
+        const puzzlePath = extraStr("extraPuzzlePhoto");
+        const puzzleSigned = puzzlePath ? await signStoragePaths([puzzlePath]) : [];
+        const puzzleImage = puzzleSigned[0] || photoUrls[0];
+        if (puzzleImage) block = setString(block, "PUZZLE_IMAGE", puzzleImage);
         break;
-      case "kazi-kazan-surprizi":
-        if (extra.extraScratchMessage) block = setString(block, "scratchMessage", extra.extraScratchMessage);
-        if (photoUrls.length) block = setString(block, "scratchImage", photoUrls[0]);
+      }
+      case "kazi-kazan-surprizi": {
+        if (extra.extraScratchMessage) block = setString(block, "scratchMessage", extraStr("extraScratchMessage") || "");
+        const scratchPath = extraStr("extraScratchPhoto");
+        const scratchSigned = scratchPath ? await signStoragePaths([scratchPath]) : [];
+        const scratchImage = scratchSigned[0] || photoUrls[0];
+        if (scratchImage) block = setString(block, "scratchImage", scratchImage);
         break;
-      case "hafiza-kartlari":
-        if (extra.extraSymbols) {
-          const syms = extra.extraSymbols.trim().split(/\s+/).filter(Boolean).slice(0, 6);
+      }
+      case "hafiza-kartlari": {
+        const symbolsRaw = extraStr("extraSymbols");
+        if (symbolsRaw) {
+          const syms = symbolsRaw.trim().split(/\s+/).filter(Boolean).slice(0, 6);
           if (syms.length === 6) block = setArray(block, "SYMBOLS", syms);
         }
         break;
-      case "evlilik-teklifi":
-        if (extra.extraMilestones) block = setArray(block, "milestones", parseMilestones(extra.extraMilestones));
+      }
+      case "evlilik-teklifi": {
+        const milestones = extraStr("extraMilestones");
+        if (milestones) block = setArray(block, "milestones", parseMilestones(milestones));
         break;
-      case "altin-saat":
-        if (extra.extraMemories) {
-          block = setArray(block, "memories", parseMemories(extra.extraMemories, photoUrls));
+      }
+      case "altin-saat": {
+        const memoriesRaw = extraStr("extraMemories");
+        if (memoriesRaw) {
+          const memoriesPaths = extraPaths("extraMemoriesPhoto");
+          const memoriesPhotos = memoriesPaths.length ? await signStoragePaths(memoriesPaths) : photoUrls;
+          block = setArray(block, "memories", parseMemories(memoriesRaw, memoriesPhotos));
         }
         break;
-      case "dogum-gunu-solen":
-        if (extra.extraAge) block = setNumberOrNull(block, "age", extra.extraAge);
-        if (extra.extraWishes) block = setArray(block, "wishes", parseWishes(extra.extraWishes));
+      }
+      case "dogum-gunu-solen": {
+        const age = extraStr("extraAge");
+        if (age) block = setNumberOrNull(block, "age", age);
+        const wishes = extraStr("extraWishes");
+        if (wishes) block = setArray(block, "wishes", parseWishes(wishes));
         break;
-      case "bebek-duyurusu":
-        if (extra.extraRevealType) block = setString(block, "revealType", extra.extraRevealType);
-        if (extra.extraRevealColor) block = setString(block, "revealColor", extra.extraRevealColor);
-        if (extra.extraParentNames) block = setString(block, "parentNames", extra.extraParentNames);
-        if (extra.extraBabyName) block = setString(block, "babyName", extra.extraBabyName);
+      }
+      case "bebek-duyurusu": {
+        const revealType = extraStr("extraRevealType");
+        if (revealType) block = setString(block, "revealType", revealType);
+        const revealColor = extraStr("extraRevealColor");
+        if (revealColor) block = setString(block, "revealColor", revealColor);
+        const parentNames = extraStr("extraParentNames");
+        if (parentNames) block = setString(block, "parentNames", parentNames);
+        const babyName = extraStr("extraBabyName");
+        if (babyName) block = setString(block, "babyName", babyName);
         if (order.special_date) block = setString(block, "dueDate", isoDateTime(order.special_date));
-        if (extra.extraWishes) block = setArray(block, "wishes", parseWishes(extra.extraWishes));
+        const wishes = extraStr("extraWishes");
+        if (wishes) block = setArray(block, "wishes", parseWishes(wishes));
         break;
-      case "tesekkur-ozur":
-        if (extra.extraPageType) block = setString(block, "pageType", extra.extraPageType);
-        if (extra.extraReasons) block = setArray(block, "reasons", parseLines(extra.extraReasons));
+      }
+      case "tesekkur-ozur": {
+        const pageType = extraStr("extraPageType");
+        if (pageType) block = setString(block, "pageType", pageType);
+        const reasons = extraStr("extraReasons");
+        if (reasons) block = setArray(block, "reasons", parseLines(reasons));
         break;
-      case "aile-gunu":
-        if (extra.extraPageType) block = setString(block, "pageType", extra.extraPageType);
-        if (extra.extraReasons) block = setArray(block, "reasons", parseLines(extra.extraReasons));
-        if (extra.extraFamilyWishes) block = setArray(block, "familyWishes", parseWishes(extra.extraFamilyWishes));
+      }
+      case "aile-gunu": {
+        const pageType = extraStr("extraPageType");
+        if (pageType) block = setString(block, "pageType", pageType);
+        const reasons = extraStr("extraReasons");
+        if (reasons) block = setArray(block, "reasons", parseLines(reasons));
+        const familyWishes = extraStr("extraFamilyWishes");
+        if (familyWishes) block = setArray(block, "familyWishes", parseWishes(familyWishes));
         break;
-      case "mezuniyet":
-        if (extra.extraDegree) block = setString(block, "degree", extra.extraDegree);
-        if (extra.extraMilestones) block = setArray(block, "milestones", parseMilestones(extra.extraMilestones));
-        if (extra.extraWishes) block = setArray(block, "wishes", parseWishes(extra.extraWishes));
+      }
+      case "mezuniyet": {
+        const degree = extraStr("extraDegree");
+        if (degree) block = setString(block, "degree", degree);
+        const milestones = extraStr("extraMilestones");
+        if (milestones) block = setArray(block, "milestones", parseMilestones(milestones));
+        const wishes = extraStr("extraWishes");
+        if (wishes) block = setArray(block, "wishes", parseWishes(wishes));
         break;
-      case "yeni-is-terfi":
-        if (extra.extraRole) block = setString(block, "role", extra.extraRole);
-        if (extra.extraMilestones) block = setArray(block, "milestones", parseMilestones(extra.extraMilestones));
-        if (extra.extraWishes) block = setArray(block, "wishes", parseWishes(extra.extraWishes));
+      }
+      case "yeni-is-terfi": {
+        const role = extraStr("extraRole");
+        if (role) block = setString(block, "role", role);
+        const milestones = extraStr("extraMilestones");
+        if (milestones) block = setArray(block, "milestones", parseMilestones(milestones));
+        const wishes = extraStr("extraWishes");
+        if (wishes) block = setArray(block, "wishes", parseWishes(wishes));
         break;
-      case "evcil-hayvan-anisi":
-        if (extra.extraYearsTogether) block = setString(block, "yearsTogether", extra.extraYearsTogether);
+      }
+      case "evcil-hayvan-anisi": {
+        const yearsTogether = extraStr("extraYearsTogether");
+        if (yearsTogether) block = setString(block, "yearsTogether", yearsTogether);
         break;
+      }
     }
 
     html = html.replace(configMatch[0], block);
